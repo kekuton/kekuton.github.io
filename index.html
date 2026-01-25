@@ -244,6 +244,23 @@ body {
   margin-bottom: 24px;
   font-weight: 600;
 }
+.card-answer {
+  display: none;
+  margin-top: 16px;
+  font-size: 16px;
+  color: var(--text-gray);
+  background: rgba(255,255,255,0.08);
+  padding: 12px;
+  border-radius: 14px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+}
+.card-answer.show {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
 .answer-buttons {
   display: grid;
   grid-template-columns: 1fr;
@@ -284,6 +301,10 @@ body {
 .btn-answer:active {
   transform: scale(0.98);
 }
+.btn-answer:disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
 .controls {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -322,7 +343,11 @@ body {
 .btn-control.primary:hover {
   box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
 }
-/* Result Screen */
+.btn-control:disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+/* ... остальные стили без изменений ... */
 .result-container {
   padding: 32px 24px;
   text-align: center;
@@ -384,7 +409,6 @@ body {
   letter-spacing: 0.5px;
   opacity: 0.85;
 }
-/* Modals */
 .modal {
   position: fixed;
   top: 0;
@@ -416,7 +440,6 @@ body {
   max-height: 90vh;
   overflow-y: auto;
 }
-/* Notification */
 .notification {
   position: fixed;
   bottom: 24px;
@@ -435,7 +458,6 @@ body {
 .notification.show {
   transform: translateX(-50%) translateY(0);
 }
-/* Footer icons */
 .footer-icons {
   position: fixed;
   bottom: 24px;
@@ -470,7 +492,6 @@ body {
 .icon-btn:active {
   transform: scale(0.95);
 }
-/* Progress bar */
 .progress-container {
   height: 8px;
   background: rgba(255, 255, 255, 0.1);
@@ -485,7 +506,6 @@ body {
   border-radius: 4px;
   transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
-/* Difficulty selector */
 .difficulty-selector {
   display: flex;
   justify-content: center;
@@ -517,7 +537,6 @@ body {
   background: rgba(255, 255, 255, 0.15);
   transform: translateY(-2px);
 }
-/* Authors section */
 .authors-section {
   padding: 20px;
   text-align: center;
@@ -558,7 +577,6 @@ body {
   transform: translateY(-4px);
   box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
 }
-/* Profile Section */
 .profile-section {
   display: flex;
   align-items: center;
@@ -600,7 +618,6 @@ body {
   font-size: 13px;
   color: var(--text-gray);
 }
-/* Scroll indicator */
 .scroll-indicator {
   position: absolute;
   bottom: 90px;
@@ -624,7 +641,6 @@ body {
 .scroll-indicator i {
   font-size: 18px;
 }
-/* Ripple Effect */
 .ripple {
   position: absolute;
   border-radius: 50%;
@@ -664,7 +680,7 @@ body {
 </div>
 <!-- Notification -->
 <div class="notification" id="notification">Правильный ответ! +10 очков</div>
-<!-- Achievements Modal -->
+<!-- Modals (без изменений) -->
 <div class="modal" id="achievements-modal">
 <div class="modal-content">
 <h3 style="text-align: center; margin-bottom: 24px; font-size: 22px; font-weight: 800;">
@@ -676,7 +692,6 @@ body {
 </button>
 </div>
 </div>
-<!-- Leaderboard Modal -->
 <div class="modal" id="leaderboard-modal">
 <div class="modal-content">
 <h3 style="text-align: center; margin-bottom: 24px; font-size: 22px; font-weight: 800;">
@@ -691,7 +706,6 @@ body {
 </button>
 </div>
 </div>
-<!-- Profile Modal -->
 <div class="modal" id="profile-modal">
 <div class="modal-content">
 <h3 style="text-align: center; margin-bottom: 24px; font-size: 22px; font-weight: 800;">
@@ -734,7 +748,6 @@ body {
 <button class="btn-control" id="close-profile">Закрыть</button>
 </div>
 </div>
-<!-- Share Modal -->
 <div class="modal" id="share-modal">
 <div class="modal-content">
 <h3 style="text-align: center; margin-bottom: 24px; font-size: 22px; font-weight: 800;">
@@ -751,7 +764,6 @@ body {
 <button class="btn-control" style="margin-top: 16px;" id="close-share">Закрыть</button>
 </div>
 </div>
-<!-- Multiplayer Modal -->
 <div class="modal" id="multiplayer-modal">
 <div class="modal-content">
 <h3 style="text-align: center; margin-bottom: 24px; font-size: 22px; font-weight: 800;">
@@ -774,7 +786,6 @@ body {
 <button class="btn-control" id="close-multiplayer">Закрыть</button>
 </div>
 </div>
-<!-- Study Mode Modal -->
 <div class="modal" id="study-modal">
 <div class="modal-content">
 <h3 style="text-align: center; margin-bottom: 24px; font-size: 22px; font-weight: 800;">
@@ -814,7 +825,6 @@ body {
 <button class="btn-control" id="close-study">Закрыть</button>
 </div>
 </div>
-<!-- Invite Modal -->
 <div class="modal" id="invite-modal">
 <div class="modal-content">
 <h3 style="text-align:center; margin-bottom:20px; font-size:22px; font-weight:800;">
@@ -834,7 +844,6 @@ body {
 <h1>🧠 ZUMER BRAIN</h1>
 <p>Тест на зумерскую эрудицию</p>
 </div>
-<!-- Profile Section -->
 <div class="profile-section">
 <div class="profile-avatar" id="main-profile-avatar">
 <img src="" alt="Avatar" id="main-profile-avatar-img" style="display: none;">
@@ -845,13 +854,11 @@ body {
 <div class="profile-level">Уровень <span id="main-profile-level">1</span></div>
 </div>
 </div>
-<!-- Multiplayer Button -->
 <div style="padding: 0 20px 20px;">
 <button class="btn-control primary" id="open-multiplayer" style="width: 100%;">
 <i class="fas fa-users"></i> Играть с друзьями
 </button>
 </div>
-<!-- Study Mode Button -->
 <div style="padding: 0 20px 20px;">
 <button class="btn-control" style="background: linear-gradient(135deg, var(--success), #16a34a); width: 100%;" id="open-study">
 <i class="fas fa-book"></i> Режим обучения
@@ -860,7 +867,6 @@ body {
 <div class="age-warning" id="age-warning">
 <i class="fas fa-exclamation-triangle"></i> Контент 18+
 </div>
-<!-- Daily Challenges -->
 <div style="padding: 0 20px 20px;">
 <h4 style="margin: 20px 0 16px; font-weight: 800; padding-left: 4px;">Ежедневные челленджи</h4>
 <div style="background: rgba(255,255,255,0.08); border-radius: 18px; padding: 18px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.1);">
@@ -916,7 +922,6 @@ body {
 <div class="theme-desc">Дейтинг и любовь</div>
 </div>
 </div>
-<!-- Authors Section -->
 <div class="authors-section">
 <div class="authors-title">Разработчики приложения</div>
 <div class="author-links">
@@ -981,6 +986,9 @@ body {
 <div class="card">
 <div class="card-category" id="card-category">TikTok</div>
 <div class="card-question" id="card-question">Как называется тренд с одинаковым танцем?</div>
+<div class="card-answer" id="card-answer">
+  Правильный ответ: <span id="correct-answer-text"></span>
+</div>
 </div>
 </div>
 <div class="answer-buttons">
@@ -996,7 +1004,7 @@ body {
 <i class="fas fa-arrow-left"></i> Назад
 </button>
 <button class="btn-control primary" id="btn-next">
-Вперед <i class="fas fa-arrow-right"></i>
+Далее <i class="fas fa-arrow-right"></i>
 </button>
 </div>
 </div>
@@ -1039,7 +1047,6 @@ body {
 <i class="fas fa-share-alt"></i> Поделиться результатом
 </button>
 </div>
-<!-- Authors Section in Results -->
 <div class="authors-section" style="margin-top: 28px; padding: 20px;">
 <div class="authors-title">Создано разработчиками</div>
 <div class="author-links">
@@ -1292,13 +1299,6 @@ function setupEventListeners() {
       setTimeout(() => ripple.remove(), 600);
       if ('vibrate' in navigator) navigator.vibrate(10);
     }, { passive: false });
-    
-    // Fallback for non-touch devices
-    el.addEventListener('click', function(e) {
-      // Prevent double execution on touch devices
-      if (window.TouchEvent && e instanceof TouchEvent) return;
-      // Your click logic is handled by touchstart above
-    });
   });
 
   // Theme selection
@@ -1504,6 +1504,14 @@ function startGame() {
   updateStats();
   startTimer();
 
+  // Деактивируем кнопку "Далее" в начале
+  const nextBtn = document.getElementById('btn-next');
+  if (nextBtn) {
+    nextBtn.disabled = true;
+    nextBtn.style.opacity = '0.6';
+    nextBtn.style.pointerEvents = 'none';
+  }
+
   const msg = isInDuel 
     ? "🎮 Дуэль началась! Удачи!" 
     : "Игра началась! Удачи!";
@@ -1525,6 +1533,17 @@ function updateCard() {
     const progress = ((currentCardIndex + 1) / currentCards.length) * 100;
     progressEl.style.width = `${progress}%`;
   }
+
+  // Скрываем ответ при новом вопросе
+  const answerContainer = document.getElementById('card-answer');
+  if (answerContainer) {
+    answerContainer.style.display = 'none';
+    answerContainer.classList.remove('show');
+  }
+
+  // Разблокируем кнопки ответа
+  document.getElementById('btn-correct').disabled = false;
+  document.getElementById('btn-incorrect').disabled = false;
 }
 
 function updateStats() {
@@ -1545,15 +1564,44 @@ function startTimer() {
     if (timeLeft <= 0) {
       clearInterval(timer);
       showNotification("Время вышло! ⏰", "warning");
-      nextQuestion();
+      // Автоматически показываем ответ и активируем "Далее"
+      const card = currentCards[currentCardIndex];
+      const answerEl = document.getElementById('correct-answer-text');
+      const answerContainer = document.getElementById('card-answer');
+      if (answerEl && answerContainer) {
+        answerEl.textContent = card.answer;
+        answerContainer.style.display = 'block';
+        answerContainer.classList.add('show');
+      }
+      const nextBtn = document.getElementById('btn-next');
+      if (nextBtn) {
+        nextBtn.disabled = false;
+        nextBtn.style.opacity = '1';
+        nextBtn.style.pointerEvents = 'auto';
+      }
+      document.getElementById('btn-correct').disabled = true;
+      document.getElementById('btn-incorrect').disabled = true;
     }
   }, 1000);
 }
 
+// === НОВАЯ ФУНКЦИЯ ОТВЕТА ===
 function checkAnswer(isCorrect) {
   clearInterval(timer);
+  
   const card = currentCards[currentCardIndex];
-  if (isCorrect === card.isCorrect) {
+  const isActuallyCorrect = (isCorrect === card.isCorrect);
+
+  // Показываем правильный ответ
+  const answerEl = document.getElementById('correct-answer-text');
+  const answerContainer = document.getElementById('card-answer');
+  if (answerEl && answerContainer) {
+    answerEl.textContent = card.answer;
+    answerContainer.style.display = 'block';
+    answerContainer.classList.add('show');
+  }
+
+  if (isActuallyCorrect) {
     const points = GAME_CONFIG.basePoints;
     score += points;
     correctCount++;
@@ -1563,14 +1611,31 @@ function checkAnswer(isCorrect) {
     showNotification(`✅ Правильно! +${points} очков`, "success");
     createConfetti();
   } else {
+    // Снимаем 5 секунд с таймера
+    timeLeft = Math.max(0, timeLeft - 5);
     currentStreak = 0;
-    showNotification("❌ Неправильно!", "error");
+    showNotification("❌ Неправильно! -5 сек", "error");
   }
+
   updateStats();
+
+  // Блокируем кнопки ответа
+  document.getElementById('btn-correct').disabled = true;
+  document.getElementById('btn-incorrect').disabled = true;
+
+  // Делаем кнопку "Далее" активной
+  const nextBtn = document.getElementById('btn-next');
+  if (nextBtn) {
+    nextBtn.disabled = false;
+    nextBtn.style.opacity = '1';
+    nextBtn.style.pointerEvents = 'auto';
+  }
 }
 
+// === НОВАЯ ФУНКЦИЯ ПЕРЕХОДА ===
 function nextQuestion() {
   currentCardIndex++;
+
   if (currentCardIndex < currentCards.length) {
     updateCard();
     startTimer();
