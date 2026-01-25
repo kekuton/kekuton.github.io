@@ -9,1155 +9,1140 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <style>
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+-webkit-tap-highlight-color: transparent;
 }
 :root {
-  --primary: #6366f1;
-  --secondary: #8b5cf6;
-  --accent: #ec4899;
-  --bg-dark: #0f172a;
-  --bg-card: #1e293b;
-  --text-light: #f8fafc;
-  --text-gray: #94a3b8;
-  --success: #22c55e;
-  --danger: #ef4444;
-  --warning: #f59e0b;
-  --border-radius: 24px;
-  --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+--primary: #6366f1;
+--secondary: #8b5cf6;
+--accent: #ec4899;
+--bg-dark: #0f172a;
+--bg-card: #1e293b;
+--text-light: #f8fafc;
+--text-gray: #94a3b8;
+--success: #22c55e;
+--danger: #ef4444;
+--warning: #f59e0b;
+--border-radius: 24px;
+--shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
 }
 body {
-  background: linear-gradient(135deg, var(--bg-dark), #1e293b);
-  color: var(--text-light);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 20px;
-  overflow-x: hidden;
-  position: relative;
-  -webkit-overflow-scrolling: touch;
+background: linear-gradient(135deg, var(--bg-dark), #1e293b);
+color: var(--text-light);
+font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+min-height: 100vh;
+display: flex;
+justify-content: center;
+align-items: flex-start;
+padding: 20px;
+overflow-x: hidden;
+position: relative;
+-webkit-overflow-scrolling: touch;
 }
 .container {
-  width: 100%;
-  max-width: 420px;
-  background: var(--bg-card);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-  position: relative;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+width: 100%;
+max-width: 420px;
+background: var(--bg-card);
+border-radius: var(--border-radius);
+box-shadow: var(--shadow);
+overflow: hidden;
+position: relative;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+backdrop-filter: blur(10px);
+border: 1px solid rgba(255, 255, 255, 0.1);
 }
 .header {
-  padding: 24px 20px;
-  text-align: center;
-  background: linear-gradient(135deg, #1e293b, #0f172a);
-  position: relative;
-  flex-shrink: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+padding: 24px 20px;
+text-align: center;
+background: linear-gradient(135deg, #1e293b, #0f172a);
+position: relative;
+flex-shrink: 0;
+border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 .header h1 {
-  font-size: 28px;
-  font-weight: 800;
-  background: linear-gradient(90deg, #8b5cf6, #ec4899, #6366f1);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 8px;
-  letter-spacing: -0.5px;
+font-size: 28px;
+font-weight: 800;
+background: linear-gradient(90deg, #8b5cf6, #ec4899, #6366f1);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+margin-bottom: 8px;
+letter-spacing: -0.5px;
 }
 .header p {
-  font-size: 15px;
-  color: var(--text-gray);
-  opacity: 0.9;
+font-size: 15px;
+color: var(--text-gray);
+opacity: 0.9;
 }
 .screen {
-  display: none;
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: 20px;
+display: none;
+flex: 1;
+overflow-y: auto;
+-webkit-overflow-scrolling: touch;
+padding-bottom: 20px;
 }
 .screen.active {
-  display: flex;
-  flex-direction: column;
+display: flex;
+flex-direction: column;
 }
 /* Age Warning */
 .age-warning {
-  background: rgba(239, 68, 68, 0.15);
-  border-left: 4px solid var(--danger);
-  padding: 16px;
-  margin: 20px;
-  border-radius: 16px;
-  display: none;
-  animation: pulse 2s infinite;
+background: rgba(239, 68, 68, 0.15);
+border-left: 4px solid var(--danger);
+padding: 16px;
+margin: 20px;
+border-radius: 16px;
+display: none;
+animation: pulse 2s infinite;
 }
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+0%, 100% { opacity: 1; }
+50% { opacity: 0.7; }
 }
 .age-warning.show {
-  display: block;
+display: block;
 }
 /* Theme Selection */
 .theme-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  padding: 0 20px;
-  flex: 1;
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 20px;
+padding: 0 20px;
+flex: 1;
 }
 .theme-card {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  padding: 24px 16px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  position: relative;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(5px);
+background: rgba(255, 255, 255, 0.08);
+border-radius: 20px;
+padding: 24px 16px;
+text-align: center;
+cursor: pointer;
+transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+position: relative;
+border: 1px solid rgba(255, 255, 255, 0.1);
+backdrop-filter: blur(5px);
 }
 .theme-card:hover, .theme-card:active {
-  transform: translateY(-6px);
-  background: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
-  border-color: rgba(255, 255, 255, 0.2);
+transform: translateY(-6px);
+background: rgba(255, 255, 255, 0.15);
+box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+border-color: rgba(255, 255, 255, 0.2);
 }
 .theme-icon {
-  font-size: 36px;
-  margin-bottom: 14px;
-  display: block;
-  transition: transform 0.3s ease;
+font-size: 36px;
+margin-bottom: 14px;
+display: block;
+transition: transform 0.3s ease;
 }
 .theme-card:hover .theme-icon {
-  transform: scale(1.2);
+transform: scale(1.2);
 }
 .theme-title {
-  font-size: 16px;
-  font-weight: 700;
-  margin-bottom: 8px;
-  color: white;
+font-size: 16px;
+font-weight: 700;
+margin-bottom: 8px;
+color: white;
 }
 .theme-desc {
-  font-size: 12px;
-  color: var(--text-gray);
-  line-height: 1.4;
-  opacity: 0.85;
+font-size: 12px;
+color: var(--text-gray);
+line-height: 1.4;
+opacity: 0.85;
 }
 .theme-card.adult::after {
-  content: "18+";
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  background: var(--accent);
-  color: white;
-  font-size: 11px;
-  font-weight: 800;
-  padding: 5px 12px;
-  border-radius: 14px;
-  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+content: "18+";
+position: absolute;
+top: 14px;
+right: 14px;
+background: var(--accent);
+color: white;
+font-size: 11px;
+font-weight: 800;
+padding: 5px 12px;
+border-radius: 14px;
+box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
 }
 /* Game Screen */
 .game-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.2);
-  flex-shrink: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 20px;
+background: rgba(0, 0, 0, 0.2);
+flex-shrink: 0;
+border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 .timer-box {
-  background: rgba(236, 72, 153, 0.15);
-  padding: 10px 20px;
-  border-radius: 16px;
-  font-size: 22px;
-  font-weight: 800;
-  color: #ec4899;
-  border: 1px solid rgba(236, 72, 153, 0.3);
+background: rgba(236, 72, 153, 0.15);
+padding: 10px 20px;
+border-radius: 16px;
+font-size: 22px;
+font-weight: 800;
+color: #ec4899;
+border: 1px solid rgba(236, 72, 153, 0.3);
 }
 .stats-row {
-  display: flex;
-  justify-content: space-around;
-  padding: 16px 20px;
-  background: rgba(0, 0, 0, 0.2);
-  font-size: 14px;
-  flex-shrink: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+display: flex;
+justify-content: space-around;
+padding: 16px 20px;
+background: rgba(0, 0, 0, 0.2);
+font-size: 14px;
+flex-shrink: 0;
+border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 .stat {
-  text-align: center;
+text-align: center;
 }
 .stat-value {
-  font-weight: 800;
-  font-size: 20px;
-  color: var(--primary);
-  margin-bottom: 4px;
+font-weight: 800;
+font-size: 20px;
+color: var(--primary);
+margin-bottom: 4px;
 }
 .card-area {
-  padding: 24px 20px;
-  min-height: 240px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
+padding: 24px 20px;
+min-height: 240px;
+display: flex;
+align-items: center;
+justify-content: center;
+flex: 1;
 }
 .card {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 22px;
-  padding: 28px;
-  text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-  position: relative;
-  overflow: hidden;
-  backdrop-filter: blur(10px);
+width: 100%;
+background: rgba(255, 255, 255, 0.08);
+border-radius: 22px;
+padding: 28px;
+text-align: center;
+border: 1px solid rgba(255, 255, 255, 0.15);
+box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+position: relative;
+overflow: hidden;
+backdrop-filter: blur(10px);
 }
 .card-category {
-  background: linear-gradient(90deg, var(--primary), var(--secondary));
-  color: white;
-  font-size: 13px;
-  font-weight: 800;
-  padding: 8px 20px;
-  border-radius: 50px;
-  display: inline-block;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+background: linear-gradient(90deg, var(--primary), var(--secondary));
+color: white;
+font-size: 13px;
+font-weight: 800;
+padding: 8px 20px;
+border-radius: 50px;
+display: inline-block;
+margin-bottom: 20px;
+box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 .card-question {
-  font-size: 20px;
-  line-height: 1.5;
-  margin-bottom: 24px;
-  font-weight: 600;
+font-size: 20px;
+line-height: 1.5;
+margin-bottom: 24px;
+font-weight: 600;
 }
 .answer-buttons {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-  padding: 0 20px 20px;
-  flex-shrink: 0;
+display: grid;
+grid-template-columns: 1fr;
+gap: 16px;
+padding: 0 20px 20px;
+flex-shrink: 0;
 }
 .btn-answer {
-  padding: 18px;
-  border: none;
-  border-radius: 18px;
-  font-size: 17px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  position: relative;
-  overflow: hidden;
-  touch-action: manipulation;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+padding: 18px;
+border: none;
+border-radius: 18px;
+font-size: 17px;
+font-weight: 700;
+cursor: pointer;
+transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 12px;
+position: relative;
+overflow: hidden;
+touch-action: manipulation;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 .btn-answer.correct {
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  color: white;
+background: linear-gradient(135deg, #22c55e, #16a34a);
+color: white;
 }
 .btn-answer.incorrect {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  color: white;
+background: linear-gradient(135deg, #ef4444, #dc2626);
+color: white;
 }
 .btn-answer:hover:not(:disabled) {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+transform: translateY(-3px);
+box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 .btn-answer:active {
-  transform: scale(0.98);
+transform: scale(0.98);
 }
 .controls {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  padding: 20px;
-  flex-shrink: 0;
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 16px;
+padding: 20px;
+flex-shrink: 0;
 }
 .btn-control {
-  padding: 16px;
-  border: none;
-  border-radius: 18px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--text-light);
-  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+padding: 16px;
+border: none;
+border-radius: 18px;
+font-size: 16px;
+font-weight: 700;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 10px;
+background: rgba(255, 255, 255, 0.1);
+color: var(--text-light);
+transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 .btn-control:hover {
-  background: rgba(255, 255, 255, 0.18);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+background: rgba(255, 255, 255, 0.18);
+transform: translateY(-3px);
+box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 .btn-control.primary {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color: white;
-  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+background: linear-gradient(135deg, var(--primary), var(--secondary));
+color: white;
+box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
 }
 .btn-control.primary:hover {
-  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
 }
 /* Result Screen */
 .result-container {
-  padding: 32px 24px;
-  text-align: center;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+padding: 32px 24px;
+text-align: center;
+flex: 1;
+display: flex;
+flex-direction: column;
+align-items: center;
 }
 .result-icon {
-  font-size: 72px;
-  margin: 24px 0;
-  text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+font-size: 72px;
+margin: 24px 0;
+text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
 }
 .result-title {
-  font-size: 28px;
-  font-weight: 800;
-  margin-bottom: 20px;
-  background: linear-gradient(90deg, #8b5cf6, #ec4899);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+font-size: 28px;
+font-weight: 800;
+margin-bottom: 20px;
+background: linear-gradient(90deg, #8b5cf6, #ec4899);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
 }
 .rating-badge {
-  background: linear-gradient(135deg, var(--accent), var(--secondary));
-  color: white;
-  padding: 12px 28px;
-  border-radius: 50px;
-  display: inline-block;
-  font-weight: 800;
-  margin: 24px 0;
-  font-size: 18px;
-  box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+background: linear-gradient(135deg, var(--accent), var(--secondary));
+color: white;
+padding: 12px 28px;
+border-radius: 50px;
+display: inline-block;
+font-weight: 800;
+margin: 24px 0;
+font-size: 18px;
+box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
 }
 .result-stats {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  margin: 28px 0;
-  width: 100%;
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 20px;
+margin: 28px 0;
+width: 100%;
 }
 .stat-box {
-  background: rgba(255, 255, 255, 0.08);
-  padding: 20px;
-  border-radius: 20px;
-  text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+background: rgba(255, 255, 255, 0.08);
+padding: 20px;
+border-radius: 20px;
+text-align: center;
+border: 1px solid rgba(255, 255, 255, 0.1);
 }
 .stat-box-value {
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--primary);
-  margin-bottom: 8px;
-  text-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+font-size: 24px;
+font-weight: 800;
+color: var(--primary);
+margin-bottom: 8px;
+text-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
 }
 .stat-box-label {
-  font-size: 13px;
-  color: var(--text-gray);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  opacity: 0.85;
+font-size: 13px;
+color: var(--text-gray);
+text-transform: uppercase;
+letter-spacing: 0.5px;
+opacity: 0.85;
 }
 /* Modals */
 .modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(15, 23, 42, 0.9);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(15, 23, 42, 0.9);
+display: flex;
+justify-content: center;
+align-items: center;
+z-index: 1000;
+opacity: 0;
+pointer-events: none;
+transition: opacity 0.3s ease;
 }
 .modal.active {
-  opacity: 1;
-  pointer-events: auto;
+opacity: 1;
+pointer-events: auto;
 }
 .modal-content {
-  background: var(--bg-card);
-  border-radius: 24px;
-  padding: 28px;
-  width: 90%;
-  max-width: 380px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  max-height: 90vh;
-  overflow-y: auto;
+background: var(--bg-card);
+border-radius: 24px;
+padding: 28px;
+width: 90%;
+max-width: 380px;
+box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+backdrop-filter: blur(20px);
+border: 1px solid rgba(255, 255, 255, 0.15);
+max-height: 90vh;
+overflow-y: auto;
 }
 /* Notification */
 .notification {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%) translateY(120px);
-  background: rgba(30, 41, 59, 0.95);
-  color: white;
-  padding: 16px 24px;
-  border-radius: 20px;
-  font-weight: 700;
-  z-index: 999;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+position: fixed;
+bottom: 24px;
+left: 50%;
+transform: translateX(-50%) translateY(120px);
+background: rgba(30, 41, 59, 0.95);
+color: white;
+padding: 16px 24px;
+border-radius: 20px;
+font-weight: 700;
+z-index: 999;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+border: 1px solid rgba(255, 255, 255, 0.15);
 }
 .notification.show {
-  transform: translateX(-50%) translateY(0);
+transform: translateX(-50%) translateY(0);
 }
 /* Footer icons */
 .footer-icons {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  display: flex;
-  gap: 16px;
-  z-index: 100;
+position: fixed;
+bottom: 24px;
+right: 24px;
+display: flex;
+gap: 16px;
+z-index: 100;
 }
 .icon-btn {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 20px;
-  cursor: pointer;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+width: 52px;
+height: 52px;
+border-radius: 50%;
+background: rgba(255, 255, 255, 0.15);
+display: flex;
+align-items: center;
+justify-content: center;
+color: white;
+font-size: 20px;
+cursor: pointer;
+box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+backdrop-filter: blur(10px);
+border: 1px solid rgba(255, 255, 255, 0.2);
 }
 .icon-btn:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+background: rgba(255, 255, 255, 0.25);
+transform: translateY(-4px);
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
 }
 .icon-btn:active {
-  transform: scale(0.95);
+transform: scale(0.95);
 }
 /* Progress bar */
 .progress-container {
-  height: 8px;
-  background: rgba(255, 255, 255, 0.1);
-  margin: 0 20px;
-  border-radius: 4px;
-  overflow: hidden;
-  flex-shrink: 0;
+height: 8px;
+background: rgba(255, 255, 255, 0.1);
+margin: 0 20px;
+border-radius: 4px;
+overflow: hidden;
+flex-shrink: 0;
 }
 .progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--primary), var(--secondary));
-  border-radius: 4px;
-  transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+height: 100%;
+background: linear-gradient(90deg, var(--primary), var(--secondary));
+border-radius: 4px;
+transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 /* Difficulty selector */
 .difficulty-selector {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  padding: 0 20px 20px;
-  flex-shrink: 0;
+display: flex;
+justify-content: center;
+gap: 12px;
+padding: 0 20px 20px;
+flex-shrink: 0;
 }
 .diff-btn {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--text-gray);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+padding: 10px 20px;
+border: none;
+border-radius: 16px;
+background: rgba(255, 255, 255, 0.1);
+color: var(--text-gray);
+font-size: 14px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+border: 1px solid rgba(255, 255, 255, 0.15);
 }
 .diff-btn.active {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color: white;
-  border: none;
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+background: linear-gradient(135deg, var(--primary), var(--secondary));
+color: white;
+border: none;
+box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
 }
 .diff-btn:hover:not(.active) {
-  background: rgba(255, 255, 255, 0.15);
-  transform: translateY(-2px);
+background: rgba(255, 255, 255, 0.15);
+transform: translateY(-2px);
 }
 /* Authors section */
 .authors-section {
-  padding: 20px;
-  text-align: center;
-  background: rgba(0, 0, 0, 0.2);
-  margin-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  flex-shrink: 0;
+padding: 20px;
+text-align: center;
+background: rgba(0, 0, 0, 0.2);
+margin-top: 20px;
+border-top: 1px solid rgba(255, 255, 255, 0.1);
+flex-shrink: 0;
 }
 .authors-title {
-  font-size: 14px;
-  color: var(--text-gray);
-  margin-bottom: 12px;
-  font-weight: 600;
+font-size: 14px;
+color: var(--text-gray);
+margin-bottom: 12px;
+font-weight: 600;
 }
 .author-links {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
+display: flex;
+justify-content: center;
+gap: 16px;
 }
 .author-link {
-  background: rgba(255, 255, 255, 0.12);
-  padding: 10px 20px;
-  border-radius: 18px;
-  color: var(--text-light);
-  text-decoration: none;
-  font-size: 15px;
-  font-weight: 600;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+background: rgba(255, 255, 255, 0.12);
+padding: 10px 20px;
+border-radius: 18px;
+color: var(--text-light);
+text-decoration: none;
+font-size: 15px;
+font-weight: 600;
+transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+display: flex;
+align-items: center;
+gap: 8px;
+border: 1px solid rgba(255, 255, 255, 0.15);
 }
 .author-link:hover, .author-link:active {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+background: linear-gradient(135deg, var(--primary), var(--secondary));
+transform: translateY(-4px);
+box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
 }
 /* Profile Section */
 .profile-section {
-  display: flex;
-  align-items: center;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.2);
-  margin: 20px;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+display: flex;
+align-items: center;
+padding: 20px;
+background: rgba(0, 0, 0, 0.2);
+margin: 20px;
+border-radius: 20px;
+border: 1px solid rgba(255, 255, 255, 0.1);
 }
 .profile-avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 26px;
-  margin-right: 16px;
-  cursor: pointer;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+width: 56px;
+height: 56px;
+border-radius: 50%;
+background: linear-gradient(135deg, var(--primary), var(--secondary));
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 26px;
+margin-right: 16px;
+cursor: pointer;
+overflow: hidden;
+box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
 }
 .profile-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
+width: 100%;
+height: 100%;
+object-fit: cover;
+border-radius: 50%;
 }
 .profile-info {
-  flex: 1;
+flex: 1;
 }
 .profile-name {
-  font-weight: 700;
-  font-size: 17px;
-  margin-bottom: 4px;
+font-weight: 700;
+font-size: 17px;
+margin-bottom: 4px;
 }
 .profile-level {
-  font-size: 13px;
-  color: var(--text-gray);
+font-size: 13px;
+color: var(--text-gray);
 }
 /* Scroll indicator */
 .scroll-indicator {
-  position: absolute;
-  bottom: 90px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 36px;
-  height: 36px;
-  border: 2px solid var(--text-gray);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.8;
-  animation: bounce 2s infinite;
-  z-index: 50;
+position: absolute;
+bottom: 90px;
+left: 50%;
+transform: translateX(-50%);
+width: 36px;
+height: 36px;
+border: 2px solid var(--text-gray);
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+opacity: 0.8;
+animation: bounce 2s infinite;
+z-index: 50;
 }
 @keyframes bounce {
-  0%, 100% { transform: translateX(-50%) translateY(0); }
-  50% { transform: translateX(-50%) translateY(8px); }
+0%, 100% { transform: translateX(-50%) translateY(0); }
+50% { transform: translateX(-50%) translateY(8px); }
 }
 .scroll-indicator i {
-  font-size: 18px;
+font-size: 18px;
 }
 /* Ripple Effect */
 .ripple {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.6);
-  transform: scale(0);
-  animation: ripple 0.6s linear;
+position: absolute;
+border-radius: 50%;
+background: rgba(255, 255, 255, 0.6);
+transform: scale(0);
+animation: ripple 0.6s linear;
 }
 @keyframes ripple {
-  to {
-    transform: scale(4);
-    opacity: 0;
-  }
+to {
+transform: scale(4);
+opacity: 0;
+}
 }
 </style>
 </head>
 <body>
 <!-- Confetti container -->
 <div id="confetti-container" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999;"></div>
-
 <!-- Scroll indicator -->
 <div class="scroll-indicator" id="scroll-indicator">
-  <i class="fas fa-chevron-down"></i>
+<i class="fas fa-chevron-down"></i>
 </div>
-
 <!-- Footer Icons -->
 <div class="footer-icons">
-  <div class="icon-btn" id="sound-toggle">
-    <i class="fas fa-volume-up"></i>
-  </div>
-  <div class="icon-btn" id="achievements-toggle">
-    <i class="fas fa-trophy"></i>
-  </div>
-  <div class="icon-btn" id="leaderboard-toggle">
-    <i class="fas fa-crown"></i>
-  </div>
-  <div class="icon-btn" id="profile-toggle">
-    <i class="fas fa-user"></i>
-  </div>
+<div class="icon-btn" id="sound-toggle">
+<i class="fas fa-volume-up"></i>
 </div>
-
+<div class="icon-btn" id="achievements-toggle">
+<i class="fas fa-trophy"></i>
+</div>
+<div class="icon-btn" id="leaderboard-toggle">
+<i class="fas fa-crown"></i>
+</div>
+<div class="icon-btn" id="profile-toggle">
+<i class="fas fa-user"></i>
+</div>
+</div>
 <!-- Notification -->
 <div class="notification" id="notification">Правильный ответ! +10 очков</div>
-
 <!-- Achievements Modal -->
 <div class="modal" id="achievements-modal">
-  <div class="modal-content">
-    <h3 style="text-align: center; margin-bottom: 24px; font-size: 22px; font-weight: 800;">
-      <i class="fas fa-trophy"></i> Достижения
-    </h3>
-    <div id="achievements-list" style="max-height: 240px; overflow-y: auto;"></div>
-    <button class="btn-control" style="margin-top: 24px;" id="close-achievements">
-      Закрыть
-    </button>
-  </div>
+<div class="modal-content">
+<h3 style="text-align: center; margin-bottom: 24px; font-size: 22px; font-weight: 800;">
+<i class="fas fa-trophy"></i> Достижения
+</h3>
+<div id="achievements-list" style="max-height: 240px; overflow-y: auto;"></div>
+<button class="btn-control" style="margin-top: 24px;" id="close-achievements">
+Закрыть
+</button>
 </div>
-
+</div>
 <!-- Leaderboard Modal -->
 <div class="modal" id="leaderboard-modal">
-  <div class="modal-content">
-    <h3 style="text-align: center; margin-bottom: 24px; font-size: 22px; font-weight: 800;">
-      <i class="fas fa-crown"></i> Глобальный рейтинг
-    </h3>
-    <div id="leaderboard-list" style="max-height: 240px; overflow-y: auto;"></div>
-    <div style="margin-top: 16px; text-align: center; font-size: 14px; color: var(--text-gray);">
-      Еженедельный приз: 1000 монет 🏆
-    </div>
-    <button class="btn-control" style="margin-top: 24px;" id="close-leaderboard">
-      Закрыть
-    </button>
-  </div>
+<div class="modal-content">
+<h3 style="text-align: center; margin-bottom: 24px; font-size: 22px; font-weight: 800;">
+<i class="fas fa-crown"></i> Глобальный рейтинг
+</h3>
+<div id="leaderboard-list" style="max-height: 240px; overflow-y: auto;"></div>
+<div style="margin-top: 16px; text-align: center; font-size: 14px; color: var(--text-gray);">
+Еженедельный приз: 1000 монет 🏆
 </div>
-
+<button class="btn-control" style="margin-top: 24px;" id="close-leaderboard">
+Закрыть
+</button>
+</div>
+</div>
 <!-- Profile Modal -->
 <div class="modal" id="profile-modal">
-  <div class="modal-content">
-    <h3 style="text-align: center; margin-bottom: 24px; font-size: 22px; font-weight: 800;">
-      <i class="fas fa-user"></i> Мой профиль
-    </h3>
-    <div style="text-align: center; margin-bottom: 24px;">
-      <div class="profile-avatar" id="profile-avatar">
-        <img src="" alt="Avatar" id="profile-avatar-img" style="display: none;">
-        <span id="profile-avatar-fallback">🧠</span>
-      </div>
-      <h4 id="profile-display-name" style="margin: 16px 0; font-weight: 800; font-size: 20px;">Зумер</h4>
-      <div style="display: flex; justify-content: center; gap: 20px; margin: 16px 0;">
-        <div style="text-align: center;">
-          <div style="font-weight: 800; color: var(--primary); font-size: 20px;" id="profile-level">1</div>
-          <div style="font-size: 13px; color: var(--text-gray);">Уровень</div>
-        </div>
-        <div style="text-align: center;">
-          <div style="font-weight: 800; color: var(--accent); font-size: 20px;" id="profile-coins">100</div>
-          <div style="font-size: 13px; color: var(--text-gray);">Монеты</div>
-        </div>
-        <div style="text-align: center;" id="premium-indicator" style="display: none;">
-          <div style="font-weight: 800; color: gold; font-size: 20px;">⭐</div>
-          <div style="font-size: 13px; color: gold;">Premium</div>
-        </div>
-      </div>
-    </div>
-    
-    <div style="margin-bottom: 24px;">
-      <h4 style="margin-bottom: 16px; font-weight: 800;">Статистика</h4>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-        <div style="background: rgba(255,255,255,0.08); padding: 16px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.1);">
-          <div style="font-weight: 800; color: var(--success); font-size: 18px;" id="profile-accuracy">85%</div>
-          <div style="font-size: 12px; color: var(--text-gray); margin-top: 6px;">Точность</div>
-        </div>
-        <div style="background: rgba(255,255,255,0.08); padding: 16px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.1);">
-          <div style="font-weight: 800; color: var(--accent); font-size: 18px;" id="profile-streak">5</div>
-          <div style="font-size: 12px; color: var(--text-gray); margin-top: 6px;">Серия</div>
-        </div>
-      </div>
-    </div>
-    
-    <button class="btn-control" id="close-profile">Закрыть</button>
-  </div>
+<div class="modal-content">
+<h3 style="text-align: center; margin-bottom: 24px; font-size: 22px; font-weight: 800;">
+<i class="fas fa-user"></i> Мой профиль
+</h3>
+<div style="text-align: center; margin-bottom: 24px;">
+<div class="profile-avatar" id="profile-avatar">
+<img src="" alt="Avatar" id="profile-avatar-img" style="display: none;">
+<span id="profile-avatar-fallback">🧠</span>
 </div>
-
+<h4 id="profile-display-name" style="margin: 16px 0; font-weight: 800; font-size: 20px;">Зумер</h4>
+<div style="display: flex; justify-content: center; gap: 20px; margin: 16px 0;">
+<div style="text-align: center;">
+<div style="font-weight: 800; color: var(--primary); font-size: 20px;" id="profile-level">1</div>
+<div style="font-size: 13px; color: var(--text-gray);">Уровень</div>
+</div>
+<div style="text-align: center;">
+<div style="font-weight: 800; color: var(--accent); font-size: 20px;" id="profile-coins">100</div>
+<div style="font-size: 13px; color: var(--text-gray);">Монеты</div>
+</div>
+<div style="text-align: center;" id="premium-indicator" style="display: none;">
+<div style="font-weight: 800; color: gold; font-size: 20px;">⭐</div>
+<div style="font-size: 13px; color: gold;">Premium</div>
+</div>
+</div>
+</div>
+<div style="margin-bottom: 24px;">
+<h4 style="margin-bottom: 16px; font-weight: 800;">Статистика</h4>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+<div style="background: rgba(255,255,255,0.08); padding: 16px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.1);">
+<div style="font-weight: 800; color: var(--success); font-size: 18px;" id="profile-accuracy">85%</div>
+<div style="font-size: 12px; color: var(--text-gray); margin-top: 6px;">Точность</div>
+</div>
+<div style="background: rgba(255,255,255,0.08); padding: 16px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.1);">
+<div style="font-weight: 800; color: var(--accent); font-size: 18px;" id="profile-streak">5</div>
+<div style="font-size: 12px; color: var(--text-gray); margin-top: 6px;">Серия</div>
+</div>
+</div>
+</div>
+<button class="btn-control" id="close-profile">Закрыть</button>
+</div>
+</div>
 <!-- Share Modal -->
 <div class="modal" id="share-modal">
-  <div class="modal-content">
-    <h3 style="text-align: center; margin-bottom: 24px; font-size: 22px; font-weight: 800;">
-      <i class="fas fa-share-alt"></i> Поделиться результатом
-    </h3>
-    <div style="text-align: center; margin-bottom: 24px;">
-      <div style="font-size: 52px; margin: 20px 0;">🏆</div>
-      <p style="margin-bottom: 20px; font-size: 18px; font-weight: 600;">Я ответил на <strong>95%</strong> вопросов!</p>
-      <p style="color: var(--text-gray); font-size: 15px; margin-bottom: 28px;">Попробуй и ты в ZUMER BRAIN!</p>
-    </div>
-    <div class="btn-control primary" id="share-to-telegram" style="padding: 18px;">
-      <i class="fab fa-telegram-plane"></i> Отправить в Telegram
-    </div>
-    <button class="btn-control" style="margin-top: 16px;" id="close-share">Закрыть</button>
-  </div>
+<div class="modal-content">
+<h3 style="text-align: center; margin-bottom: 24px; font-size: 22px; font-weight: 800;">
+<i class="fas fa-share-alt"></i> Поделиться результатом
+</h3>
+<div style="text-align: center; margin-bottom: 24px;">
+<div style="font-size: 52px; margin: 20px 0;">🏆</div>
+<p style="margin-bottom: 20px; font-size: 18px; font-weight: 600;">Я ответил на <strong>95%</strong> вопросов!</p>
+<p style="color: var(--text-gray); font-size: 15px; margin-bottom: 28px;">Попробуй и ты в ZUMER BRAIN!</p>
 </div>
-
+<div class="btn-control primary" id="share-to-telegram" style="padding: 18px;">
+<i class="fab fa-telegram-plane"></i> Отправить в Telegram
+</div>
+<button class="btn-control" style="margin-top: 16px;" id="close-share">Закрыть</button>
+</div>
+</div>
 <!-- Multiplayer Modal -->
 <div class="modal" id="multiplayer-modal">
-  <div class="modal-content">
-    <h3 style="text-align: center; margin-bottom: 24px; font-size: 22px; font-weight: 800;">
-      <i class="fas fa-users"></i> Мультиплеер
-    </h3>
-    <div style="margin: 20px 0;">
-      <button class="btn-control primary" id="duel-btn" style="margin-bottom: 12px; width: 100%;">
-        <i class="fas fa-user-friends"></i> Дуэль 1vs1
-      </button>
-      <button class="btn-control" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); width: 100%; margin-bottom: 12px;">
-        <i class="fas fa-users"></i> Команда 2vs2
-      </button>
-      <button class="btn-control" style="background: linear-gradient(135deg, #ec4899, #db2777); width: 100%;">
-        <i class="fas fa-trophy"></i> Турнир
-      </button>
-    </div>
-    <div style="text-align: center; margin: 16px 0; font-size: 14px; color: var(--text-gray);">
-      Пригласите друга или найдите случайного соперника
-    </div>
-    <button class="btn-control" id="close-multiplayer">Закрыть</button>
-  </div>
+<div class="modal-content">
+<h3 style="text-align: center; margin-bottom: 24px; font-size: 22px; font-weight: 800;">
+<i class="fas fa-users"></i> Мультиплеер
+</h3>
+<div style="margin: 20px 0;">
+<button class="btn-control primary" id="duel-btn" style="margin-bottom: 12px; width: 100%;">
+<i class="fas fa-user-friends"></i> Дуэль 1vs1
+</button>
+<button class="btn-control" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); width: 100%; margin-bottom: 12px;">
+<i class="fas fa-users"></i> Команда 2vs2
+</button>
+<button class="btn-control" style="background: linear-gradient(135deg, #ec4899, #db2777); width: 100%;">
+<i class="fas fa-trophy"></i> Турнир
+</button>
 </div>
-
+<div style="text-align: center; margin: 16px 0; font-size: 14px; color: var(--text-gray);">
+Пригласите друга или найдите случайного соперника
+</div>
+<button class="btn-control" id="close-multiplayer">Закрыть</button>
+</div>
+</div>
 <!-- Study Mode Modal -->
 <div class="modal" id="study-modal">
-  <div class="modal-content">
-    <h3 style="text-align: center; margin-bottom: 24px; font-size: 22px; font-weight: 800;">
-      <i class="fas fa-book"></i> Режим обучения
-    </h3>
-    <div style="background: rgba(34, 197, 94, 0.15); border-left: 4px solid var(--success); padding: 16px; border-radius: 16px; margin-bottom: 24px;">
-      <h4 style="margin-bottom: 12px; font-weight: 700; color: var(--success);">Без таймера • С объяснениями</h4>
-      <p style="font-size: 15px; line-height: 1.6; color: var(--text-gray);">
-        Учитесь в своем темпе! Каждый ответ сопровождается подробным объяснением.
-      </p>
-    </div>
-    <div style="margin: 20px 0;">
-      <h4 style="margin-bottom: 16px; font-weight: 800;">Выберите тему для изучения</h4>
-      <div class="theme-grid" style="grid-template-columns: 1fr; gap: 16px;">
-        <div class="theme-card" data-study="tiktok">
-          <i class="fab fa-tiktok theme-icon"></i>
-          <div class="theme-title">TikTok</div>
-          <div class="theme-desc">Тренды и челленджи</div>
-        </div>
-        <div class="theme-card" data-study="memes">
-          <i class="fas fa-laugh-squint theme-icon"></i>
-          <div class="theme-title">Мемы</div>
-          <div class="theme-desc">Вирусные шутки</div>
-        </div>
-        <div class="theme-card" data-study="music">
-          <i class="fas fa-music theme-icon"></i>
-          <div class="theme-title">Музыка</div>
-          <div class="theme-desc">Хиты и артисты</div>
-        </div>
-        <div class="theme-card" data-study="slang">
-          <i class="fas fa-comment-dots theme-icon"></i>
-          <div class="theme-title">Сленг</div>
-          <div class="theme-desc">Кринж, вайб, рофл</div>
-        </div>
-      </div>
-    </div>
-    <button class="btn-control" id="close-study">Закрыть</button>
-  </div>
+<div class="modal-content">
+<h3 style="text-align: center; margin-bottom: 24px; font-size: 22px; font-weight: 800;">
+<i class="fas fa-book"></i> Режим обучения
+</h3>
+<div style="background: rgba(34, 197, 94, 0.15); border-left: 4px solid var(--success); padding: 16px; border-radius: 16px; margin-bottom: 24px;">
+<h4 style="margin-bottom: 12px; font-weight: 700; color: var(--success);">Без таймера • С объяснениями</h4>
+<p style="font-size: 15px; line-height: 1.6; color: var(--text-gray);">
+Учитесь в своем темпе! Каждый ответ сопровождается подробным объяснением.
+</p>
 </div>
-
+<div style="margin: 20px 0;">
+<h4 style="margin-bottom: 16px; font-weight: 800;">Выберите тему для изучения</h4>
+<div class="theme-grid" style="grid-template-columns: 1fr; gap: 16px;">
+<div class="theme-card" data-study="tiktok">
+<i class="fab fa-tiktok theme-icon"></i>
+<div class="theme-title">TikTok</div>
+<div class="theme-desc">Тренды и челленджи</div>
+</div>
+<div class="theme-card" data-study="memes">
+<i class="fas fa-laugh-squint theme-icon"></i>
+<div class="theme-title">Мемы</div>
+<div class="theme-desc">Вирусные шутки</div>
+</div>
+<div class="theme-card" data-study="music">
+<i class="fas fa-music theme-icon"></i>
+<div class="theme-title">Музыка</div>
+<div class="theme-desc">Хиты и артисты</div>
+</div>
+<div class="theme-card" data-study="slang">
+<i class="fas fa-comment-dots theme-icon"></i>
+<div class="theme-title">Сленг</div>
+<div class="theme-desc">Кринж, вайб, рофл</div>
+</div>
+</div>
+</div>
+<button class="btn-control" id="close-study">Закрыть</button>
+</div>
+</div>
+<!-- Invite Modal -->
+<div class="modal" id="invite-modal">
+<div class="modal-content">
+<h3 style="text-align:center; margin-bottom:20px; font-size:22px; font-weight:800;">
+🔗 Отправь другу!
+</h3>
+<p style="text-align:center; color:var(--text-gray); margin-bottom:16px; font-size:14px;">
+Скопируй ссылку и отправь в Telegram
+</p>
+<input type="text" id="invite-input" readonly style="width:100%; padding:12px; border-radius:12px; background:rgba(255,255,255,0.1); color:white; border:1px solid rgba(255,255,255,0.2); margin:12px 0;">
+<button class="btn-control primary" id="copy-link-btn" style="width:100%;">Копировать</button>
+<button class="btn-control" id="close-invite" style="margin-top:12px; width:100%;">Закрыть</button>
+</div>
+</div>
 <!-- Theme Selection Screen -->
 <div class="container screen active" id="screen-theme">
-  <div class="header">
-    <h1>🧠 ZUMER BRAIN</h1>
-    <p>Тест на зумерскую эрудицию</p>
-  </div>
-  
-  <!-- Profile Section -->
-  <div class="profile-section">
-    <div class="profile-avatar" id="main-profile-avatar">
-      <img src="" alt="Avatar" id="main-profile-avatar-img" style="display: none;">
-      <span id="main-profile-avatar-fallback">🧠</span>
-    </div>
-    <div class="profile-info">
-      <div class="profile-name" id="main-profile-name">Зумер</div>
-      <div class="profile-level">Уровень <span id="main-profile-level">1</span></div>
-    </div>
-  </div>
-  
-  <!-- Multiplayer Button -->
-  <div style="padding: 0 20px 20px;">
-    <button class="btn-control primary" id="open-multiplayer" style="width: 100%;">
-      <i class="fas fa-users"></i> Играть с друзьями
-    </button>
-  </div>
-  
-  <!-- Study Mode Button -->
-  <div style="padding: 0 20px 20px;">
-    <button class="btn-control" style="background: linear-gradient(135deg, var(--success), #16a34a); width: 100%;" id="open-study">
-      <i class="fas fa-book"></i> Режим обучения
-    </button>
-  </div>
-  
-  <!-- Event Banner -->
-  <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 16px; text-align: center; border-radius: 20px; margin: 20px; font-weight: 700; animation: pulse 2s infinite;">
-    🎃 Хэллоуинский челлендж! +50 монет за 5 правильных ответов
-  </div>
-  
-  <div class="age-warning" id="age-warning">
-    <i class="fas fa-exclamation-triangle"></i> Контент 18+
-  </div>
-  
-  <!-- Daily Challenges -->
-  <div style="padding: 0 20px 20px;">
-    <h4 style="margin: 20px 0 16px; font-weight: 800; padding-left: 4px;">Ежедневные челленджи</h4>
-    <div style="background: rgba(255,255,255,0.08); border-radius: 18px; padding: 18px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.1);">
-      <div style="font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 10px;">
-        <i class="fas fa-music" style="color: var(--primary);"></i> Музыкальный гений
-      </div>
-      <div style="font-size: 14px; color: var(--text-gray); margin-bottom: 12px;">Ответь на 5 вопросов про музыку</div>
-      <div style="height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-bottom: 12px; overflow: hidden;">
-        <div style="height: 100%; background: linear-gradient(90deg, var(--accent), var(--primary)); border-radius: 4px; width: 60%;"></div>
-      </div>
-      <div style="font-size: 14px; color: var(--success); font-weight: 700;">+25 монет 🪙</div>
-    </div>
-    <div style="background: rgba(255,255,255,0.08); border-radius: 18px; padding: 18px; border: 1px solid rgba(255,255,255,0.1);">
-      <div style="font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 10px;">
-        <i class="fas fa-fire" style="color: var(--accent);"></i> Огненная серия
-      </div>
-      <div style="font-size: 14px; color: var(--text-gray); margin-bottom: 12px;">10 правильных ответов подряд</div>
-      <div style="height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-bottom: 12px; overflow: hidden;">
-        <div style="height: 100%; background: linear-gradient(90deg, var(--accent), var(--primary)); border-radius: 4px; width: 30%;"></div>
-      </div>
-      <div style="font-size: 14px; color: var(--success); font-weight: 700;">+50 монет 🪙</div>
-    </div>
-  </div>
-  
-  <div class="difficulty-selector">
-    <button class="diff-btn" data-diff="easy">Легко</button>
-    <button class="diff-btn active" data-diff="medium">Средне</button>
-    <button class="diff-btn" data-diff="hard">Сложно</button>
-  </div>
-  
-  <div class="theme-grid">
-    <div class="theme-card" data-theme="tiktok">
-      <i class="fab fa-tiktok theme-icon"></i>
-      <div class="theme-title">TikTok</div>
-      <div class="theme-desc">Тренды и челленджи</div>
-    </div>
-    <div class="theme-card" data-theme="memes">
-      <i class="fas fa-laugh-squint theme-icon"></i>
-      <div class="theme-title">Мемы</div>
-      <div class="theme-desc">Вирусные шутки</div>
-    </div>
-    <div class="theme-card" data-theme="music">
-      <i class="fas fa-music theme-icon"></i>
-      <div class="theme-title">Музыка</div>
-      <div class="theme-desc">Хиты и артисты</div>
-    </div>
-    <div class="theme-card" data-theme="slang">
-      <i class="fas fa-comment-dots theme-icon"></i>
-      <div class="theme-title">Сленг</div>
-      <div class="theme-desc">Кринж, вайб, рофл</div>
-    </div>
-    <div class="theme-card adult" data-theme="dating">
-      <i class="fas fa-heart theme-icon"></i>
-      <div class="theme-title">Отношения</div>
-      <div class="theme-desc">Дейтинг и любовь</div>
-    </div>
-  </div>
-  
-  <!-- Authors Section -->
-  <div class="authors-section">
-    <div class="authors-title">Разработчики приложения</div>
-    <div class="author-links">
-      <a href="https://t.me/crypto_Nit_tg" class="author-link" target="_blank">
-        <i class="fab fa-telegram"></i> @crypto_Nit_tg
-      </a>
-      <a href="https://t.me/opiumcartidemons" class="author-link" target="_blank">
-        <i class="fab fa-telegram"></i> @opiumcartidemons
-      </a>
-    </div>
-  </div>
+<div class="header">
+<h1>🧠 ZUMER BRAIN</h1>
+<p>Тест на зумерскую эрудицию</p>
 </div>
-
+<!-- Profile Section -->
+<div class="profile-section">
+<div class="profile-avatar" id="main-profile-avatar">
+<img src="" alt="Avatar" id="main-profile-avatar-img" style="display: none;">
+<span id="main-profile-avatar-fallback">🧠</span>
+</div>
+<div class="profile-info">
+<div class="profile-name" id="main-profile-name">Зумер</div>
+<div class="profile-level">Уровень <span id="main-profile-level">1</span></div>
+</div>
+</div>
+<!-- Multiplayer Button -->
+<div style="padding: 0 20px 20px;">
+<button class="btn-control primary" id="open-multiplayer" style="width: 100%;">
+<i class="fas fa-users"></i> Играть с друзьями
+</button>
+</div>
+<!-- Study Mode Button -->
+<div style="padding: 0 20px 20px;">
+<button class="btn-control" style="background: linear-gradient(135deg, var(--success), #16a34a); width: 100%;" id="open-study">
+<i class="fas fa-book"></i> Режим обучения
+</button>
+</div>
+<div class="age-warning" id="age-warning">
+<i class="fas fa-exclamation-triangle"></i> Контент 18+
+</div>
+<!-- Daily Challenges -->
+<div style="padding: 0 20px 20px;">
+<h4 style="margin: 20px 0 16px; font-weight: 800; padding-left: 4px;">Ежедневные челленджи</h4>
+<div style="background: rgba(255,255,255,0.08); border-radius: 18px; padding: 18px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.1);">
+<div style="font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 10px;">
+<i class="fas fa-music" style="color: var(--primary);"></i> Музыкальный гений
+</div>
+<div style="font-size: 14px; color: var(--text-gray); margin-bottom: 12px;">Ответь на 5 вопросов про музыку</div>
+<div style="height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-bottom: 12px; overflow: hidden;">
+<div style="height: 100%; background: linear-gradient(90deg, var(--accent), var(--primary)); border-radius: 4px; width: 60%;"></div>
+</div>
+<div style="font-size: 14px; color: var(--success); font-weight: 700;">+25 монет 🪙</div>
+</div>
+<div style="background: rgba(255,255,255,0.08); border-radius: 18px; padding: 18px; border: 1px solid rgba(255,255,255,0.1);">
+<div style="font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 10px;">
+<i class="fas fa-fire" style="color: var(--accent);"></i> Огненная серия
+</div>
+<div style="font-size: 14px; color: var(--text-gray); margin-bottom: 12px;">10 правильных ответов подряд</div>
+<div style="height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-bottom: 12px; overflow: hidden;">
+<div style="height: 100%; background: linear-gradient(90deg, var(--accent), var(--primary)); border-radius: 4px; width: 30%;"></div>
+</div>
+<div style="font-size: 14px; color: var(--success); font-weight: 700;">+50 монет 🪙</div>
+</div>
+</div>
+<div class="difficulty-selector">
+<button class="diff-btn" data-diff="easy">Легко</button>
+<button class="diff-btn active" data-diff="medium">Средне</button>
+<button class="diff-btn" data-diff="hard">Сложно</button>
+</div>
+<div class="theme-grid">
+<div class="theme-card" data-theme="tiktok">
+<i class="fab fa-tiktok theme-icon"></i>
+<div class="theme-title">TikTok</div>
+<div class="theme-desc">Тренды и челленджи</div>
+</div>
+<div class="theme-card" data-theme="memes">
+<i class="fas fa-laugh-squint theme-icon"></i>
+<div class="theme-title">Мемы</div>
+<div class="theme-desc">Вирусные шутки</div>
+</div>
+<div class="theme-card" data-theme="music">
+<i class="fas fa-music theme-icon"></i>
+<div class="theme-title">Музыка</div>
+<div class="theme-desc">Хиты и артисты</div>
+</div>
+<div class="theme-card" data-theme="slang">
+<i class="fas fa-comment-dots theme-icon"></i>
+<div class="theme-title">Сленг</div>
+<div class="theme-desc">Кринж, вайб, рофл</div>
+</div>
+<div class="theme-card adult" data-theme="dating">
+<i class="fas fa-heart theme-icon"></i>
+<div class="theme-title">Отношения</div>
+<div class="theme-desc">Дейтинг и любовь</div>
+</div>
+</div>
+<!-- Authors Section -->
+<div class="authors-section">
+<div class="authors-title">Разработчики приложения</div>
+<div class="author-links">
+<a href="https://t.me/crypto_Nit_tg" class="author-link" target="_blank">
+<i class="fab fa-telegram"></i> @crypto_Nit_tg
+</a>
+<a href="https://t.me/opiumcartidemons" class="author-link" target="_blank">
+<i class="fab fa-telegram"></i> @opiumcartidemons
+</a>
+</div>
+</div>
+</div>
 <!-- Age Check Screen -->
 <div class="container screen" id="screen-age">
-  <div class="header">
-    <h1><i class="fas fa-user-lock"></i> 18+</h1>
-    <p>Подтвердите возраст</p>
-  </div>
-  <div style="padding: 40px 24px; text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center;">
-    <div style="font-size: 72px; margin: 24px 0; color: var(--danger);">
-      <i class="fas fa-user-secret"></i>
-    </div>
-    <h2 style="font-size: 26px; margin-bottom: 20px; font-weight: 800;">Только для взрослых</h2>
-    <p style="color: var(--text-gray); line-height: 1.7; margin-bottom: 36px; font-size: 16px; opacity: 0.9;">
-      Этот контент содержит материалы,<br>предназначенные только для лиц<br>
-      <strong>старше 18 лет</strong>.
-    </p>
-    <div style="display: flex; flex-direction: column; gap: 16px;">
-      <button class="btn-control primary" id="btn-age-yes" style="padding: 18px;">
-        <i class="fas fa-check"></i> Мне есть 18
-      </button>
-      <button class="btn-control" id="btn-age-no" style="padding: 18px; background: linear-gradient(135deg, var(--danger), #dc2626);">
-        <i class="fas fa-times"></i> Мне нет 18
-      </button>
-    </div>
-  </div>
+<div class="header">
+<h1><i class="fas fa-user-lock"></i> 18+</h1>
+<p>Подтвердите возраст</p>
 </div>
-
+<div style="padding: 40px 24px; text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center;">
+<div style="font-size: 72px; margin: 24px 0; color: var(--danger);">
+<i class="fas fa-user-secret"></i>
+</div>
+<h2 style="font-size: 26px; margin-bottom: 20px; font-weight: 800;">Только для взрослых</h2>
+<p style="color: var(--text-gray); line-height: 1.7; margin-bottom: 36px; font-size: 16px; opacity: 0.9;">
+Этот контент содержит материалы,<br>предназначенные только для лиц<br>
+<strong>старше 18 лет</strong>.
+</p>
+<div style="display: flex; flex-direction: column; gap: 16px;">
+<button class="btn-control primary" id="btn-age-yes" style="padding: 18px;">
+<i class="fas fa-check"></i> Мне есть 18
+</button>
+<button class="btn-control" id="btn-age-no" style="padding: 18px; background: linear-gradient(135deg, var(--danger), #dc2626);">
+<i class="fas fa-times"></i> Мне нет 18
+</button>
+</div>
+</div>
+</div>
 <!-- Game Screen -->
 <div class="container screen" id="screen-game">
-  <div class="game-header">
-    <div id="game-title">TikTok</div>
-    <div class="timer-box" id="timer">30</div>
-  </div>
-  
-  <div class="stats-row">
-    <div class="stat">
-      <div class="stat-value" id="score">0</div>
-      <div>Очки</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value" id="coins">100</div>
-      <div>Монеты</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value" id="current-q">1</div>
-      <div>Вопрос</div>
-    </div>
-  </div>
-  
-  <div class="progress-container">
-    <div class="progress-fill" id="progress-bar" style="width: 0%"></div>
-  </div>
-  
-  <div class="card-area">
-    <div class="card">
-      <div class="card-category" id="card-category">TikTok</div>
-      <div class="card-question" id="card-question">Как называется тренд с одинаковым танцем?</div>
-    </div>
-  </div>
-  
-  <div class="answer-buttons">
-    <button class="btn-answer correct" id="btn-correct">
-      <i class="fas fa-check"></i> Правильно
-    </button>
-    <button class="btn-answer incorrect" id="btn-incorrect">
-      <i class="fas fa-times"></i> Неправильно
-    </button>
-  </div>
-  
-  <div class="controls">
-    <button class="btn-control" id="btn-prev">
-      <i class="fas fa-arrow-left"></i> Назад
-    </button>
-    <button class="btn-control primary" id="btn-next">
-      Вперед <i class="fas fa-arrow-right"></i>
-    </button>
-  </div>
+<div class="game-header">
+<div id="game-title">TikTok</div>
+<div class="timer-box" id="timer">30</div>
 </div>
-
+<div class="stats-row">
+<div class="stat">
+<div class="stat-value" id="score">0</div>
+<div>Очки</div>
+</div>
+<div class="stat">
+<div class="stat-value" id="coins">100</div>
+<div>Монеты</div>
+</div>
+<div class="stat">
+<div class="stat-value" id="current-q">1</div>
+<div>Вопрос</div>
+</div>
+</div>
+<div class="progress-container">
+<div class="progress-fill" id="progress-bar" style="width: 0%"></div>
+</div>
+<div class="card-area">
+<div class="card">
+<div class="card-category" id="card-category">TikTok</div>
+<div class="card-question" id="card-question">Как называется тренд с одинаковым танцем?</div>
+</div>
+</div>
+<div class="answer-buttons">
+<button class="btn-answer correct" id="btn-correct">
+<i class="fas fa-check"></i> Правильно
+</button>
+<button class="btn-answer incorrect" id="btn-incorrect">
+<i class="fas fa-times"></i> Неправильно
+</button>
+</div>
+<div class="controls">
+<button class="btn-control" id="btn-prev">
+<i class="fas fa-arrow-left"></i> Назад
+</button>
+<button class="btn-control primary" id="btn-next">
+Вперед <i class="fas fa-arrow-right"></i>
+</button>
+</div>
+</div>
 <!-- Results Screen -->
 <div class="container screen" id="screen-result">
-  <div class="header">
-    <h1><i class="fas fa-trophy"></i> Результаты</h1>
-    <p>Твоя статистика</p>
-  </div>
-  
-  <div class="result-container">
-    <div class="result-icon" id="result-icon">🏆</div>
-    <h2 class="result-title" id="result-title">Отличная игра!</h2>
-    <div class="rating-badge" id="rating-badge">Хорошо</div>
-    
-    <div class="result-stats">
-      <div class="stat-box">
-        <div class="stat-box-value" id="final-score">0</div>
-        <div class="stat-box-label">Очки</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-box-value" id="final-accuracy">0%</div>
-        <div class="stat-box-label">Точность</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-box-value" id="final-correct">0/5</div>
-        <div class="stat-box-label">Правильно</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-box-value" id="final-time">0с</div>
-        <div class="stat-box-label">Среднее время</div>
-      </div>
-    </div>
-    
-    <div style="margin-top: 28px; width: 100%; display: flex; flex-direction: column; gap: 16px;">
-      <button class="btn-control primary" id="btn-replay" style="padding: 18px;">
-        <i class="fas fa-redo"></i> Играть снова
-      </button>
-      <button class="btn-control" id="btn-change-theme" style="padding: 18px;">
-        <i class="fas fa-sync-alt"></i> Сменить тему
-      </button>
-      <button class="btn-control" style="background: linear-gradient(135deg, var(--success), #16a34a); padding: 18px;" id="btn-share-result">
-        <i class="fas fa-share-alt"></i> Поделиться результатом
-      </button>
-    </div>
-    
-    <!-- Authors Section in Results -->
-    <div class="authors-section" style="margin-top: 28px; padding: 20px;">
-      <div class="authors-title">Создано разработчиками</div>
-      <div class="author-links">
-        <a href="https://t.me/crypto_Nit_tg" class="author-link" target="_blank">
-          <i class="fab fa-telegram"></i> @crypto_Nit_tg
-        </a>
-        <a href="https://t.me/opiumcartidemons" class="author-link" target="_blank">
-          <i class="fab fa-telegram"></i> @opiumcartidemons
-        </a>
-      </div>
-    </div>
-  </div>
+<div class="header">
+<h1><i class="fas fa-trophy"></i> Результаты</h1>
+<p>Твоя статистика</p>
 </div>
-
+<div class="result-container">
+<div class="result-icon" id="result-icon">🏆</div>
+<h2 class="result-title" id="result-title">Отличная игра!</h2>
+<div class="rating-badge" id="rating-badge">Хорошо</div>
+<div class="result-stats">
+<div class="stat-box">
+<div class="stat-box-value" id="final-score">0</div>
+<div class="stat-box-label">Очки</div>
+</div>
+<div class="stat-box">
+<div class="stat-box-value" id="final-accuracy">0%</div>
+<div class="stat-box-label">Точность</div>
+</div>
+<div class="stat-box">
+<div class="stat-box-value" id="final-correct">0/5</div>
+<div class="stat-box-label">Правильно</div>
+</div>
+<div class="stat-box">
+<div class="stat-box-value" id="final-time">0с</div>
+<div class="stat-box-label">Среднее время</div>
+</div>
+</div>
+<div style="margin-top: 28px; width: 100%; display: flex; flex-direction: column; gap: 16px;">
+<button class="btn-control primary" id="btn-replay" style="padding: 18px;">
+<i class="fas fa-redo"></i> Играть снова
+</button>
+<button class="btn-control" id="btn-change-theme" style="padding: 18px;">
+<i class="fas fa-sync-alt"></i> Сменить тему
+</button>
+<button class="btn-control" style="background: linear-gradient(135deg, var(--success), #16a34a); padding: 18px;" id="btn-share-result">
+<i class="fas fa-share-alt"></i> Поделиться результатом
+</button>
+</div>
+<!-- Authors Section in Results -->
+<div class="authors-section" style="margin-top: 28px; padding: 20px;">
+<div class="authors-title">Создано разработчиками</div>
+<div class="author-links">
+<a href="https://t.me/crypto_Nit_tg" class="author-link" target="_blank">
+<i class="fab fa-telegram"></i> @crypto_Nit_tg
+</a>
+<a href="https://t.me/opiumcartidemons" class="author-link" target="_blank">
+<i class="fab fa-telegram"></i> @opiumcartidemons
+</a>
+</div>
+</div>
+</div>
+</div>
 <script>
-// ==================== ШАБЛОНЫ ВОПРОСОВ (ИИ-СИМУЛЯЦИЯ) ====================
+// ==================== ШАБЛОНЫ ВОПРОСОВ ====================
 const QUESTION_TEMPLATES = {
-  tiktok: [
-    { q: "Как называется тренд, где все повторяют один и тот же танец под песню '{{song}}'?", a: "Челлендж" },
-    { q: "Кто из этих блогеров стал вирусным благодаря челленджу '{{challenge}}'?", a: "{{creator}}" },
-    { q: "Что означает термин 'сигма' в TikTok-культуре?", a: "Тип мужчины, который ставит цели выше отношений" },
-    { q: "Какой тренд стал мемом после видео с '{{memeSubject}}'?", a: "{{trendName}}" },
-    { q: "Откуда пошёл мем 'окей, бумер'?", a: "Из TikTok как ответ старшему поколению" }
-  ],
-  memes: [
-    { q: "Что означает слово 'кринж' в зумерском сленге?", a: "Сильное чувство стыда за кого-то" },
-    { q: "Кто такой 'чел' в интернет-культуре?", a: "Парень, мужчина (от слова 'человек')" },
-    { q: "Что значит 'флексить'?", a: "Хвастаться, показывать свой статус" },
-    { q: "Какой мем с котиком стал вирусным в 2023 году?", a: "{{catMeme}}" },
-    { q: "Откуда пошёл мем '{{randomMeme}}'?", a: "Из TikTok/Reddit в 2022-2023" }
-  ],
-  music: [
-    { q: "Кто исполнил трек '{{song}}', ставший вирусным в TikTok?", a: "{{artist}}" },
-    { q: "Какой русский рэпер выпустил трек '{{track}}'?", a: "MORGENSHTERN" },
-    { q: "Что такое 'phonk' в музыкальной культуре?", a: "Жанр электронной музыки с мемфис-рэп семплами" },
-    { q: "Из какой песни строчка: '{{lyric}}'?", a: "{{artist}} - {{song}}" },
-    { q: "Какой трек дольше всего был в тренде TikTok в 2023?", a: "Dreams - Fleetwood Mac" }
-  ],
-  slang: [
-    { q: "Что значит 'вайб'?", a: "Атмосфера, настроение, энергия" },
-    { q: "Что такое 'чилить'?", a: "Расслабляться, отдыхать (от англ. chill)" },
-    { q: "Что значит 'го'?", a: "Пойдем, давай (от англ. go)" },
-    { q: "Кто такой 'симп'?", a: "Парень, который слишком много внимания уделяет девушке" },
-    { q: "Что значит 'АУФ'?", a: "Восклицание, выражающее удивление или одобрение" }
-  ],
-  dating: [
-    { q: "Что такое 'ghosting' в современных отношениях?", a: "Резкое прекращение общения без объяснений" },
-    { q: "Что значит 'situationship'?", a: "Неопределенные отношения без обязательств" },
-    { q: "Как называется свидание вслепую через приложение?", a: "Blind date через Tinder/Bumble" },
-    { q: "Что такое 'soft launching' отношений?", a: "Постепенное знакомство с партнером в соцсетях" },
-    { q: "Какое приложение для знакомств самое популярное у зумеров?", a: "Tinder" }
-  ]
+tiktok: [
+{ q: "Как называется тренд, где все повторяют один и тот же танец под песню '{{song}}'?", a: "Челлендж" },
+{ q: "Кто из этих блогеров стал вирусным благодаря челленджу '{{challenge}}'?", a: "{{creator}}" },
+{ q: "Что означает термин 'сигма' в TikTok-культуре?", a: "Тип мужчины, который ставит цели выше отношений" },
+{ q: "Какой тренд стал мемом после видео с '{{memeSubject}}'?", a: "{{trendName}}" },
+{ q: "Откуда пошёл мем 'окей, бумер'?", a: "Из TikTok как ответ старшему поколению" }
+],
+memes: [
+{ q: "Что означает слово 'кринж' в зумерском сленге?", a: "Сильное чувство стыда за кого-то" },
+{ q: "Кто такой 'чел' в интернет-культуре?", a: "Парень, мужчина (от слова 'человек')" },
+{ q: "Что значит 'флексить'?", a: "Хвастаться, показывать свой статус" },
+{ q: "Какой мем с котиком стал вирусным в 2023 году?", a: "{{catMeme}}" },
+{ q: "Откуда пошёл мем '{{randomMeme}}'?", a: "Из TikTok/Reddit в 2022-2023" }
+],
+music: [
+{ q: "Кто исполнил трек '{{song}}', ставший вирусным в TikTok?", a: "{{artist}}" },
+{ q: "Какой русский рэпер выпустил трек '{{track}}'?", a: "MORGENSHTERN" },
+{ q: "Что такое 'phonk' в музыкальной культуре?", a: "Жанр электронной музыки с мемфис-рэп семплами" },
+{ q: "Из какой песни строчка: '{{lyric}}'?", a: "{{artist}} - {{song}}" },
+{ q: "Какой трек дольше всего был в тренде TikTok в 2023?", a: "Dreams - Fleetwood Mac" }
+],
+slang: [
+{ q: "Что значит 'вайб'?", a: "Атмосфера, настроение, энергия" },
+{ q: "Что такое 'чилить'?", a: "Расслабляться, отдыхать (от англ. chill)" },
+{ q: "Что значит 'го'?", a: "Пойдем, давай (от англ. go)" },
+{ q: "Кто такой 'симп'?", a: "Парень, который слишком много внимания уделяет девушке" },
+{ q: "Что значит 'АУФ'?", a: "Восклицание, выражающее удивление или одобрение" }
+],
+dating: [
+{ q: "Что такое 'ghosting' в современных отношениях?", a: "Резкое прекращение общения без объяснений" },
+{ q: "Что значит 'situationship'?", a: "Неопределенные отношения без обязательств" },
+{ q: "Как называется свидание вслепую через приложение?", a: "Blind date через Tinder/Bumble" },
+{ q: "Что такое 'soft launching' отношений?", a: "Постепенное знакомство с партнером в соцсетях" },
+{ q: "Какое приложение для знакомств самое популярное у зумеров?", a: "Tinder" }
+]
 };
-
 // ==================== ДАННЫЕ ДЛЯ ГЕНЕРАЦИИ ====================
 const DYNAMIC_DATA = {
-  songs: ["Murder on My Mind", "INDUSTRY BABY", "As It Was", "Flowers", "Kill Bill"],
-  artists: ["YNW Melly", "Lil Nas X", "Harry Styles", "Miley Cyrus", "SZA"],
-  creators: ["Дава", "Настя Ивлеева", "Эдвард Морган", "Маша Хмель", "Артур Бабич"],
-  challenges: ["Buss It Challenge", "Silhouette Challenge", "Point of View", "Get Ready With Me"],
-  memeSubjects: ["танцующий пёс", "плачущий ребёнок", "удивлённая бабушка", "кот в очках"],
-  trendNames: ["Silhouette", "POV", "GRWM", "Sigma Walk"],
-  catMemes: ["Grumpy Cat", "I Can Has Cheezburger?", "Nyan Cat", "Keyboard Cat"],
-  randomMemes: ["How it started vs How it's going", "Woman Yelling at a Cat", "Distracted Boyfriend", "This is Fine"]
+songs: ["Murder on My Mind", "INDUSTRY BABY", "As It Was", "Flowers", "Kill Bill"],
+artists: ["YNW Melly", "Lil Nas X", "Harry Styles", "Miley Cyrus", "SZA"],
+creators: ["Дава", "Настя Ивлеева", "Эдвард Морган", "Маша Хмель", "Артур Бабич"],
+challenges: ["Buss It Challenge", "Silhouette Challenge", "Point of View", "Get Ready With Me"],
+memeSubjects: ["танцующий пёс", "плачущий ребёнок", "удивлённая бабушка", "кот в очках"],
+trendNames: ["Silhouette", "POV", "GRWM", "Sigma Walk"],
+catMemes: ["Grumpy Cat", "I Can Has Cheezburger?", "Nyan Cat", "Keyboard Cat"],
+randomMemes: ["How it started vs How it's going", "Woman Yelling at a Cat", "Distracted Boyfriend", "This is Fine"]
 };
 
-// ==================== ФУНКЦИЯ ГЕНЕРАЦИИ ВОПРОСОВ ====================
-function generateQuestionsForTheme(theme, count = 5) {
+// ==================== ДЕТЕРМИНИРОВАННЫЙ ГЕНЕРАТОР ====================
+function seededRandom(seed) {
+  let s = seed;
+  return function() {
+    s = Math.sin(s) * 10000;
+    return s - Math.floor(s);
+  };
+}
+
+function generateQuestionsForTheme(theme, count = 5, seed = null) {
   const templates = QUESTION_TEMPLATES[theme];
   if (!templates) return [];
-
+  
+  const random = seed ? seededRandom(seed) : Math.random;
   const questions = [];
   const usedIndices = new Set();
-
-  // Выбираем уникальные шаблоны
+  
   for (let i = 0; i < Math.min(count, templates.length); i++) {
     let index;
     do {
-      index = Math.floor(Math.random() * templates.length);
+      index = Math.floor(random() * templates.length);
     } while (usedIndices.has(index) && usedIndices.size < templates.length);
-    
     usedIndices.add(index);
     const template = templates[index];
-
-    // Подставляем случайные данные
+    
     let question = template.q;
     let answer = template.a;
-
-    // Замена плейсхолдеров
-    question = question.replace(/\{\{song\}\}/g, getRandomItem(DYNAMIC_DATA.songs));
-    question = question.replace(/\{\{artist\}\}/g, getRandomItem(DYNAMIC_DATA.artists));
-    question = question.replace(/\{\{creator\}\}/g, getRandomItem(DYNAMIC_DATA.creators));
-    question = question.replace(/\{\{challenge\}\}/g, getRandomItem(DYNAMIC_DATA.challenges));
-    question = question.replace(/\{\{memeSubject\}\}/g, getRandomItem(DYNAMIC_DATA.memeSubjects));
-    question = question.replace(/\{\{trendName\}\}/g, getRandomItem(DYNAMIC_DATA.trendNames));
-    question = question.replace(/\{\{catMeme\}\}/g, getRandomItem(DYNAMIC_DATA.catMemes));
-    question = question.replace(/\{\{randomMeme\}\}/g, getRandomItem(DYNAMIC_DATA.randomMemes));
-    question = question.replace(/\{\{track\}\}/g, getRandomItem(DYNAMIC_DATA.songs));
-    question = question.replace(/\{\{lyric\}\}/g, `"${getRandomItem([
-      "Это жесть, это дичь", 
-      "Я не твоя, но ты мой", 
-      "Где мои деньги, Леброн?",
-      "Сигма шагает по городу"
-    ])}"`);
-
-    // Для ответов тоже подставляем
-    answer = answer.replace(/\{\{artist\}\}/g, getRandomItem(DYNAMIC_DATA.artists));
-    answer = answer.replace(/\{\{song\}\}/g, getRandomItem(DYNAMIC_DATA.songs));
-
+    
+    // Замена плейсхолдеров с учётом seed
+    const replacePlaceholder = (str, key, arr) => {
+      const item = arr[Math.floor(random() * arr.length)];
+      return str.replace(new RegExp(`{{${key}}}`, 'g'), item);
+    };
+    
+    question = replacePlaceholder(question, 'song', DYNAMIC_DATA.songs);
+    question = replacePlaceholder(question, 'artist', DYNAMIC_DATA.artists);
+    question = replacePlaceholder(question, 'creator', DYNAMIC_DATA.creators);
+    question = replacePlaceholder(question, 'challenge', DYNAMIC_DATA.challenges);
+    question = replacePlaceholder(question, 'memeSubject', DYNAMIC_DATA.memeSubjects);
+    question = replacePlaceholder(question, 'trendName', DYNAMIC_DATA.trendNames);
+    question = replacePlaceholder(question, 'catMeme', DYNAMIC_DATA.catMemes);
+    question = replacePlaceholder(question, 'randomMeme', DYNAMIC_DATA.randomMemes);
+    question = replacePlaceholder(question, 'track', DYNAMIC_DATA.songs);
+    
+    if (question.includes('{{lyric}}')) {
+      const lyrics = ["Это жесть, это дичь", "Я не твоя, но ты мой", "Где мои деньги, Леброн?", "Сигма шагает по городу"];
+      const lyric = `"${lyrics[Math.floor(random() * lyrics.length)]}"`;
+      question = question.replace(/{{lyric}}/g, lyric);
+    }
+    
+    answer = replacePlaceholder(answer, 'artist', DYNAMIC_DATA.artists);
+    answer = replacePlaceholder(answer, 'song', DYNAMIC_DATA.songs);
+    
     questions.push({
       category: getThemeCategory(theme),
       question: question,
@@ -1165,12 +1150,7 @@ function generateQuestionsForTheme(theme, count = 5) {
       isCorrect: true
     });
   }
-
   return questions;
-}
-
-function getRandomItem(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
 }
 
 function getThemeCategory(theme) {
@@ -1192,7 +1172,6 @@ const GAME_CONFIG = {
   dailyBonus: 50,
   levelUpThreshold: 100
 };
-
 const adultThemes = ['dating'];
 
 // State
@@ -1221,6 +1200,10 @@ let telegramPhotoUrl = null;
 let recognition = null;
 let isListening = false;
 
+// === MULTIPLAYER STATE ===
+let multiplayerRoom = null;
+let isInDuel = false;
+
 // Mock leaderboard data
 const mockLeaderboard = [
   { rank: 1, name: 'CryptoNit', avatar: '👑', score: 1250, userId: 'user1' },
@@ -1240,6 +1223,17 @@ const screens = {
 
 // Init
 document.addEventListener('DOMContentLoaded', () => {
+  // === Обработка URL-параметра дуэли ===
+  const urlParams = new URLSearchParams(window.location.search);
+  const duelId = urlParams.get('duel');
+  if (duelId) {
+    multiplayerRoom = duelId;
+    isInDuel = true;
+    setTimeout(() => {
+      showNotification(`🎮 Вы в дуэли! Играйте честно!`, "success");
+    }, 1000);
+  }
+
   initTelegramIntegration();
   setupEventListeners();
   loadProgress();
@@ -1253,54 +1247,35 @@ function initTelegramIntegration() {
   if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
     const tg = Telegram.WebApp;
     tg.expand();
-    
-    // Get user info from Telegram
     if (tg.initDataUnsafe.user) {
       const user = tg.initDataUnsafe.user;
       telegramUserId = user.id;
       telegramUsername = user.username || user.first_name;
       telegramPhotoUrl = user.photo_url;
-      
-      // Set profile info
       playerName = user.first_name || 'Зумер';
       if (user.last_name) playerName += ' ' + user.last_name;
-      
-      // Check for premium
       isTelegramPremium = user.is_premium || false;
-      
-      // Update UI with Telegram data
       updateProfileDisplay();
     }
-    
-    // Main button setup
     tg.MainButton.setText("Закрыть");
     tg.MainButton.onClick(() => tg.close());
   }
 }
 
 function setupEventListeners() {
-  // Ripple effect for all buttons
+  // Ripple effect
   document.querySelectorAll('button, .icon-btn, .author-link, .theme-card').forEach(el => {
     el.addEventListener('click', function(e) {
       const rect = this.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      
       const ripple = document.createElement('span');
       ripple.classList.add('ripple');
       ripple.style.left = `${x}px`;
       ripple.style.top = `${y}px`;
-      
       this.appendChild(ripple);
-      
-      setTimeout(() => {
-        ripple.remove();
-      }, 600);
-      
-      // Haptic feedback
-      if ('vibrate' in navigator) {
-        navigator.vibrate(10);
-      }
+      setTimeout(() => ripple.remove(), 600);
+      if ('vibrate' in navigator) navigator.vibrate(10);
     });
   });
 
@@ -1312,7 +1287,7 @@ function setupEventListeners() {
     });
   });
 
-  // Study mode selection
+  // Study mode
   document.querySelectorAll('[data-study]').forEach(card => {
     card.addEventListener('click', () => {
       const theme = card.dataset.study;
@@ -1350,59 +1325,56 @@ function setupEventListeners() {
   document.getElementById('close-achievements').addEventListener('click', () => {
     document.getElementById('achievements-modal').classList.remove('active');
   });
-  
   document.getElementById('leaderboard-toggle').addEventListener('click', toggleLeaderboard);
   document.getElementById('close-leaderboard').addEventListener('click', () => {
     document.getElementById('leaderboard-modal').classList.remove('active');
   });
-  
   document.getElementById('profile-toggle').addEventListener('click', toggleProfile);
   document.getElementById('close-profile').addEventListener('click', () => {
     document.getElementById('profile-modal').classList.remove('active');
   });
-  
   document.getElementById('open-multiplayer').addEventListener('click', toggleMultiplayer);
   document.getElementById('close-multiplayer').addEventListener('click', () => {
     document.getElementById('multiplayer-modal').classList.remove('active');
   });
-  
   document.getElementById('duel-btn').addEventListener('click', startDuel);
-  
   document.getElementById('open-study').addEventListener('click', toggleStudyMode);
   document.getElementById('close-study').addEventListener('click', () => {
     document.getElementById('study-modal').classList.remove('active');
   });
-  
   document.getElementById('close-share').addEventListener('click', () => {
     document.getElementById('share-modal').classList.remove('active');
   });
-  
   document.getElementById('share-to-telegram').addEventListener('click', shareToTelegram);
-  
+
   // Sound toggle
   document.getElementById('sound-toggle').addEventListener('click', toggleSound);
-  
-  // Handle scroll events
+
+  // Handle scroll
   document.getElementById('screen-theme').addEventListener('scroll', handleScroll);
+
+  // Invite modal
+  document.getElementById('copy-link-btn').addEventListener('click', () => {
+    const input = document.getElementById('invite-input');
+    navigator.clipboard.writeText(input.value).then(() => {
+      showNotification("✅ Ссылка скопирована!", "success");
+    });
+  });
+  document.getElementById('close-invite').addEventListener('click', () => {
+    document.getElementById('invite-modal').classList.remove('active');
+  });
 }
 
 function handleScroll() {
   const screen = document.getElementById('screen-theme');
   const scrollIndicator = document.getElementById('scroll-indicator');
   const isAtBottom = screen.scrollHeight - screen.scrollTop <= screen.clientHeight + 10;
-  
-  if (isAtBottom) {
-    scrollIndicator.style.display = 'none';
-  } else {
-    scrollIndicator.style.display = 'flex';
-  }
+  scrollIndicator.style.display = isAtBottom ? 'none' : 'flex';
 }
 
 function setupScrollIndicator() {
   const screen = document.getElementById('screen-theme');
   const scrollIndicator = document.getElementById('scroll-indicator');
-  
-  // Hide scroll indicator after 5 seconds if not needed
   setTimeout(() => {
     if (screen.scrollHeight <= screen.clientHeight) {
       scrollIndicator.style.display = 'none';
@@ -1411,12 +1383,8 @@ function setupScrollIndicator() {
 }
 
 function showScreen(screenName) {
-  Object.keys(screens).forEach(key => {
-    screens[key].classList.remove('active');
-  });
+  Object.keys(screens).forEach(key => screens[key].classList.remove('active'));
   screens[screenName].classList.add('active');
-  
-  // Hide scroll indicator when changing screens
   document.getElementById('scroll-indicator').style.display = 'none';
 }
 
@@ -1440,7 +1408,6 @@ function startStudyMode(theme) {
   currentCardIndex = 0;
   showScreen('game');
   updateCard();
-  // No timer in study mode
   document.getElementById('timer').textContent = "∞";
   document.getElementById('game-title').textContent = `📚 ${theme} (Обучение)`;
 }
@@ -1462,18 +1429,17 @@ function updateDifficulty() {
   }
 }
 
+// === ОСНОВНАЯ ФУНКЦИЯ ЗАПУСКА ИГРЫ ===
 function startGame() {
-  // Генерируем ВОПРОСЫ ИИ-СТИЛЕМ!
-  currentCards = generateQuestionsForTheme(currentTheme, 5);
+  // Генерируем seed из комнаты или текущего времени
+  const seed = multiplayerRoom ? parseInt(multiplayerRoom, 36) : Date.now();
+
+  currentCards = generateQuestionsForTheme(currentTheme, 5, seed);
   totalQuestions = currentCards.length;
   currentCardIndex = 0;
   score = 0;
   correctCount = 0;
   currentStreak = 0;
-  questionTimes = [];
-  answeredQuestions.clear();
-  doublePointsActive = false;
-  questionsAnswered = 0;
 
   const themeNames = {
     'tiktok': '📱 TikTok & Reels',
@@ -1484,33 +1450,15 @@ function startGame() {
   };
 
   document.getElementById('game-title').textContent = themeNames[currentTheme] || 'ZUMER BRAIN';
-  document.getElementById('game-subtitle').textContent = adultThemes.includes(currentTheme)
-    ? 'Контент 18+ • ' + GAME_CONFIG.timePerQuestion + ' секунд на ответ'
-    : GAME_CONFIG.timePerQuestion + ' секунд на ответ';
-
-  showScreen('game-screen');
-  resetTimer();
+  showScreen('game');
   updateCard();
   updateStats();
-  updateLevelDisplay();
-  updateCoinsDisplay();
-  updatePowerupDisplay();
-  enableAnswerButtons();
-
-  if (typeof tg !== 'undefined') {
-    tg.MainButton.setText("Сменить тему");
-    tg.MainButton.onClick(() => {
-      showScreen('theme-selection');
-      tg.MainButton.setText("Закрыть");
-      tg.MainButton.onClick(() => tg.close());
-    });
-  }
-
   startTimer();
-  const adultMessage = adultThemes.includes(currentTheme)
-    ? "Внимание! Контент для взрослых 18+"
+
+  const msg = isInDuel 
+    ? "🎮 Дуэль началась! Удачи!" 
     : "Игра началась! Удачи!";
-  showNotification(adultMessage, adultThemes.includes(currentTheme) ? "warning" : "success");
+  showNotification(msg, "success");
 }
 
 function updateCard() {
@@ -1566,9 +1514,7 @@ function nextQuestion() {
   currentCardIndex++;
   if (currentCardIndex < currentCards.length) {
     updateCard();
-    if (!document.getElementById('game-title').textContent.includes('Обучение')) {
-      startTimer();
-    }
+    startTimer();
   } else {
     finishGame();
   }
@@ -1578,17 +1524,14 @@ function prevQuestion() {
   if (currentCardIndex > 0) {
     currentCardIndex--;
     updateCard();
-    if (!document.getElementById('game-title').textContent.includes('Обучение')) {
-      startTimer();
-    }
+    startTimer();
   }
 }
 
 function finishGame() {
   totalGames++;
   const accuracy = currentCards.length > 0 ? Math.round((correctCount / currentCards.length) * 100) : 0;
-  
-  // Отправка данных обратно в бота
+
   if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
     Telegram.WebApp.sendData(JSON.stringify({
       action: 'game_result',
@@ -1599,35 +1542,33 @@ function finishGame() {
       theme: currentTheme
     }));
   }
-  
+
   document.getElementById('final-score').textContent = score;
   document.getElementById('final-accuracy').textContent = `${accuracy}%`;
   document.getElementById('final-correct').textContent = `${correctCount}/${currentCards.length}`;
   document.getElementById('final-time').textContent = "15с";
-  
+
   let rating = "Хорошо", icon = "👍";
   if (accuracy >= 90) { rating = "Отлично!"; icon = "🏆"; }
   else if (accuracy >= 70) { rating = "Хорошо"; icon = "👍"; }
   else if (accuracy >= 50) { rating = "Неплохо"; icon = "😊"; }
   else { rating = "Попробуй еще"; icon = "💪"; }
-  
+
   document.getElementById('result-icon').textContent = icon;
   document.getElementById('result-title').textContent = accuracy >= 70 ? "Отличная игра!" : "Попробуй еще!";
   document.getElementById('rating-badge').textContent = rating;
-  
-  // Update player stats
+
   if (accuracy > 80) {
     favoriteThemes.push(currentTheme);
     favoriteThemes = [...new Set(favoriteThemes)].slice(-3);
   }
-  
-  // Level up logic
+
   const xpGained = score / 10;
   if (xpGained >= GAME_CONFIG.levelUpThreshold) {
     playerLevel++;
     showNotification(`🎉 Уровень UP! Теперь ${playerLevel} уровень!`, "success");
   }
-  
+
   showScreen('result');
   updateProfileDisplay();
   saveProgress();
@@ -1640,61 +1581,52 @@ function showNotification(message, type = "info") {
   setTimeout(() => notif.classList.remove('show'), 2500);
 }
 
+// === МУЛЬТИПЛЕЕР ===
+function startDuel() {
+  if (isInDuel) {
+    showNotification("Вы уже в дуэли!", "warning");
+    return;
+  }
+
+  const roomId = Math.random().toString(36).substring(2, 10);
+  const inviteLink = `${window.location.origin}${window.location.pathname}?duel=${roomId}`;
+
+  document.getElementById('invite-input').value = inviteLink;
+  document.getElementById('invite-modal').classList.add('active');
+
+  multiplayerRoom = roomId;
+  isInDuel = true;
+}
+
+// === ОСТАЛЬНЫЕ ФУНКЦИИ (без изменений) ===
 function toggleAchievements() {
   document.getElementById('achievements-modal').classList.add('active');
   document.getElementById('achievements-list').innerHTML = `
-    <div style="padding: 16px; background: rgba(255,255,255,0.08); border-radius: 16px; margin: 12px 0; border: 1px solid rgba(255,255,255,0.1);">
-      <div style="font-weight: 700; margin-bottom: 8px;">Первый флекс</div>
-      <div style="font-size: 13px; color: var(--text-gray);">Правильно ответить на первый вопрос</div>
-    </div>
-    <div style="padding: 16px; background: rgba(255,255,255,0.08); border-radius: 16px; margin: 12px 0; border: 1px solid rgba(255,255,255,0.1); opacity: 0.5;">
-      <div style="font-weight: 700; margin-bottom: 8px;">Кринжовый стрик</div>
-      <div style="font-size: 13px; color: var(--text-gray);">10 правильных ответов подряд</div>
-    </div>
+  <div style="padding: 16px; background: rgba(255,255,255,0.08); border-radius: 16px; margin: 12px 0; border: 1px solid rgba(255,255,255,0.1);">
+    <div style="font-weight: 700; margin-bottom: 8px;">Первый флекс</div>
+    <div style="font-size: 13px; color: var(--text-gray);">Правильно ответить на первый вопрос</div>
+  </div>
+  <div style="padding: 16px; background: rgba(255,255,255,0.08); border-radius: 16px; margin: 12px 0; border: 1px solid rgba(255,255,255,0.1); opacity: 0.5;">
+    <div style="font-weight: 700; margin-bottom: 8px;">Кринжовый стрик</div>
+    <div style="font-size: 13px; color: var(--text-gray);">10 правильных ответов подряд</div>
+  </div>
   `;
 }
-
 function toggleLeaderboard() {
   document.getElementById('leaderboard-modal').classList.add('active');
 }
-
 function toggleProfile() {
   document.getElementById('profile-modal').classList.add('active');
 }
-
 function showShareModal() {
   document.getElementById('share-modal').classList.add('active');
 }
-
 function toggleMultiplayer() {
   document.getElementById('multiplayer-modal').classList.add('active');
 }
-
 function toggleStudyMode() {
   document.getElementById('study-modal').classList.add('active');
 }
-
-function startDuel() {
-  showNotification("🔍 Ищем соперника...", "info");
-  setTimeout(() => {
-    const opponents = ['Иван', 'Мария', 'Алексей', 'Екатерина', 'Дмитрий'];
-    const opponent = opponents[Math.floor(Math.random() * opponents.length)];
-    showNotification(`🎮 Найден соперник: ${opponent}!`, "success");
-    setTimeout(() => {
-      const win = Math.random() > 0.5;
-      if (win) {
-        const reward = 100;
-        playerCoins += reward;
-        showNotification(`🏆 Победа над ${opponent}! +${reward} монет`, "success");
-      } else {
-        showNotification(`😔 Проиграл ${opponent}. Попробуй еще!`, "warning");
-      }
-      updateStats();
-      document.getElementById('multiplayer-modal').classList.remove('active');
-    }, 3000);
-  }, 2000);
-}
-
 function shareToTelegram() {
   const message = `Я набрал ${score} очков в ZUMER BRAIN! Попробуй и ты: https://t.me/vibecards_bot`;
   if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
@@ -1703,22 +1635,19 @@ function shareToTelegram() {
   showNotification("Результат отправлен в Telegram! 📱", "success");
   document.getElementById('share-modal').classList.remove('active');
 }
-
 function populateLeaderboard() {
   const leaderboardList = document.getElementById('leaderboard-list');
   leaderboardList.innerHTML = mockLeaderboard.map((player, index) => `
-    <div style="display: flex; align-items: center; padding: 16px; margin: 12px 0; background: rgba(255,255,255,0.05); border-radius: 18px;">
-      <div style="width: 36px; height: 36px; border-radius: 50%; background: ${index < 3 ? 'linear-gradient(135deg, gold, #ff8c00)' : 'var(--primary)'}; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; margin-right: 16px;">
-        ${player.rank}
-      </div>
-      <div style="flex: 1; font-weight: 600;">${player.name}</div>
-      <div style="font-weight: 800; color: var(--primary);">${player.score}</div>
+  <div style="display: flex; align-items: center; padding: 16px; margin: 12px 0; background: rgba(255,255,255,0.05); border-radius: 18px;">
+    <div style="width: 36px; height: 36px; border-radius: 50%; background: ${index < 3 ? 'linear-gradient(135deg, gold, #ff8c00)' : 'var(--primary)'}; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; margin-right: 16px;">
+      ${player.rank}
     </div>
+    <div style="flex: 1; font-weight: 600;">${player.name}</div>
+    <div style="font-weight: 800; color: var(--primary);">${player.score}</div>
+  </div>
   `).join('');
 }
-
 function updateProfileDisplay() {
-  // Set avatar image or fallback
   const setAvatar = (imgElement, fallbackElement, photoUrl) => {
     if (photoUrl) {
       imgElement.src = photoUrl;
@@ -1729,33 +1658,19 @@ function updateProfileDisplay() {
       fallbackElement.style.display = 'block';
     }
   };
-  
-  // Main screen
-  setAvatar(
-    document.getElementById('main-profile-avatar-img'),
-    document.getElementById('main-profile-avatar-fallback'),
-    telegramPhotoUrl
-  );
+  setAvatar(document.getElementById('main-profile-avatar-img'), document.getElementById('main-profile-avatar-fallback'), telegramPhotoUrl);
   document.getElementById('main-profile-name').textContent = playerName;
   document.getElementById('main-profile-level').textContent = playerLevel;
-  
-  // Profile modal
-  setAvatar(
-    document.getElementById('profile-avatar-img'),
-    document.getElementById('profile-avatar-fallback'),
-    telegramPhotoUrl
-  );
+  setAvatar(document.getElementById('profile-avatar-img'), document.getElementById('profile-avatar-fallback'), telegramPhotoUrl);
   document.getElementById('profile-display-name').textContent = playerName;
   document.getElementById('profile-level').textContent = playerLevel;
   document.getElementById('profile-coins').textContent = playerCoins;
   document.getElementById('profile-accuracy').textContent = totalGames > 0 ? '85%' : '0%';
   document.getElementById('profile-streak').textContent = maxStreak;
 }
-
 function createConfetti() {
   const container = document.getElementById('confetti-container');
   const colors = ['#6366f1', '#8b5cf6', '#ec4899', '#22c55e', '#f59e0b'];
-  
   for (let i = 0; i < 50; i++) {
     const confetti = document.createElement('div');
     confetti.className = 'confetti';
@@ -1764,20 +1679,15 @@ function createConfetti() {
     confetti.style.animationDelay = Math.random() * 2 + 's';
     confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
     container.appendChild(confetti);
-    
-    setTimeout(() => {
-      confetti.remove();
-    }, 5000);
+    setTimeout(() => confetti.remove(), 5000);
   }
 }
-
 function toggleSound() {
   soundEnabled = !soundEnabled;
   const icon = document.querySelector('#sound-toggle i');
   icon.className = soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
   showNotification(soundEnabled ? "🔊 Звук включен" : "🔇 Звук выключен");
 }
-
 function checkDailyBonus() {
   const today = new Date().toDateString();
   const lastDate = localStorage.getItem('lastPlayDate');
@@ -1787,7 +1697,6 @@ function checkDailyBonus() {
     showNotification(`🎁 Ежедневный бонус! +${GAME_CONFIG.dailyBonus} монет`, "success");
   }
 }
-
 function saveProgress() {
   const progress = {
     coins: playerCoins,
@@ -1804,7 +1713,6 @@ function saveProgress() {
   };
   localStorage.setItem('gameProgress', JSON.stringify(progress));
 }
-
 function loadProgress() {
   const saved = localStorage.getItem('gameProgress');
   if (saved) {
@@ -1825,4 +1733,3 @@ function loadProgress() {
 </script>
 </body>
 </html>
-
