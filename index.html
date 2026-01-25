@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ZUMER BRAIN</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    :root {
+      --primary: #ff4d94;
+      --bg: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      --card-bg: rgba(0, 0, 0, 0.25);
+    }
+    body {
+      background: var(--bg);
+      color: white;
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 28px;
+      margin: 20px 0;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .screen { display: none; width: 100%; }
+    .active { display: block; }
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 14px 24px;
+      font-size: 18px;
+      border-radius: 50px;
+      margin: 12px 0;
+      cursor: pointer;
+      width: 80%;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+    button:hover { opacity: 0.9; }
+    .theme-btn, .shop-item {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .question-text {
+      font-size: 20px;
+      margin: 30px 0;
+      line-height: 1.4;
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 16px;
+    }
+    .explanation {
+      font-size: 16px;
+      margin-top: 15px;
+      opacity: 0.9;
+      background: rgba(0,0,0,0.2);
+      padding: 10px;
+      border-radius: 10px;
+    }
+    .progress-bar {
+      height: 8px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 4px;
+      margin: 10px 0;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: #ffcc00;
+      width: 0%;
+      transition: width 0.5s;
+    }
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      margin: 15px 0;
+      font-size: 16px;
+    }
+    .coins { color: gold; font-weight: bold; }
+    .achievement-popup {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ff6b6b;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 100;
+      animation: slideUp 3s forwards;
+      display: none;
+    }
+    @keyframes slideUp {
+      0% { bottom: 20px; opacity: 1; }
+      70% { opacity: 1; }
+      100% { bottom: 100px; opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Приветствие -->
+    <div id="welcome-screen" class="screen active">
+      <h1>🧠 ZUMER BRAIN</h1>
+      <p>Проверь, насколько ты в теме Gen Z культуры!</p>
+      <button onclick="startGame()">Начать</button>
+    </div>
+
+    <!-- Профиль -->
+    <div id="profile-screen" class="screen">
+      <h1>Профиль</h1>
+      <div id="player-info" style="margin: 20px 0;"></div>
+      <div class="progress-bar"><div class="progress-fill" id="xp-bar"></div></div>
+      <p>Уровень <span id="level-num">1</span> • <span id="xp-text">0/100 XP</span></p>
+      <button onclick="showScreen('main-menu')">Назад</button>
+    </div>
+
+    <!-- Главное меню -->
+    <div id="main-menu" class="screen">
+      <h1>ZUMER BRAIN</h1>
+      <div class="stats">
+        <div>🪙 <span id="coin-count" class="coins">0</span></div>
+        <div>🏆 Уровень <span id="menu-level">1</span></div>
+      </div>
+      <button onclick="showScreen('theme-select')">Играть</button>
+      <button onclick="showScreen('study-mode')">Учиться</button>
+      <button onclick="showScreen('shop')">Магазин</button>
+      <button onclick="showScreen('achievements')">Достижения</button>
+      <button onclick="showScreen('profile-screen')">Профиль</button>
+      <button onclick="showScreen('challenges')">Челленджи</button>
+    </div>
+
+    <!-- Выбор темы -->
+    <div id="theme-select" class="screen">
+      <h1>Выбери тему:</h1>
+      <button class="theme-btn" onclick="startQuiz('tiktok')">TikTok</button>
+      <button class="theme-btn" onclick="startQuiz('memes')">Мемы</button>
+      <button class="theme-btn" onclick="startQuiz('music')">Музыка</button>
+      <button class="theme-btn" onclick="startQuiz('slang')">Сленг</button>
+      <button class="theme-btn" onclick="startQuiz('dating')">Знакомства</button>
+      <button onclick="showScreen('main-menu')">Назад</button>
+    </div>
+
+    <!-- Игра -->
+    <div id="game-screen" class="screen">
+      <div class="stats">
+        <div>Вопрос: <span id="q-num">1</span>/5</div>
+        <div>🪙 <span id="in-game-coins" class="coins">0</span></div>
+      </div>
+      <div class="question-text" id="question-text">Загрузка...</div>
+      <div id="explanation" class="explanation" style="display:none;"></div>
+      <button onclick="answer(true)">Правда</button>
+      <button onclick="answer(false)">Ложь</button>
+      <button class="theme-btn" onclick="useHint()" id="hint-btn" style="display:none;">Подсказка (50 🪙)</button>
+    </div>
+
+    <!-- Результат -->
+    <div id="result-screen" class="screen">
+      <h1>Игра окончена!</h1>
+      <div style="font-size:22px; margin:15px 0;">
+        Счёт: <span id="final-score">0</span>
+      </div>
+      <div>Точность: <span id="accuracy">0</span>%</div>
+      <div>Получено: <span id="earned-coins" class="coins">0</span> 🪙</div>
+      <button onclick="showScreen('main-menu')">В меню</button>
+      <button onclick="restartQuiz()">Сыграть ещё</button>
+    </div>
+
+    <!-- Магазин -->
+    <div id="shop" class="screen">
+      <h1>Магазин</h1>
+      <p>Баланс: <span id="shop-coins" class="coins">0</span> 🪙</p>
+      <button class="shop-item" onclick="buyHint()">Подсказка — 50 🪙</button>
+      <button class="shop-item" onclick="buyExtraTime()">+10 секунд — 30 🪙</button>
+      <button class="shop-item" onclick="buyNeonTheme()">Неон-тема — 100 🪙</button>
+      <button onclick="showScreen('main-menu')">Назад</button>
+    </div>
+
+    <!-- Достижения -->
+    <div id="achievements" class="screen">
+      <h1>Достижения</h1>
+      <div id="achievements-list" style="text-align:left; margin:20px; background:var(--card-bg); padding:15px; border-radius:12px;"></div>
+      <button onclick="showScreen('main-menu')">Назад</button>
+    </div>
+
+    <!-- Челленджи -->
+    <div id="challenges" class="screen">
+      <h1>Ежедневные челленджи</h1>
+      <div id="challenges-list" style="margin:20px;"></div>
+      <button onclick="showScreen('main-menu')">Назад</button>
+    </div>
+
+    <!-- Режим обучения -->
+    <div id="study-mode" class="screen">
+      <h1>Режим обучения</h1>
+      <p>Изучай термины Gen Z без стресса!</p>
+      <button class="theme-btn" onclick="startStudy('tiktok')">TikTok</button>
+      <button class="theme-btn" onclick="startStudy('memes')">Мемы</button>
+      <button onclick="showScreen('main-menu')">Назад</button>
+    </div>
+  </div>
+
+  <!-- Попап достижения -->
+  <div id="achievement-popup" class="achievement-popup"></div>
+
+  <script>
+    // === КОНФИГ ===
+    const BACKEND_URL = 'https://your-backend.com'; // ← ЗАМЕНИТЕ!
+    
+    // === ДАННЫЕ ИГРОКА ===
+    let player = JSON.parse(localStorage.getItem('zumerPlayer')) || {
+      coins: 100,
+      xp: 0,
+      level: 1,
+      achievements: {},
+      hints: 0,
+      lastDaily: new Date().toDateString(),
+      dailyChallenges: {
+        played: false,
+        streak: 0
+      }
+    };
+
+    // === ВОПРОСЫ (локальные фолбэк) ===
+    const QUESTIONS = {
+      tiktok: [
+        { q: "Buss It Challenge был популярен в 2021 году?", a: true, exp: "Это челлендж, где девушки меняют образ под трек Erica Banks." },
+        { q: "'Sigma' означает слабого мужчину?", a: false, exp: "'Sigma' — это тип мужчины, который самодостаточен и не гонится за одобрением." }
+      ],
+      memes: [
+        { q: "'Кринж' — это что-то стыдное?", a: true, exp: "Кринж вызывает чувство вторичного стыда за чьи-то действия." },
+        { q: "'Чел' — это сокращение от 'человек'?", a: true, exp: "Используется как разговорное обращение: 'ну че, чел?'" }
+      ],
+      music: [
+        { q: "'Flowers' исполнила Miley Cyrus?", a: true, exp: "Песня вышла в 2023 и стала хитом TikTok." }
+      ],
+      slang: [
+        { q: "'Вайб' — это плохое настроение?", a: false, exp: "'Вайб' — это атмосфера или общее настроение." }
+      ],
+      dating: [
+        { q: "Ghosting — это когда человек внезапно исчезает?", a: true, exp: "Без объяснений прекращает общение." }
+      ]
+    };
+
+    // === УРОВНИ ===
+    const LEVELS = [
+      { level: 1, xp: 0, title: "Новичок" },
+      { level: 2, xp: 100, title: "Зумер" },
+      { level: 3, xp: 250, title: "Кринж-мастер" },
+      { level: 4, xp: 500, title: "Sigma Brain" }
+    ];
+
+    // === ДОСТИЖЕНИЯ ===
+    const ACHIEVEMENTS = {
+      first_win: { name: "Первый успех", desc: "Правильно ответь на 1 вопрос", unlocked: false },
+      streak_3: { name: "Серия!", desc: "3 правильных подряд", unlocked: false },
+      coin_hoarder: { name: "Копилка", desc: "Накопи 200 монет", unlocked: false },
+      level_3: { name: "Профи", desc: "Достигни 3 уровня", unlocked: false }
+    };
+
+    // === ЧЕЛЛЕНДЖИ (ежедневные) ===
+    const DAILY_CHALLENGES = [
+      { id: 'play_1', desc: "Сыграй 1 игру", reward: 50, completed: false },
+      { id: 'win_tiktok', desc: "Выиграй в теме TikTok", reward: 70, completed: false },
+      { id: 'streak_5', desc: "5 правильных подряд", reward: 100, completed: false }
+    ];
+
+    // === ИНИЦИАЛИЗАЦИЯ ===
+    Telegram.WebApp.ready();
+    Telegram.WebApp.expand();
+    updateUI();
+
+    // === ФУНКЦИИ ===
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      if (id === 'achievements') renderAchievements();
+      if (id === 'challenges') renderChallenges();
+      if (id === 'shop') document.getElementById('shop-coins').textContent = player.coins;
+    }
+
+    function updateUI() {
+      document.getElementById('coin-count').textContent = player.coins;
+      document.getElementById('menu-level').textContent = player.level;
+      document.getElementById('shop-coins').textContent = player.coins;
+
+      // Обновление профиля
+      const currentLevel = LEVELS.find(l => l.level === player.level) || LEVELS[0];
+      const nextLevel = LEVELS.find(l => l.xp > player.xp) || LEVELS[LEVELS.length - 1];
+      const xpForNext = nextLevel ? nextLevel.xp - currentLevel.xp : 100;
+      const xpProgress = nextLevel ? ((player.xp - currentLevel.xp) / xpForNext) * 100 : 100;
+
+      document.getElementById('level-num').textContent = player.level;
+      document.getElementById('xp-text').textContent = `${player.xp}/${nextLevel.xp} XP`;
+      document.getElementById('xp-bar').style.width = `${Math.min(100, xpProgress)}%`;
+    }
+
+    function addXP(xp) {
+      player.xp += xp;
+      // Повышение уровня
+      while (player.level < LEVELS.length && player.xp >= LEVELS[player.level].xp) {
+        player.level++;
+        showAchievement("level_3");
+      }
+      savePlayer();
+      updateUI();
+    }
+
+    function addCoins(amount) {
+      player.coins += amount;
+      if (player.coins >= 200) showAchievement("coin_hoarder");
+      savePlayer();
+      updateUI();
+    }
+
+    function savePlayer() {
+      localStorage.setItem('zumerPlayer', JSON.stringify(player));
+    }
+
+    function showAchievement(id) {
+      if (!player.achievements[id]) {
+        player.achievements[id] = true;
+        savePlayer();
+        const popup = document.getElementById('achievement-popup');
+        popup.textContent = `🏆 ${ACHIEVEMENTS[id].name} разблокировано!`;
+        popup.style.display = 'block';
+        setTimeout(() => popup.style.display = 'none', 3000);
+      }
+    }
+
+    function renderAchievements() {
+      let html = '';
+      for (const [id, ach] of Object.entries(ACHIEVEMENTS)) {
+        const unlocked = player.achievements[id];
+        html += `<div style="margin:10px 0; opacity:${unlocked ? 1 : 0.5};">
+          <strong>${ach.name}</strong> — ${ach.desc}
+          ${unlocked ? '✅' : '🔒'}
+        </div>`;
+      }
+      document.getElementById('achievements-list').innerHTML = html;
+    }
+
+    function renderChallenges() {
+      let html = '<div style="background:var(--card-bg); padding:15px; border-radius:12px;">';
+      DAILY_CHALLENGES.forEach(ch => {
+        const done = ch.completed;
+        html += `<div style="margin:10px 0; display:flex; justify-content:space-between;">
+          <span>${ch.desc}</span>
+          <span>${done ? '✅' : ch.reward + ' 🪙'}</span>
+        </div>`;
+      });
+      html += '</div>';
+      document.getElementById('challenges-list').innerHTML = html;
+    }
+
+    // === ИГРА ===
+    let currentQuestions = [];
+    let currentQuestionIndex = 0;
+    let correctStreak = 0;
+    let correctCount = 0;
+
+    async function startQuiz(theme) {
+      currentQuestions = [...(QUESTIONS[theme] || [])];
+      if (currentQuestions.length === 0) {
+        alert("Нет вопросов по этой теме!");
+        return;
+      }
+      // Добавляем вопросы до 5 шт
+      while (currentQuestions.length < 5) {
+        const randomTheme = Object.keys(QUESTIONS)[Math.floor(Math.random() * Object.keys(QUESTIONS).length)];
+        currentQuestions.push(...QUESTIONS[randomTheme]);
+        currentQuestions = currentQuestions.slice(0, 5);
+      }
+      currentQuestionIndex = 0;
+      correctCount = 0;
+      correctStreak = 0;
+      showScreen('game-screen');
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      if (currentQuestionIndex >= currentQuestions.length) {
+        finishGame();
+        return;
+      }
+      const q = currentQuestions[currentQuestionIndex];
+      document.getElementById('q-num').textContent = currentQuestionIndex + 1;
+      document.getElementById('question-text').textContent = q.q;
+      document.getElementById('explanation').style.display = 'none';
+      document.getElementById('in-game-coins').textContent = player.coins;
+      document.getElementById('hint-btn').style.display = player.hints > 0 ? 'block' : 'none';
+    }
+
+    function answer(userAnswer) {
+      const q = currentQuestions[currentQuestionIndex];
+      const isCorrect = userAnswer === q.a;
+      
+      if (isCorrect) {
+        correctCount++;
+        correctStreak++;
+        if (correctStreak >= 3) showAchievement("streak_3");
+        addXP(10);
+        addCoins(20);
+      } else {
+        correctStreak = 0;
+      }
+
+      // Показываем пояснение
+      document.getElementById('explanation').textContent = q.exp;
+      document.getElementById('explanation').style.display = 'block';
+
+      currentQuestionIndex++;
+      setTimeout(loadQuestion, 2500);
+    }
+
+    function useHint() {
+      if (player.hints > 0) {
+        player.hints--;
+        const q = currentQuestions[currentQuestionIndex];
+        alert(`Подсказка: ${q.exp}`);
+        savePlayer();
+        loadQuestion();
+      }
+    }
+
+    function finishGame() {
+      const total = currentQuestions.length;
+      const accuracy = Math.round((correctCount / total) * 100);
+      const earned = correctCount * 25;
+      addCoins(earned);
+
+      document.getElementById('final-score').textContent = correctCount + '/' + total;
+      document.getElementById('accuracy').textContent = accuracy;
+      document.getElementById('earned-coins').textContent = earned;
+
+      // Разблокировка первого успеха
+      if (correctCount > 0) showAchievement("first_win");
+
+      showScreen('result-screen');
+    }
+
+    function restartQuiz() {
+      const theme = currentQuestions[0]?.q.includes("Buss") ? 'tiktok' : 'memes';
+      startQuiz(theme);
+    }
+
+    // === МАГАЗИН ===
+    function buyHint() {
+      if (player.coins >= 50) {
+        player.coins -= 50;
+        player.hints += 1;
+        savePlayer();
+        updateUI();
+        alert("Подсказка куплена! Используй в игре.");
+      } else {
+        alert("Недостаточно монет!");
+      }
+    }
+
+    function buyExtraTime() {
+      if (player.coins >= 30) {
+        player.coins -= 30;
+        alert("+10 секунд активировано!");
+      } else {
+        alert("Недостаточно монет!");
+      }
+    }
+
+    function buyNeonTheme() {
+      if (player.coins >= 100) {
+        player.coins -= 100;
+        document.documentElement.style.setProperty('--primary', '#00f3ff');
+        document.documentElement.style.setProperty('--bg', 'linear-gradient(135deg, #0f0c29, #302b63, #24243e)');
+        savePlayer();
+        updateUI();
+        alert("Неон-тема активирована!");
+      } else {
+        alert("Недостаточно монет!");
+      }
+    }
+
+    // === РЕЖИМ ОБУЧЕНИЯ ===
+    function startStudy(theme) {
+      alert("Режим обучения: скоро будет реализован с карточками!");
+      showScreen('main-menu');
+    }
+
+    // === СТАРТ ===
+    function startGame() {
+      showScreen('main-menu');
+    }
+  </script>
+</body>
+</html>
