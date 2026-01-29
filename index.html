@@ -80,6 +80,8 @@
             height: 100%;
             display: flex;
             transition: transform 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+            will-change: transform;
+            backface-visibility: hidden;
         }
         
         .category-slide {
@@ -90,6 +92,9 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            min-width: 100%;
+            max-width: 100%;
+            overflow: hidden;
         }
         
         .category-card {
@@ -276,6 +281,8 @@
             height: 100%;
             display: flex;
             transition: transform 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+            will-change: transform;
+            backface-visibility: hidden;
         }
         
         .question-slide {
@@ -285,11 +292,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            min-width: 100%;
+            max-width: 100%;
+            overflow: hidden;
         }
         
         .question-card {
-            width: 100%;
-            height: 100%;
+            width: 90%;
+            height: 90%;
             background: rgba(255, 255, 255, 0.14);
             backdrop-filter: blur(12px);
             border-radius: 28px;
@@ -302,6 +312,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
             position: relative;
             overflow: hidden;
+            margin: 0 auto;
         }
         
         .question-card::before {
@@ -969,10 +980,14 @@
                 const diff = currentX - startX;
                 const threshold = handlers.threshold || 50;
                 
+                console.log(`Свайп: diff=${diff}, threshold=${threshold}`);
+                
                 if (Math.abs(diff) > threshold) {
                     if (diff < 0 && handlers.onSwipeLeft) {
+                        console.log('Свайп влево сработал');
                         handlers.onSwipeLeft();
                     } else if (diff > 0 && handlers.onSwipeRight) {
+                        console.log('Свайп вправо сработал');
                         handlers.onSwipeRight();
                     }
                 }
@@ -1032,9 +1047,16 @@
             selectedCategory = category;
             currentQuestionIndex = 0;
             
+            console.log(`Выбрана категория: ${category.id}`);
+            
             if (category.id === 'Блиц') {
                 startBlitzMode();
             } else {
+                // Проверяем, есть ли вопросы в категории
+                if (!questionsData[category.id] || questionsData[category.id].length === 0) {
+                    alert('В этой категории пока нет вопросов!');
+                    return;
+                }
                 showQuestionsScreen();
             }
         }
@@ -1043,9 +1065,15 @@
         function showQuestionsScreen() {
             if (!selectedCategory) return;
             
+            // Скрываем экран категорий
+            categoriesScreen.style.display = 'none';
+            
             currentCategoryName.textContent = selectedCategory.name;
             renderQuestions();
             updateQuestionCounter();
+            
+            // Убедимся, что индексы сброшены
+            currentQuestionIndex = 0;
             
             setTimeout(() => {
                 questionsScreen.classList.add('active');
@@ -1060,6 +1088,13 @@
             questionsProgress.innerHTML = '';
             
             const questions = questionsData[selectedCategory.id] || [];
+            
+            if (questions.length === 0) {
+                console.error('Нет вопросов в категории:', selectedCategory.id);
+                alert('Нет вопросов в этой категории!');
+                backToMain();
+                return;
+            }
             
             questions.forEach((question, index) => {
                 const slide = document.createElement('div');
@@ -1082,10 +1117,16 @@
 
         // Обновление позиции вопросов
         function updateQuestionsPosition() {
+            if (!questionsSlider || !selectedCategory) return;
+            
             const translateX = -currentQuestionIndex * 100;
             questionsSlider.style.transform = `translateX(${translateX}%)`;
             
-            document.querySelectorAll('#questionsProgress .progress-dot').forEach((dot, index) => {
+            console.log(`Вопрос ${currentQuestionIndex + 1}, translateX: ${translateX}%`);
+            
+            // Обновляем точки прогресса
+            const dots = document.querySelectorAll('#questionsProgress .progress-dot');
+            dots.forEach((dot, index) => {
                 dot.classList.toggle('active', index === currentQuestionIndex);
             });
         }
@@ -1103,6 +1144,9 @@
             blitzCorrectAnswers = 0;
             blitzTotalAnswered = 0;
             blitzCurrentIndex = 0;
+            
+            // Скрываем экран категорий
+            categoriesScreen.style.display = 'none';
             
             updateBlitzUI();
             showNextBlitzQuestion();
@@ -1167,6 +1211,7 @@
 
         // Возврат на главный экран
         function backToMain() {
+            // Сначала анимация
             questionsScreen.classList.remove('active');
             blitzScreen.classList.remove('active');
             
@@ -1176,8 +1221,29 @@
             }
             
             setTimeout(() => {
+                // Показываем экран категорий
                 categoriesScreen.style.display = 'flex';
-            }, 400);
+                
+                // Сбрасываем позиции
+                const translateX = -currentCategoryIndex * 100;
+                categoriesTrack.style.transform = `translateX(${translateX}%)`;
+                
+                // Сбрасываем индексы вопросов
+                currentQuestionIndex = 0;
+                selectedCategory = null;
+                
+                // Обновляем UI
+                document.querySelectorAll('.category-card').forEach((card, index) => {
+                    card.classList.toggle('active', index === currentCategoryIndex);
+                });
+                
+                // Сбрасываем таймер блица
+                timerElement.textContent = '30';
+                timerElement.style.color = '';
+                timerElement.style.textShadow = '';
+                
+                console.log('Вернулись на главный экран');
+            }, 450);
         }
 
         // Настройка обработчиков событий
@@ -1210,27 +1276,21 @@
                 showNextBlitzQuestion();
             });
             
-            document.addEventListener('touchmove', (e) => {
-                if (e.target.closest('.categories-container') || e.target.closest('.questions-track')) {
-                    e.preventDefault();
-                }
-            }, { passive: false });
-            
+            // Добавляем стрелки клавиатуры для навигации по вопросам
             document.addEventListener('keydown', (e) => {
                 if (questionsScreen.classList.contains('active')) {
+                    const questions = questionsData[selectedCategory.id] || [];
+                    
                     if (e.key === 'ArrowLeft' && currentQuestionIndex > 0) {
                         currentQuestionIndex--;
                         updateQuestionsPosition();
                         updateQuestionCounter();
                         showSwipeFeedback('left', 'question');
-                    } else if (e.key === 'ArrowRight') {
-                        const questions = questionsData[selectedCategory.id] || [];
-                        if (currentQuestionIndex < questions.length - 1) {
-                            currentQuestionIndex++;
-                            updateQuestionsPosition();
-                            updateQuestionCounter();
-                            showSwipeFeedback('right', 'question');
-                        }
+                    } else if (e.key === 'ArrowRight' && currentQuestionIndex < questions.length - 1) {
+                        currentQuestionIndex++;
+                        updateQuestionsPosition();
+                        updateQuestionCounter();
+                        showSwipeFeedback('right', 'question');
                     }
                 }
             });
