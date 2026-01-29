@@ -1,4 +1,4 @@
-// script.js - Исправленная версия с рабочими свайпами
+// script.js - УПРОЩЕННЫЙ КОД С РАБОЧИМИ СВАЙПАМИ ДЛЯ ТЕЛЕФОНА
 
 // Конфигурация категорий
 const categories = [
@@ -39,9 +39,8 @@ const totalScore = document.getElementById('totalScore');
 const blitzQuestionText = document.getElementById('blitzQuestionText');
 const themeToggle = document.getElementById('themeToggle');
 
-// Упрощенная функция звука (без AudioContext проблем)
+// Простая функция звука
 function playSound(type) {
-    // Просто консольный лог для отладки
     console.log(`Sound: ${type}`);
 }
 
@@ -95,8 +94,9 @@ function init() {
     
     loadTheme();
     renderCategories();
-    setupSwipeGestures();
+    setupSimpleSwipeGestures(); // Используем упрощенную версию
     setupEventListeners();
+    console.log('Приложение инициализировано');
 }
 
 // Рендеринг категорий
@@ -146,111 +146,41 @@ function updateCategoriesPosition() {
     });
 }
 
-// НАСТРОЙКА СВАЙПОВ - ИСПРАВЛЕННАЯ ВЕРСИЯ
-function setupSwipeGestures() {
-    const categoriesContainer = document.getElementById('categoriesContainer');
-    const questionsTrack = document.getElementById('questionsTrack');
-    
-    // Простая функция для обработки свайпов
-    function setupSwipe(element, onSwipeLeft, onSwipeRight) {
-        let startX = 0;
-        let isSwiping = false;
-        
-        // Touch events для мобильных
-        element.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].clientX;
-            isSwiping = true;
-        }, { passive: true });
-        
-        element.addEventListener('touchmove', (e) => {
-            if (!isSwiping) return;
-            // Просто позволяем скроллить, движение обработаем в touchend
-        }, { passive: true });
-        
-        element.addEventListener('touchend', (e) => {
-            if (!isSwiping) return;
-            isSwiping = false;
-            
-            const endX = e.changedTouches[0].clientX;
-            const diff = startX - endX;
-            const threshold = 50; // Минимальное расстояние для свайпа
-            
-            if (Math.abs(diff) > threshold) {
-                if (diff > 0 && onSwipeLeft) {
-                    // Свайп влево
-                    onSwipeLeft();
-                } else if (diff < 0 && onSwipeRight) {
-                    // Свайп вправо
-                    onSwipeRight();
-                }
-            }
-        });
-        
-        // Mouse events для десктопа
-        element.addEventListener('mousedown', (e) => {
-            startX = e.clientX;
-            isSwiping = true;
-            
-            const onMouseMove = (moveEvent) => {
-                if (!isSwiping) return;
-                // Просто следим за движением
-            };
-            
-            const onMouseUp = (upEvent) => {
-                if (!isSwiping) return;
-                isSwiping = false;
-                
-                const endX = upEvent.clientX;
-                const diff = startX - endX;
-                const threshold = 50;
-                
-                if (Math.abs(diff) > threshold) {
-                    if (diff > 0 && onSwipeLeft) {
-                        onSwipeLeft();
-                    } else if (diff < 0 && onSwipeRight) {
-                        onSwipeRight();
-                    }
-                }
-                
-                document.removeEventListener('mousemove', onMouseMove);
-                document.removeEventListener('mouseup', onMouseUp);
-            };
-            
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
-        });
-    }
+// САМЫЕ ПРОСТЫЕ СВАЙПЫ ДЛЯ ТЕЛЕФОНА
+function setupSimpleSwipeGestures() {
+    console.log('Настройка простых свайпов для телефона');
     
     // Свайпы для категорий
-    setupSwipe(
-        categoriesContainer,
-        // onSwipeLeft
+    const categoriesContainer = document.getElementById('categoriesContainer');
+    setupTouchSwipe(categoriesContainer, 
+        // Свайп влево
         () => {
+            console.log('Свайп влево по категориям');
             if (currentCategoryIndex < categories.length - 1) {
                 currentCategoryIndex++;
                 updateCategoriesPosition();
                 showSwipeFeedback('right', 'category');
                 playSound('swipe');
-                console.log('Свайп влево по категориям');
             }
         },
-        // onSwipeRight
+        // Свайп вправо
         () => {
+            console.log('Свайп вправо по категориям');
             if (currentCategoryIndex > 0) {
                 currentCategoryIndex--;
                 updateCategoriesPosition();
                 showSwipeFeedback('left', 'category');
                 playSound('swipe');
-                console.log('Свайп вправо по категориям');
             }
         }
     );
     
     // Свайпы для вопросов
-    setupSwipe(
-        questionsTrack,
-        // onSwipeLeft
+    const questionsTrack = document.getElementById('questionsTrack');
+    setupTouchSwipe(questionsTrack,
+        // Свайп влево
         () => {
+            console.log('Свайп влево по вопросам');
             if (!selectedCategory) return;
             const questions = questionsData[selectedCategory.id] || [];
             if (currentQuestionIndex < questions.length - 1) {
@@ -259,21 +189,104 @@ function setupSwipeGestures() {
                 showSwipeFeedback('right', 'question');
                 updateQuestionCounter();
                 playSound('swipe');
-                console.log('Свайп влево по вопросам');
             }
         },
-        // onSwipeRight
+        // Свайп вправо
         () => {
+            console.log('Свайп вправо по вопросам');
             if (currentQuestionIndex > 0) {
                 currentQuestionIndex--;
                 updateQuestionsPosition();
                 showSwipeFeedback('left', 'question');
                 updateQuestionCounter();
                 playSound('swipe');
-                console.log('Свайп вправо по вопросам');
             }
         }
     );
+}
+
+// ОЧЕНЬ ПРОСТАЯ ФУНКЦИЯ СВАЙПА ДЛЯ ТЕЛЕФОНА
+function setupTouchSwipe(element, onSwipeLeft, onSwipeRight) {
+    let startX = 0;
+    let startY = 0;
+    
+    element.addEventListener('touchstart', function(e) {
+        console.log('touchstart на элементе');
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+    }, { passive: true });
+    
+    element.addEventListener('touchend', function(e) {
+        console.log('touchend на элементе');
+        if (!startX) return;
+        
+        const endX = e.changedTouches[0].clientX;
+        const endY = e.changedTouches[0].clientY;
+        
+        // Вычисляем разницу
+        const diffX = startX - endX;
+        const diffY = startY - endY;
+        
+        // Игнорируем вертикальные свайпы (скролл)
+        if (Math.abs(diffY) > Math.abs(diffX)) {
+            console.log('Вертикальный свайп, игнорируем');
+            return;
+        }
+        
+        // Минимальное расстояние для свайпа
+        const threshold = 50;
+        
+        if (Math.abs(diffX) > threshold) {
+            if (diffX > 0) {
+                console.log('Определен свайп влево, diffX:', diffX);
+                if (onSwipeLeft) onSwipeLeft();
+            } else {
+                console.log('Определен свайп вправо, diffX:', diffX);
+                if (onSwipeRight) onSwipeRight();
+            }
+        }
+        
+        // Сбрасываем начальные координаты
+        startX = 0;
+        startY = 0;
+    }, { passive: true });
+    
+    // Для тестирования на компьютере (мышь)
+    element.addEventListener('mousedown', function(e) {
+        console.log('mousedown на элементе');
+        startX = e.clientX;
+        startY = e.clientY;
+    });
+    
+    element.addEventListener('mouseup', function(e) {
+        console.log('mouseup на элементе');
+        if (!startX) return;
+        
+        const endX = e.clientX;
+        const endY = e.clientY;
+        
+        const diffX = startX - endX;
+        const diffY = startY - endY;
+        
+        if (Math.abs(diffY) > Math.abs(diffX)) {
+            return;
+        }
+        
+        const threshold = 50;
+        
+        if (Math.abs(diffX) > threshold) {
+            if (diffX > 0) {
+                console.log('Мышь: свайп влево');
+                if (onSwipeLeft) onSwipeLeft();
+            } else {
+                console.log('Мышь: свайп вправо');
+                if (onSwipeRight) onSwipeRight();
+            }
+        }
+        
+        startX = 0;
+        startY = 0;
+    });
 }
 
 // Показать анимацию свайпа
@@ -284,14 +297,18 @@ function showSwipeFeedback(direction, type) {
     
     const feedback = document.getElementById(feedbackId);
     
-    feedback.classList.remove('show');
-    // Принудительный reflow для перезапуска анимации
-    void feedback.offsetWidth;
-    feedback.classList.add('show');
+    if (!feedback) {
+        console.error('Элемент feedback не найден:', feedbackId);
+        return;
+    }
     
+    feedback.classList.remove('show');
     setTimeout(() => {
-        feedback.classList.remove('show');
-    }, 500);
+        feedback.classList.add('show');
+        setTimeout(() => {
+            feedback.classList.remove('show');
+        }, 500);
+    }, 10);
 }
 
 // Выбор категории
@@ -301,32 +318,13 @@ function selectCategory(category) {
     
     console.log(`Выбрана категория: ${category.id}`);
     
-    // Проверяем, есть ли категория в questionsData
-    if (!questionsData[category.id] || questionsData[category.id].length === 0) {
-        if (category.id === 'Блиц') {
-            // Для блица создаем вопросы по умолчанию
-            if (!questionsData['Блиц'] || questionsData['Блиц'].length === 0) {
-                questionsData['Блиц'] = [
-                    "Твой любимый цвет?",
-                    "Кофе или чай?",
-                    "Утро или вечер?",
-                    "Горы или море?",
-                    "Кино или сериал?",
-                    "Соленое или сладкое?",
-                    "Книга или фильм?",
-                    "Лето или зима?",
-                    "Собака или кошка?",
-                    "Пицца или суши?"
-                ];
-            }
-            startBlitzMode();
-        } else {
-            alert(`В категории "${category.name}" пока нет вопросов!\n\nДобавьте вопросы в файл questions.js`);
-            return;
-        }
-    } else if (category.id === 'Блиц') {
+    if (category.id === 'Блиц') {
         startBlitzMode();
     } else {
+        if (!questionsData[category.id] || questionsData[category.id].length === 0) {
+            alert(`В категории "${category.name}" пока нет вопросов!`);
+            return;
+        }
         showQuestionsScreen();
     }
 }
@@ -442,7 +440,6 @@ function showNextBlitzQuestion() {
 function startBlitzTimer() {
     if (blitzTimer) clearInterval(blitzTimer);
     
-    // Сброс стилей таймера
     timerElement.style.color = '';
     timerElement.style.textShadow = '';
     
@@ -547,7 +544,7 @@ function setupEventListeners() {
     
     themeToggle.addEventListener('click', toggleTheme);
     
-    // Клавиатурная навигация
+    // Клавиатурная навигация для тестирования
     document.addEventListener('keydown', (e) => {
         if (questionsScreen.classList.contains('active')) {
             const questions = questionsData[selectedCategory.id] || [];
@@ -571,28 +568,90 @@ function setupEventListeners() {
             }
         }
         
-        // Быстрое переключение темы Ctrl+T
         if (e.key === 't' && (e.ctrlKey || e.metaKey)) {
             e.preventDefault();
             toggleTheme();
         }
     });
     
-    // Предотвращаем поведение по умолчанию для свайпов по вертикали
-    document.addEventListener('touchmove', (e) => {
-        if (e.target.closest('.categories-container') || e.target.closest('.questions-track')) {
-            // Разрешаем вертикальный скролл, но предотвращаем горизонтальный
-            if (Math.abs(e.touches[0].clientX - e.touches[0].screenX) > 10) {
-                e.preventDefault();
+    // Добавим кнопки для тестирования на ПК
+    addTestButtons();
+}
+
+// Добавляем кнопки для тестирования свайпов на ПК
+function addTestButtons() {
+    if (window.innerWidth > 768) { // Только для десктопа
+        const testDiv = document.createElement('div');
+        testDiv.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        `;
+        
+        const prevBtn = document.createElement('button');
+        prevBtn.textContent = '← Предыдущий';
+        prevBtn.style.cssText = `
+            padding: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        `;
+        prevBtn.onclick = () => {
+            if (questionsScreen.classList.contains('active')) {
+                if (currentQuestionIndex > 0) {
+                    currentQuestionIndex--;
+                    updateQuestionsPosition();
+                    updateQuestionCounter();
+                    showSwipeFeedback('left', 'question');
+                }
+            } else if (categoriesScreen.style.display !== 'none') {
+                if (currentCategoryIndex > 0) {
+                    currentCategoryIndex--;
+                    updateCategoriesPosition();
+                    showSwipeFeedback('left', 'category');
+                }
             }
-        }
-    }, { passive: false });
+        };
+        
+        const nextBtn = document.createElement('button');
+        nextBtn.textContent = 'Следующий →';
+        nextBtn.style.cssText = `
+            padding: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        `;
+        nextBtn.onclick = () => {
+            if (questionsScreen.classList.contains('active')) {
+                if (!selectedCategory) return;
+                const questions = questionsData[selectedCategory.id] || [];
+                if (currentQuestionIndex < questions.length - 1) {
+                    currentQuestionIndex++;
+                    updateQuestionsPosition();
+                    updateQuestionCounter();
+                    showSwipeFeedback('right', 'question');
+                }
+            } else if (categoriesScreen.style.display !== 'none') {
+                if (currentCategoryIndex < categories.length - 1) {
+                    currentCategoryIndex++;
+                    updateCategoriesPosition();
+                    showSwipeFeedback('right', 'category');
+                }
+            }
+        };
+        
+        testDiv.appendChild(prevBtn);
+        testDiv.appendChild(nextBtn);
+        document.body.appendChild(testDiv);
+    }
 }
 
 // Запуск приложения
 document.addEventListener('DOMContentLoaded', init);
-
-// Предотвращаем масштабирование жестом
-document.addEventListener('gesturestart', function (e) {
-    e.preventDefault();
-});
