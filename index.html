@@ -33,7 +33,6 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         
-        /* Главный экран с категориями */
         .categories-screen {
             position: absolute;
             width: 100%;
@@ -195,7 +194,6 @@
             50% { opacity: 1; transform: translateX(8px); }
         }
         
-        /* Экран вопросов */
         .questions-screen {
             position: absolute;
             width: 100%;
@@ -328,7 +326,6 @@
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
         
-        /* Экран блица */
         .blitz-screen {
             position: absolute;
             width: 100%;
@@ -542,7 +539,6 @@
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
         
-        /* Анимации свайпов */
         .swipe-feedback {
             position: absolute;
             top: 50%;
@@ -592,7 +588,6 @@
             100% { transform: translateY(-50%) translateX(0); opacity: 0.85; }
         }
         
-        /* Прогресс индикатор */
         .progress-indicator {
             display: flex;
             justify-content: center;
@@ -634,7 +629,6 @@
             opacity: 0;
         }
         
-        /* Анимация появления контента */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -647,7 +641,6 @@
             animation-delay: calc(var(--index) * 0.1s);
         }
         
-        /* Мобильная адаптация */
         @media (max-width: 480px) {
             .category-icon {
                 font-size: 3.8rem;
@@ -695,7 +688,6 @@
             }
         }
         
-        /* Анимация для главного экрана */
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.03); }
@@ -706,14 +698,12 @@
             animation: pulse 2s infinite;
         }
         
-        /* Улучшенная тень для контейнеров */
         .categories-container, .questions-track {
             box-shadow: 
                 0 10px 25px rgba(0, 0, 0, 0.3),
                 inset 0 0 20px rgba(255, 255, 255, 0.1);
         }
         
-        /* Плавное появление экранов */
         .questions-screen, .blitz-screen {
             box-shadow: 
                 0 15px 35px rgba(0, 0, 0, 0.4),
@@ -723,7 +713,6 @@
 </head>
 <body>
     <div class="container" id="container">
-        <!-- Экран категорий -->
         <div class="categories-screen" id="categoriesScreen">
             <div class="categories-header">
                 <h1 class="categories-title">Вопросы для двоих</h1>
@@ -733,9 +722,7 @@
             <div class="categories-container" id="categoriesContainer">
                 <div class="swipe-feedback left" id="swipeLeftFeedback">←</div>
                 <div class="swipe-feedback right" id="swipeRightFeedback">→</div>
-                <div class="categories-track" id="categoriesTrack">
-                    <!-- Категории будут добавлены здесь -->
-                </div>
+                <div class="categories-track" id="categoriesTrack"></div>
             </div>
             
             <div class="swipe-hint">
@@ -744,12 +731,9 @@
                 <span class="swipe-arrow">→</span>
             </div>
             
-            <div class="progress-indicator" id="categoriesProgress">
-                <!-- Индикаторы будут добавлены здесь -->
-            </div>
+            <div class="progress-indicator" id="categoriesProgress"></div>
         </div>
         
-        <!-- Экран вопросов -->
         <div class="questions-screen" id="questionsScreen">
             <div class="questions-header">
                 <button class="back-btn" id="backFromQuestions">←</button>
@@ -762,17 +746,12 @@
             <div class="questions-track" id="questionsTrack">
                 <div class="swipe-feedback left" id="questionSwipeLeftFeedback">←</div>
                 <div class="swipe-feedback right" id="questionSwipeRightFeedback">→</div>
-                <div class="questions-slider" id="questionsSlider">
-                    <!-- Вопросы будут добавлены здесь -->
-                </div>
+                <div class="questions-slider" id="questionsSlider"></div>
             </div>
             
-            <div class="progress-indicator" id="questionsProgress">
-                <!-- Индикаторы будут добавлены здесь -->
-            </div>
+            <div class="progress-indicator" id="questionsProgress"></div>
         </div>
         
-        <!-- Экран блица -->
         <div class="blitz-screen" id="blitzScreen">
             <div class="questions-header">
                 <button class="back-btn" id="backFromBlitz">←</button>
@@ -810,11 +789,11 @@
         </div>
     </div>
 
-    <!-- Подключаем внешний файл с вопросами -->
+    <!-- Подключаем файл с вопросами -->
     <script src="questions.js"></script>
     
     <script>
-        // Конфигурация категорий
+        // Конфигурация категорий (совпадает с ключами в questions.js)
         const categories = [
             { id: "Интимные вопросы", name: "Интимные вопросы", icon: "🔞", desc: "Откровенные вопросы для близости" },
             { id: "На расстоянии", name: "На расстоянии", icon: "✈️", desc: "Для пар в разлуке" },
@@ -831,9 +810,6 @@
         let currentCategoryIndex = 0;
         let currentQuestionIndex = 0;
         let selectedCategory = null;
-        let isSwiping = false;
-        let startX = 0;
-        let currentX = 0;
         let blitzTimer = null;
         let timeLeft = 30;
         let blitzCorrectAnswers = 0;
@@ -855,8 +831,21 @@
         const totalScore = document.getElementById('totalScore');
         const blitzQuestionText = document.getElementById('blitzQuestionText');
 
+        // Проверяем, что questionsData загружен
+        function checkQuestionsData() {
+            if (typeof questionsData === 'undefined') {
+                console.error('questionsData не загружен! Проверьте файл questions.js');
+                alert('Ошибка загрузки вопросов. Проверьте наличие файла questions.js');
+                return false;
+            }
+            console.log('questionsData загружен успешно, категорий:', Object.keys(questionsData).length);
+            return true;
+        }
+
         // Функция инициализации
         function init() {
+            if (!checkQuestionsData()) return;
+            
             renderCategories();
             setupSwipeGestures();
             setupEventListeners();
@@ -868,7 +857,6 @@
             categoriesProgress.innerHTML = '';
             
             categories.forEach((category, index) => {
-                // Создаем слайд категории
                 const slide = document.createElement('div');
                 slide.className = 'category-slide';
                 slide.style.setProperty('--index', index);
@@ -881,16 +869,12 @@
                     </div>
                 `;
                 
-                // Добавляем обработчик клика
                 slide.addEventListener('click', () => {
-                    if (!isSwiping) {
-                        selectCategory(category);
-                    }
+                    selectCategory(category);
                 });
                 
                 categoriesTrack.appendChild(slide);
                 
-                // Создаем индикатор прогресса
                 const dot = document.createElement('div');
                 dot.className = `progress-dot ${index === currentCategoryIndex ? 'active' : ''}`;
                 categoriesProgress.appendChild(dot);
@@ -904,7 +888,6 @@
             const translateX = -currentCategoryIndex * 100;
             categoriesTrack.style.transform = `translateX(${translateX}%)`;
             
-            // Обновляем активные элементы
             document.querySelectorAll('.category-card').forEach((card, index) => {
                 card.classList.toggle('active', index === currentCategoryIndex);
             });
@@ -941,6 +924,7 @@
             // Свайпы для вопросов
             setupHorizontalSwipe(questionsTrack, {
                 onSwipeLeft: () => {
+                    if (!selectedCategory) return;
                     const questions = questionsData[selectedCategory.id] || [];
                     if (currentQuestionIndex < questions.length - 1) {
                         currentQuestionIndex++;
@@ -967,7 +951,6 @@
             let currentX = 0;
             let isDragging = false;
             
-            // Touch события
             element.addEventListener('touchstart', (e) => {
                 startX = e.touches[0].clientX;
                 currentX = startX;
@@ -995,7 +978,6 @@
                 }
             });
             
-            // Mouse события для десктопа
             element.addEventListener('mousedown', (e) => {
                 startX = e.clientX;
                 currentX = startX;
@@ -1037,7 +1019,7 @@
             const feedback = document.getElementById(feedbackId);
             
             feedback.classList.remove('show');
-            void feedback.offsetWidth; // Перезапуск анимации
+            void feedback.offsetWidth;
             feedback.classList.add('show');
             
             setTimeout(() => {
@@ -1059,11 +1041,12 @@
 
         // Показать экран вопросов
         function showQuestionsScreen() {
+            if (!selectedCategory) return;
+            
             currentCategoryName.textContent = selectedCategory.name;
             renderQuestions();
             updateQuestionCounter();
             
-            // Плавный переход
             setTimeout(() => {
                 questionsScreen.classList.add('active');
             }, 50);
@@ -1071,13 +1054,14 @@
 
         // Рендеринг вопросов
         function renderQuestions() {
+            if (!selectedCategory) return;
+            
             questionsSlider.innerHTML = '';
             questionsProgress.innerHTML = '';
             
             const questions = questionsData[selectedCategory.id] || [];
             
             questions.forEach((question, index) => {
-                // Создаем слайд вопроса
                 const slide = document.createElement('div');
                 slide.className = 'question-slide';
                 slide.style.setProperty('--index', index);
@@ -1088,7 +1072,6 @@
                 `;
                 questionsSlider.appendChild(slide);
                 
-                // Создаем индикатор прогресса
                 const dot = document.createElement('div');
                 dot.className = `progress-dot ${index === currentQuestionIndex ? 'active' : ''}`;
                 questionsProgress.appendChild(dot);
@@ -1102,7 +1085,6 @@
             const translateX = -currentQuestionIndex * 100;
             questionsSlider.style.transform = `translateX(${translateX}%)`;
             
-            // Обновляем активные индикаторы
             document.querySelectorAll('#questionsProgress .progress-dot').forEach((dot, index) => {
                 dot.classList.toggle('active', index === currentQuestionIndex);
             });
@@ -1110,24 +1092,22 @@
 
         // Обновление счетчика вопросов
         function updateQuestionCounter() {
+            if (!selectedCategory) return;
             const questions = questionsData[selectedCategory.id] || [];
             questionCounter.textContent = `Вопрос ${currentQuestionIndex + 1} из ${questions.length}`;
         }
 
         // Запуск режима блиц
         function startBlitzMode() {
-            // Сброс переменных блица
             timeLeft = 30;
             blitzCorrectAnswers = 0;
             blitzTotalAnswered = 0;
             blitzCurrentIndex = 0;
             
-            // Обновление UI
             updateBlitzUI();
             showNextBlitzQuestion();
             startBlitzTimer();
             
-            // Плавный переход на экран блица
             setTimeout(() => {
                 blitzScreen.classList.add('active');
             }, 50);
@@ -1137,12 +1117,12 @@
         function updateBlitzUI() {
             timerElement.textContent = timeLeft;
             correctScore.textContent = blitzCorrectAnswers;
-            totalScore.textContent = blitzCurrentIndex + 1; // Показываем текущий номер вопроса
+            totalScore.textContent = blitzCurrentIndex + 1;
         }
 
         // Показать следующий вопрос блица
         function showNextBlitzQuestion() {
-            const questions = questionsData['Блиц'];
+            const questions = questionsData['Блиц'] || [];
             if (blitzCurrentIndex < questions.length) {
                 blitzQuestionText.textContent = questions[blitzCurrentIndex];
                 totalScore.textContent = blitzCurrentIndex + 1;
@@ -1159,7 +1139,6 @@
                 timeLeft--;
                 timerElement.textContent = timeLeft;
                 
-                // Визуальное предупреждение при малом времени
                 if (timeLeft <= 5) {
                     timerElement.style.color = '#ff4d4d';
                     timerElement.style.textShadow = '0 0 15px rgba(255, 77, 77, 0.7)';
@@ -1175,12 +1154,10 @@
         function endBlitzMode() {
             clearInterval(blitzTimer);
             
-            // Расчет результатов
             const percentage = blitzTotalAnswered > 0 
                 ? Math.round((blitzCorrectAnswers / blitzTotalAnswered) * 100) 
                 : 0;
             
-            // Показ результата
             setTimeout(() => {
                 const resultMessage = `Блиц завершен!\n\nПравильных ответов: ${blitzCorrectAnswers} из ${blitzTotalAnswered}\n\nРезультат: ${percentage}%`;
                 alert(resultMessage);
@@ -1190,17 +1167,14 @@
 
         // Возврат на главный экран
         function backToMain() {
-            // Скрытие текущих экранов
             questionsScreen.classList.remove('active');
             blitzScreen.classList.remove('active');
             
-            // Очистка таймера блица, если он активен
             if (blitzTimer) {
                 clearInterval(blitzTimer);
                 blitzTimer = null;
             }
             
-            // Возврат на главный экран через небольшую задержку для плавности
             setTimeout(() => {
                 categoriesScreen.style.display = 'flex';
             }, 400);
@@ -1208,16 +1182,15 @@
 
         // Настройка обработчиков событий
         function setupEventListeners() {
-            // Кнопки назад
             document.getElementById('backFromQuestions').addEventListener('click', backToMain);
             document.getElementById('backFromBlitz').addEventListener('click', () => {
                 if (blitzTimer) clearInterval(blitzTimer);
                 backToMain();
             });
             
-            // Кнопки блица
             document.getElementById('correctBtn').addEventListener('click', () => {
-                if (blitzCurrentIndex >= questionsData['Блиц'].length) return;
+                const questions = questionsData['Блиц'] || [];
+                if (blitzCurrentIndex >= questions.length) return;
                 
                 blitzCorrectAnswers++;
                 blitzTotalAnswered++;
@@ -1228,7 +1201,8 @@
             });
             
             document.getElementById('incorrectBtn').addEventListener('click', () => {
-                if (blitzCurrentIndex >= questionsData['Блиц'].length) return;
+                const questions = questionsData['Блиц'] || [];
+                if (blitzCurrentIndex >= questions.length) return;
                 
                 blitzTotalAnswered++;
                 blitzCurrentIndex++;
@@ -1236,14 +1210,12 @@
                 showNextBlitzQuestion();
             });
             
-            // Предотвращаем стандартное поведение свайпов
             document.addEventListener('touchmove', (e) => {
                 if (e.target.closest('.categories-container') || e.target.closest('.questions-track')) {
                     e.preventDefault();
                 }
             }, { passive: false });
             
-            // Обработка нажатия клавиш на десктопе для навигации
             document.addEventListener('keydown', (e) => {
                 if (questionsScreen.classList.contains('active')) {
                     if (e.key === 'ArrowLeft' && currentQuestionIndex > 0) {
@@ -1267,7 +1239,6 @@
         // Запуск приложения
         document.addEventListener('DOMContentLoaded', init);
         
-        // Дополнительная защита от масштабирования на мобильных
         document.addEventListener('gesturestart', function (e) {
             e.preventDefault();
         });
