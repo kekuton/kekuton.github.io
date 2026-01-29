@@ -3,38 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#667eea" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f5f7fa" media="(prefers-color-scheme: light)">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Вопросы для двоих - Игра для близких</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
 </head>
 <body>
     <div class="container" id="container">
-        <div class="categories-screen" id="categoriesScreen">
+        <header class="categories-screen" id="categoriesScreen">
             <div class="categories-header">
-                <button class="theme-toggle" id="themeToggle">🌙</button>
+                <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">🌙</button>
                 <h1 class="categories-title">Вопросы для двоих</h1>
                 <div class="categories-subtitle">Игра для близких отношений</div>
             </div>
             
-            <div class="categories-container" id="categoriesContainer">
+            <main class="categories-container" id="categoriesContainer">
                 <div class="swipe-feedback left" id="swipeLeftFeedback">←</div>
                 <div class="swipe-feedback right" id="swipeRightFeedback">→</div>
                 <div class="categories-track" id="categoriesTrack"></div>
-            </div>
+            </main>
             
-            <div class="swipe-hint">
+            <footer class="swipe-hint">
                 <span class="swipe-arrow left">←</span>
                 Свайпайте для переключения категорий
                 <span class="swipe-arrow">→</span>
-            </div>
+            </footer>
             
-            <div class="progress-indicator" id="categoriesProgress"></div>
-        </div>
+            <nav class="progress-indicator" id="categoriesProgress"></nav>
+        </header>
         
-        <div class="questions-screen" id="questionsScreen">
+        <section class="questions-screen" id="questionsScreen">
             <div class="questions-header">
-                <button class="back-btn" id="backFromQuestions">←</button>
+                <button class="back-btn" id="backFromQuestions" aria-label="Назад">←</button>
                 <div>
-                    <div class="question-title" id="currentCategoryName">Категория</div>
+                    <h2 class="question-title" id="currentCategoryName">Категория</h2>
                     <div class="question-counter" id="questionCounter">Вопрос 1 из 10</div>
                 </div>
             </div>
@@ -45,14 +50,14 @@
                 <div class="questions-slider" id="questionsSlider"></div>
             </div>
             
-            <div class="progress-indicator" id="questionsProgress"></div>
-        </div>
+            <nav class="progress-indicator" id="questionsProgress"></nav>
+        </section>
         
-        <div class="blitz-screen" id="blitzScreen">
+        <section class="blitz-screen" id="blitzScreen">
             <div class="questions-header">
-                <button class="back-btn" id="backFromBlitz">←</button>
+                <button class="back-btn" id="backFromBlitz" aria-label="Назад">←</button>
                 <div>
-                    <div class="blitz-title">Блиц-опрос</div>
+                    <h2 class="blitz-title">Блиц-опрос</h2>
                     <div class="blitz-subtitle">30 секунд на ответы</div>
                 </div>
             </div>
@@ -82,11 +87,22 @@
                 <button class="blitz-btn incorrect" id="incorrectBtn">✗ Неправильно</button>
                 <button class="blitz-btn correct" id="correctBtn">✓ Правильно</button>
             </div>
-        </div>
+        </section>
     </div>
 
     <!-- Подключаем файл с вопросами -->
     <script src="questions.js"></script>
     <script src="script.js"></script>
+    
+    <!-- Service Worker для оффлайн-работы -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => {
+                    console.log('ServiceWorker регистрация не удалась: ', err);
+                });
+            });
+        }
+    </script>
 </body>
 </html>
