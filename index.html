@@ -371,14 +371,6 @@
             color: white;
         }
 
-        /* ИИ-экран */
-        #aiScreen {
-            transform: translateX(100%);
-        }
-        #aiScreen.active {
-            transform: translateX(0);
-        }
-
         /* Анимации свайпов */
         .swipe-feedback {
             position: absolute;
@@ -477,7 +469,7 @@
                 <button class="back-btn" id="backFromQuestions">←</button>
                 <div>
                     <div class="question-title" id="currentCategoryName">Категория</div>
-                    <div class="question-counter" id="questionCounter">Вопрос 1 из 10</div>
+                    <div class="question-counter" id="questionCounter">Загрузка...</div>
                 </div>
             </div>
             
@@ -530,79 +522,11 @@
                 <button class="blitz-btn correct" id="correctBtn">✓ Правильно</button>
             </div>
         </div>
-
-        <!-- Экран ИИ-вопросов -->
-        <div class="questions-screen" id="aiScreen">
-            <div class="questions-header">
-                <button class="back-btn" id="backFromAI">←</button>
-                <div>
-                    <div class="question-title">ИИ-вопросы</div>
-                    <div class="question-counter">Уникальные вопросы от нейросети</div>
-                </div>
-            </div>
-
-            <div class="blitz-question-container" style="flex: 1; padding: 20px;">
-                <div class="blitz-question-card">
-                    <div class="blitz-question-text" id="aiQuestionText">
-                        Нажмите кнопку, чтобы сгенерировать вопрос
-                    </div>
-                </div>
-            </div>
-
-            <div style="padding: 0 20px 30px; text-align: center;">
-                <button id="generateAIButton" class="blitz-btn correct" style="width: 100%; height: 60px; font-size: 1.3rem;">
-                    ✨ Сгенерировать вопрос
-                </button>
-                <div id="aiStatus" style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8;"></div>
-            </div>
-        </div>
     </div>
 
     <script>
-        // Данные вопросов
+        // Только блиц остаётся статичным
         const questionsData = {
-            "18+": [
-                "Что для тебя является самым важным в интимной жизни?",
-                "Какой твой самый смелый эротический фантазий?",
-                "Что ты считаешь идеальной прелюдией?",
-                "Какое место для интимной близости ты считаешь самым романтичным?",
-                "Как ты относишься к ролевым играм в отношениях?"
-            ],
-            "отношенияНаРасстоянии": [
-                "Что самое сложное в отношениях на расстоянии?",
-                "Как мы можем сделать наши видеозвонки более романтичными?",
-                "Что помогает тебе чувствовать себя ближе ко мне, когда мы далеко?",
-                "Какой наш самый запоминающийся виртуальный свидание?",
-                "Что ты больше всего ждешь от нашей следующей встречи?"
-            ],
-            "назадВБудущее": [
-                "Где ты видишь нас через 5 лет?",
-                "Какой наш общий самый большой жизненный цель?",
-                "Как ты представляешь наш идеальный совместный дом?",
-                "Хочешь ли ты детей и если да, то сколько?",
-                "Как ты видишь распределение обязанностей в нашей будущей семье?"
-            ],
-            "финансы": [
-                "Как ты относишься к совместному бюджету?",
-                "Какие у тебя финансовые цели на ближайшие 3 года?",
-                "Как ты считаешь, нужно ли нам иметь раздельные счета?",
-                "Что для тебя является разумной тратой денег, а что - расточительством?",
-                "Как мы должны принимать решение о крупных покупках?"
-            ],
-            "психология": [
-                "Что заставляет тебя чувствовать себя в безопасности?",
-                "Как я могу поддержать тебя в трудные моменты?",
-                "Что для тебя значит 'личное пространство' в отношениях?",
-                "Какой твой самый большой страх в отношениях?",
-                "Что помогает тебе справляться со стрессом?"
-            ],
-            "воспоминания": [
-                "Какое наше первое свидание тебе запомнилось больше всего?",
-                "Какой наш самый смешной совместный момент?",
-                "Когда ты впервые понял(а), что влюбился(а)?",
-                "Какая наша совместная поездка была самой запоминающейся?",
-                "Какой подарок от меня тебе запомнился больше всего?"
-            ],
             "блиц": [
                 "Любимый цвет партнера?",
                 "День рождения партнера?",
@@ -614,24 +538,10 @@
                 "Хобби партнера?",
                 "Любимый сезон партнера?",
                 "Мечта детства партнера?"
-            ],
-            "редФлагИлиГринФлаг": [
-                "Партнер постоянно проверяет ваш телефон",
-                "Партнер поддерживает ваши увлечения и хобби",
-                "Партнер извиняется после ссор",
-                "Партнер контролирует ваше общение с друзьями",
-                "Партнер уважает ваши личные границы"
-            ],
-            "тимбилдинг": [
-                "Если бы вы были супергероями, какие бы у вас были силы?",
-                "Какое животное лучше всего описывает нашу пару?",
-                "Если бы мы открыли бизнес, чем бы мы занимались?",
-                "Какую песню можно считать саундтреком наших отношений?",
-                "Если бы нас пригласили на шоу талантов, что бы мы показали?"
             ]
         };
 
-        // Конфигурация категорий
+        // Конфигурация категорий (без "ai")
         const categories = [
             { id: "18+", name: "18+", icon: "🔞", desc: "Интимные вопросы" },
             { id: "отношенияНаРасстоянии", name: "На расстоянии", icon: "✈️", desc: "Для пар в разлуке" },
@@ -641,27 +551,19 @@
             { id: "воспоминания", name: "Воспоминания", icon: "📸", desc: "О вашем прошлом" },
             { id: "блиц", name: "Блиц", icon: "⚡", desc: "Вопросы на время" },
             { id: "редФлагИлиГринФлаг", name: "Флаги", icon: "🚩", desc: "Здоровые отношения" },
-            { id: "тимбилдинг", name: "Тимбилдинг", icon: "👥", desc: "Веселые вопросы" },
-            { id: "ai", name: "ИИ-вопросы", icon: "🤖", desc: "Уникальные вопросы от нейросети" } // ← НОВАЯ КАТЕГОРИЯ
+            { id: "тимбилдинг", name: "Тимбилдинг", icon: "👥", desc: "Веселые вопросы" }
         ];
 
         // Глобальные переменные
         let currentCategoryIndex = 0;
         let currentQuestionIndex = 0;
         let selectedCategory = null;
-        let isSwiping = false;
-        let startX = 0;
-        let currentX = 0;
-        let blitzTimer = null;
-        let timeLeft = 30;
-        let correctAnswers = 0;
-        let totalQuestions = 0;
+        let aiGeneratedQuestions = []; // ← хранит ИИ-вопросы для текущей категории
 
         // DOM элементы
         const categoriesScreen = document.getElementById('categoriesScreen');
         const questionsScreen = document.getElementById('questionsScreen');
         const blitzScreen = document.getElementById('blitzScreen');
-        const aiScreen = document.getElementById('aiScreen');
         const categoriesTrack = document.getElementById('categoriesTrack');
         const categoriesProgress = document.getElementById('categoriesProgress');
         const questionsSlider = document.getElementById('questionsSlider');
@@ -672,11 +574,8 @@
         const correctScore = document.getElementById('correctScore');
         const totalScore = document.getElementById('totalScore');
         const blitzQuestionText = document.getElementById('blitzQuestionText');
-        const aiQuestionText = document.getElementById('aiQuestionText');
-        const generateAIButton = document.getElementById('generateAIButton');
-        const aiStatus = document.getElementById('aiStatus');
 
-        // ⚠️ ЗАМЕНИТЕ ЭТОТ URL НА СВОЙ ПОСЛЕ РАЗВЕРТЫВАНИЯ БЭКЕНДА!
+        // ⚠️ ЗАМЕНИТЕ НА СВОЙ URL ПОСЛЕ ДЕПЛОЯ БЭКЕНДА!
         const AI_API_URL = 'https://kekuton-github-io.onrender.com';
 
         // Функция инициализации
@@ -732,6 +631,7 @@
             });
         }
 
+        let isSwiping = false;
         function setupSwipeGestures() {
             const categoriesContainer = document.getElementById('categoriesContainer');
             const questionsTrack = document.getElementById('questionsTrack');
@@ -756,17 +656,18 @@
             
             setupHorizontalSwipe(questionsTrack, {
                 onSwipeLeft: () => {
-                    const questions = questionsData[selectedCategory.id] || [];
-                    if (currentQuestionIndex < questions.length - 1) {
-                        currentQuestionIndex++;
+                    const questions = aiGeneratedQuestions;
+                    if (questions.length > 1) {
+                        currentQuestionIndex = (currentQuestionIndex + 1) % questions.length;
                         updateQuestionsPosition();
                         showQuestionSwipeFeedback('right');
                         updateQuestionCounter();
                     }
                 },
                 onSwipeRight: () => {
-                    if (currentQuestionIndex > 0) {
-                        currentQuestionIndex--;
+                    const questions = aiGeneratedQuestions;
+                    if (questions.length > 1) {
+                        currentQuestionIndex = (currentQuestionIndex - 1 + questions.length) % questions.length;
                         updateQuestionsPosition();
                         showQuestionSwipeFeedback('left');
                         updateQuestionCounter();
@@ -862,36 +763,40 @@
             }, 300);
         }
 
-        // 🔥 ФУНКЦИЯ ГЕНЕРАЦИИ ИИ-ВОПРОСА (работает с Qwen/OpenAI/любым бэкендом)
-        async function fetchAIQuestions(topic) {
-            aiStatus.textContent = 'Генерируем с помощью нейросети...';
-            generateAIButton.disabled = true;
-            generateAIButton.textContent = '⏳';
+        // 🔥 ГЕНЕРАЦИЯ ВОПРОСОВ ДЛЯ КАТЕГОРИИ
+        async function loadAIQuestionsForCategory(topic) {
+            const statusElem = document.querySelector('.question-counter');
+            const originalText = statusElem.textContent;
+            statusElem.textContent = 'Генерируем...';
 
             try {
                 const response = await fetch(AI_API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ topic: topic, count: 1 })
+                    body: JSON.stringify({ topic: topic, count: 10 })
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Ошибка: ${response.status}`);
-                }
+                if (!response.ok) throw new Error('Ошибка сети');
 
                 const data = await response.json();
-                if (data.questions && data.questions.length > 0) {
-                    return data.questions[0];
-                } else {
-                    throw new Error('Пустой ответ');
-                }
+                aiGeneratedQuestions = data.questions || [
+                    "Расскажи о чём-то важном для тебя.",
+                    "Что тебя вдохновляет в последнее время?"
+                ];
+
+                showQuestionsScreen();
             } catch (e) {
                 console.error('Ошибка ИИ:', e);
-                return "Расскажи партнёру о чём-то, что ты никогда не говорил(а) раньше.";
+                aiGeneratedQuestions = [
+                    "Как ты понимаешь любовь?",
+                    "Что для тебя значит доверие?",
+                    "Когда ты чувствуешь себя по-настоящему счастливым(ой)?",
+                    "Что делает тебя уязвимым(ой)?",
+                    "Как ты выражаешь заботу?"
+                ];
+                showQuestionsScreen();
             } finally {
-                generateAIButton.disabled = false;
-                generateAIButton.textContent = '✨ Сгенерировать вопрос';
-                aiStatus.textContent = '';
+                statusElem.textContent = originalText;
             }
         }
 
@@ -901,10 +806,8 @@
             
             if (category.id === 'блиц') {
                 startBlitzMode();
-            } else if (category.id === 'ai') {
-                showAIScreen();
             } else {
-                showQuestionsScreen();
+                loadAIQuestionsForCategory(category.name);
             }
         }
 
@@ -917,19 +820,11 @@
             questionsScreen.classList.add('active');
         }
 
-        function showAIScreen() {
-            categoriesScreen.style.display = 'none';
-            aiScreen.classList.add('active');
-            aiQuestionText.textContent = 'Нажмите кнопку, чтобы сгенерировать вопрос';
-        }
-
         function renderQuestions() {
             questionsSlider.innerHTML = '';
             questionsProgress.innerHTML = '';
             
-            const questions = questionsData[selectedCategory.id] || [];
-            
-            questions.forEach((question, index) => {
+            aiGeneratedQuestions.forEach((question, index) => {
                 const slide = document.createElement('div');
                 slide.className = 'question-slide';
                 slide.innerHTML = `
@@ -957,9 +852,14 @@
         }
 
         function updateQuestionCounter() {
-            const questions = questionsData[selectedCategory.id] || [];
-            questionCounter.textContent = `Вопрос ${currentQuestionIndex + 1} из ${questions.length}`;
+            questionCounter.textContent = `Вопрос ${currentQuestionIndex + 1}`;
         }
+
+        // --- БЛИЦ (без изменений) ---
+        let blitzTimer = null;
+        let timeLeft = 30;
+        let correctAnswers = 0;
+        let totalQuestions = 0;
 
         function startBlitzMode() {
             timeLeft = 30;
@@ -1015,14 +915,12 @@
         function backToMain() {
             questionsScreen.classList.remove('active');
             blitzScreen.classList.remove('active');
-            aiScreen.classList.remove('active');
             categoriesScreen.style.display = 'flex';
         }
 
         function setupEventListeners() {
             document.getElementById('backFromQuestions').addEventListener('click', backToMain);
             document.getElementById('backFromBlitz').addEventListener('click', backToMain);
-            document.getElementById('backFromAI').addEventListener('click', backToMain);
             
             document.getElementById('correctBtn').addEventListener('click', () => {
                 correctAnswers++;
@@ -1032,13 +930,6 @@
             
             document.getElementById('incorrectBtn').addEventListener('click', () => {
                 showNextBlitzQuestion();
-            });
-
-            // 🔥 КНОПКА ГЕНЕРАЦИИ ИИ-ВОПРОСА
-            generateAIButton.addEventListener('click', async () => {
-                const topic = selectedCategory?.name || "глубокие отношения";
-                const question = await fetchAIQuestions(topic);
-                aiQuestionText.textContent = question;
             });
             
             document.addEventListener('touchmove', (e) => {
