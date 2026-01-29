@@ -1,4 +1,28 @@
-/* style.css */
+/* style.css - Полный исправленный файл */
+
+:root {
+    /* Темная тема (по умолчанию) */
+    --primary-dark: #667eea;
+    --secondary-dark: #764ba2;
+    --card-bg-dark: rgba(255, 255, 255, 0.12);
+    --card-border-dark: rgba(255, 255, 255, 0.18);
+    --text-dark: #ffffff;
+    --shadow-dark: rgba(0, 0, 0, 0.25);
+    --back-btn-bg-dark: rgba(255, 255, 255, 0.18);
+    --progress-dot-dark: rgba(255, 255, 255, 0.4);
+    
+    /* Светлая тема */
+    --primary-light: #f5f7fa;
+    --secondary-light: #c3cfe2;
+    --card-bg-light: rgba(255, 255, 255, 0.95);
+    --card-border-light: rgba(102, 126, 234, 0.3);
+    --text-light: #2c3e50;
+    --text-light-secondary: #5d6d7e;
+    --shadow-light: rgba(0, 0, 0, 0.1);
+    --back-btn-bg-light: rgba(102, 126, 234, 0.15);
+    --progress-dot-light: rgba(102, 126, 234, 0.4);
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -10,8 +34,8 @@
 }
 
 body {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-dark) 100%);
+    color: var(--text-dark);
     min-height: 100vh;
     overflow-x: hidden;
     touch-action: pan-y;
@@ -19,8 +43,8 @@ body {
 }
 
 body.light-theme {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    color: #333;
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary-light) 100%);
+    color: var(--text-light);
 }
 
 .container {
@@ -30,14 +54,6 @@ body.light-theme {
     margin: 0 auto;
     position: relative;
     overflow: hidden;
-}
-
-body:not(.light-theme) .container {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-body.light-theme .container {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
 .categories-screen {
@@ -66,7 +82,7 @@ body.light-theme .container {
 
 body.light-theme .categories-title {
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    color: #2c3e50;
+    color: var(--text-light);
 }
 
 .categories-subtitle {
@@ -77,7 +93,7 @@ body.light-theme .categories-title {
 }
 
 body.light-theme .categories-subtitle {
-    color: #5d6d7e;
+    color: var(--text-light-secondary);
 }
 
 .categories-container {
@@ -87,13 +103,13 @@ body.light-theme .categories-subtitle {
     margin: 20px 0;
     border-radius: 24px;
     background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 10px 30px var(--shadow-dark);
     margin: 0 15px;
 }
 
 body.light-theme .categories-container {
     background: rgba(255, 255, 255, 0.6);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px var(--shadow-light);
     border: 1px solid rgba(102, 126, 234, 0.1);
 }
 
@@ -123,23 +139,23 @@ body.light-theme .categories-container {
 .category-card {
     width: 100%;
     max-width: 340px;
-    background: rgba(255, 255, 255, 0.12);
+    background: var(--card-bg-dark);
     backdrop-filter: blur(12px);
     border-radius: 28px;
     padding: 45px 35px;
     text-align: center;
-    border: 2px solid rgba(255, 255, 255, 0.18);
+    border: 2px solid var(--card-border-dark);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 25px var(--shadow-dark);
     position: relative;
     overflow: hidden;
 }
 
 body.light-theme .category-card {
-    background: rgba(255, 255, 255, 0.9);
-    color: #333;
-    border: 2px solid rgba(102, 126, 234, 0.3);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    background: var(--card-bg-light);
+    color: var(--text-light);
+    border: 2px solid var(--card-border-light);
+    box-shadow: 0 8px 25px var(--shadow-light);
 }
 
 .category-card::before {
@@ -202,7 +218,7 @@ body.light-theme .category-icon {
 
 body.light-theme .category-name {
     text-shadow: none;
-    color: #2c3e50;
+    color: var(--text-light);
 }
 
 .category-desc {
@@ -214,7 +230,7 @@ body.light-theme .category-name {
 }
 
 body.light-theme .category-desc {
-    color: #5d6d7e;
+    color: var(--text-light-secondary);
 }
 
 .category-counter {
@@ -242,7 +258,7 @@ body.light-theme .category-counter {
 }
 
 body.light-theme .swipe-hint {
-    color: #5d6d7e;
+    color: var(--text-light-secondary);
 }
 
 .swipe-arrow {
@@ -297,7 +313,7 @@ body.light-theme .questions-screen {
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.18);
+    background: var(--back-btn-bg-dark);
     border: none;
     color: white;
     font-size: 1.5rem;
@@ -312,8 +328,8 @@ body.light-theme .questions-screen {
 }
 
 body.light-theme .back-btn {
-    background: rgba(102, 126, 234, 0.15);
-    color: #2c3e50;
+    background: var(--back-btn-bg-light);
+    color: var(--text-light);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
@@ -335,7 +351,7 @@ body.light-theme .back-btn:active {
 }
 
 body.light-theme .question-title {
-    color: #2c3e50;
+    color: var(--text-light);
     text-shadow: none;
 }
 
@@ -347,7 +363,7 @@ body.light-theme .question-title {
 }
 
 body.light-theme .question-counter {
-    color: #5d6d7e;
+    color: var(--text-light-secondary);
 }
 
 .questions-track {
@@ -357,12 +373,12 @@ body.light-theme .question-counter {
     margin: 0 20px 25px;
     border-radius: 24px;
     background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 8px 25px var(--shadow-dark);
 }
 
 body.light-theme .questions-track {
     background: rgba(255, 255, 255, 0.6);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 25px var(--shadow-light);
     border: 1px solid rgba(71, 95, 170, 0.1);
 }
 
@@ -400,7 +416,7 @@ body.light-theme .questions-track {
     justify-content: center;
     text-align: center;
     border: 2px solid rgba(255, 255, 255, 0.22);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 10px 30px var(--shadow-dark);
     position: relative;
     overflow: hidden;
     margin: 0 auto;
@@ -408,9 +424,9 @@ body.light-theme .questions-track {
 
 body.light-theme .question-card {
     background: rgba(255, 255, 255, 0.95);
-    color: #2c3e50;
+    color: var(--text-light);
     border: 2px solid rgba(71, 95, 170, 0.3);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 30px var(--shadow-light);
 }
 
 .question-card::before {
@@ -437,11 +453,17 @@ body.light-theme .question-card::before {
     position: relative;
     z-index: 2;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    animation: textFadeIn 0.8s ease-out;
 }
 
 body.light-theme .question-text {
     text-shadow: none;
-    color: #2c3e50;
+    color: var(--text-light);
+}
+
+@keyframes textFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .blitz-screen {
@@ -765,14 +787,14 @@ body.light-theme .swipe-feedback {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.4);
+    background: var(--progress-dot-dark);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
     box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
 body.light-theme .progress-dot {
-    background: rgba(102, 126, 234, 0.4);
+    background: var(--progress-dot-light);
     box-shadow: 0 0 5px rgba(102, 126, 234, 0.5);
 }
 
@@ -808,18 +830,6 @@ body.light-theme .progress-dot::after {
     opacity: 0;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.categories-screen .category-slide,
-.questions-screen .question-slide,
-.blitz-screen .blitz-header {
-    animation: fadeIn 0.6s ease-out forwards;
-    animation-delay: calc(var(--index) * 0.1s);
-}
-
 .theme-toggle {
     position: absolute;
     right: 20px;
@@ -827,7 +837,7 @@ body.light-theme .progress-dot::after {
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.18);
+    background: var(--back-btn-bg-dark);
     border: none;
     color: white;
     font-size: 1.5rem;
@@ -842,8 +852,8 @@ body.light-theme .progress-dot::after {
 }
 
 body.light-theme .theme-toggle {
-    background: rgba(102, 126, 234, 0.15);
-    color: #2c3e50;
+    background: var(--back-btn-bg-light);
+    color: var(--text-light);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
@@ -937,15 +947,6 @@ body.light-theme .questions-screen {
     box-shadow: 
         0 15px 35px rgba(0, 0, 0, 0.15),
         inset 0 0 30px rgba(0, 0, 0, 0.1);
-}
-
-.question-text {
-    animation: textFadeIn 0.8s ease-out;
-}
-
-@keyframes textFadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
 }
 
 /* Эффект параллакса для фона */
