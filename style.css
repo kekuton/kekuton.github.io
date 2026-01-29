@@ -975,3 +975,31 @@ body.light-theme::before {
     33% { transform: translate(-10px, 10px) scale(1.02); }
     66% { transform: translate(10px, -10px) scale(0.98); }
 }
+
+/* Улучшения для свайпов */
+.categories-container,
+.questions-track {
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+}
+
+.category-slide,
+.question-slide {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+}
+
+/* Улучшение отклика на касание */
+.category-card,
+.question-card,
+.blitz-btn,
+.back-btn,
+.theme-toggle {
+    touch-action: manipulation;
+}
+
+/* Индикатор активного свайпа */
+.categories-container:active,
+.questions-track:active {
+    cursor: grabbing;
+}
