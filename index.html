@@ -2,14 +2,14 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Вопросы для двоих - Игра для близких</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
         }
@@ -20,11 +20,12 @@
             min-height: 100vh;
             overflow-x: hidden;
             touch-action: pan-y;
+            background-attachment: fixed;
         }
         
         .container {
             width: 100%;
-            height: 100vh;
+            min-height: 100vh;
             max-width: 500px;
             margin: 0 auto;
             position: relative;
@@ -39,28 +40,39 @@
             height: 100%;
             display: flex;
             flex-direction: column;
+            padding-top: 20px;
         }
         
         .categories-header {
-            padding: 40px 20px 20px;
+            padding: 30px 20px 20px;
             text-align: center;
+            z-index: 10;
         }
         
         .categories-title {
-            font-size: 2rem;
+            font-size: 2.2rem;
             margin-bottom: 8px;
-            font-weight: 700;
+            font-weight: 800;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            letter-spacing: -0.5px;
         }
         
         .categories-subtitle {
-            font-size: 1rem;
-            opacity: 0.9;
+            font-size: 1.1rem;
+            opacity: 0.95;
+            margin-top: 5px;
+            font-weight: 300;
         }
         
         .categories-container {
             flex: 1;
             position: relative;
             overflow: hidden;
+            margin: 20px 0;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            margin: 0 15px;
         }
         
         .categories-track {
@@ -68,13 +80,13 @@
             width: 100%;
             height: 100%;
             display: flex;
-            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: transform 0.45s cubic-bezier(0.23, 1, 0.32, 1);
         }
         
         .category-slide {
             flex: 0 0 100%;
             height: 100%;
-            padding: 30px 20px;
+            padding: 35px 25px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -83,68 +95,104 @@
         
         .category-card {
             width: 100%;
-            max-width: 320px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
-            padding: 40px 30px;
+            max-width: 340px;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 45px 35px;
             text-align: center;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            transition: transform 0.3s ease, opacity 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.18);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+            transform: scale(0.8);
+            transition: transform 0.5s ease;
+            z-index: -1;
         }
         
         .category-card.active {
-            transform: scale(1.05);
-            border-color: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            transform: scale(1.03);
+            border-color: rgba(255, 255, 255, 0.45);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+            background: rgba(255, 255, 255, 0.18);
+        }
+        
+        .category-card.active::before {
+            transform: scale(1.2);
+        }
+        
+        .category-card:active {
+            transform: scale(0.98);
+            transition: transform 0.15s ease;
         }
         
         .category-icon {
-            font-size: 3.5rem;
-            margin-bottom: 25px;
+            font-size: 4.2rem;
+            margin-bottom: 22px;
+            display: block;
+            text-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+            line-height: 1;
         }
         
         .category-name {
-            font-size: 1.6rem;
-            margin-bottom: 15px;
-            font-weight: 600;
+            font-size: 1.8rem;
+            margin-bottom: 18px;
+            font-weight: 700;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
         
         .category-desc {
-            font-size: 1rem;
-            opacity: 0.9;
-            line-height: 1.4;
-            margin-bottom: 20px;
+            font-size: 1.15rem;
+            opacity: 0.92;
+            line-height: 1.5;
+            margin-bottom: 22px;
+            font-weight: 300;
         }
         
         .category-counter {
-            font-size: 0.9rem;
-            opacity: 0.7;
+            font-size: 1.05rem;
+            opacity: 0.85;
+            font-weight: 500;
+            letter-spacing: 1px;
         }
         
         .swipe-hint {
             text-align: center;
-            padding: 20px;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9rem;
+            padding: 15px 20px 25px;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 1.05rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
+            font-weight: 300;
+            letter-spacing: -0.3px;
         }
         
         .swipe-arrow {
-            font-size: 1.2rem;
-            animation: swipeHint 1.5s infinite;
-        }
-        
-        @keyframes swipeHint {
-            0%, 100% { opacity: 0.5; transform: translateX(0); }
-            50% { opacity: 1; transform: translateX(5px); }
+            font-size: 1.5rem;
+            animation: swipeHint 1.8s infinite;
+            font-weight: bold;
         }
         
         .swipe-arrow.left {
             animation-direction: reverse;
+        }
+        
+        @keyframes swipeHint {
+            0%, 100% { opacity: 0.4; transform: translateX(0); }
+            50% { opacity: 1; transform: translateX(8px); }
         }
         
         /* Экран вопросов */
@@ -155,7 +203,11 @@
             display: flex;
             flex-direction: column;
             transform: translateX(100%);
-            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: transform 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+            background: linear-gradient(135deg, #475faa 0%, #5a3d92 100%);
+            border-radius: 0 0 24px 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding-top: 20px;
         }
         
         .questions-screen.active {
@@ -163,50 +215,61 @@
         }
         
         .questions-header {
-            padding: 40px 20px 20px;
+            padding: 30px 20px 20px;
             text-align: center;
             position: relative;
+            z-index: 10;
         }
         
         .back-btn {
             position: absolute;
             left: 20px;
-            top: 40px;
-            width: 44px;
-            height: 44px;
+            top: 30px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.18);
             border: none;
             color: white;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 20;
         }
         
         .back-btn:active {
-            transform: scale(0.9);
-            background: rgba(255, 255, 255, 0.25);
+            transform: scale(0.88) rotate(-90deg);
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
         }
         
         .question-title {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-            font-weight: 600;
+            font-size: 1.75rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
         }
         
         .question-counter {
-            font-size: 1rem;
-            opacity: 0.9;
+            font-size: 1.1rem;
+            opacity: 0.92;
+            font-weight: 300;
+            letter-spacing: 0.5px;
         }
         
         .questions-track {
             flex: 1;
             position: relative;
             overflow: hidden;
-            margin: 0 20px 20px;
+            margin: 0 20px 25px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
         }
         
         .questions-slider {
@@ -214,13 +277,13 @@
             width: 100%;
             height: 100%;
             display: flex;
-            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: transform 0.45s cubic-bezier(0.23, 1, 0.32, 1);
         }
         
         .question-slide {
             flex: 0 0 100%;
             height: 100%;
-            padding: 20px 0;
+            padding: 25px 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -229,21 +292,40 @@
         .question-card {
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
-            padding: 40px 30px;
+            background: rgba(255, 255, 255, 0.14);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 50px 40px;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.22);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: scale(0.9);
+            z-index: -1;
         }
         
         .question-text {
-            font-size: 1.6rem;
-            line-height: 1.5;
-            font-weight: 500;
+            font-size: 1.85rem;
+            line-height: 1.55;
+            font-weight: 400;
+            max-width: 95%;
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
         
         /* Экран блица */
@@ -254,7 +336,11 @@
             display: flex;
             flex-direction: column;
             transform: translateX(100%);
-            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: transform 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+            background: linear-gradient(135deg, #2c3e50 0%, #4a235a 100%);
+            border-radius: 0 0 24px 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            padding-top: 20px;
         }
         
         .blitz-screen.active {
@@ -262,113 +348,198 @@
         }
         
         .blitz-header {
-            padding: 40px 20px 20px;
+            padding: 30px 20px 15px;
             text-align: center;
+            z-index: 10;
         }
         
         .blitz-title {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-            font-weight: 600;
+            font-size: 2.1rem;
+            margin-bottom: 5px;
+            font-weight: 800;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(to right, #ffd700, #ffa500, #ff4500);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
         }
         
         .blitz-subtitle {
-            font-size: 1rem;
-            opacity: 0.9;
+            font-size: 1.25rem;
+            opacity: 0.95;
+            margin-top: 3px;
+            font-weight: 300;
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
         }
         
         .timer-container {
             text-align: center;
-            margin: 20px 0;
+            margin: 15px 0 10px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 5;
         }
         
         .timer {
-            font-size: 3.5rem;
-            font-weight: 700;
+            font-size: 4.2rem;
+            font-weight: 800;
             font-family: 'Courier New', monospace;
+            background: linear-gradient(to bottom, #ff4d4d, #cc0000);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 3px 10px rgba(255, 77, 77, 0.4);
+            letter-spacing: -2px;
+            line-height: 1;
+            position: relative;
+        }
+        
+        .timer::after {
+            content: 'сек';
+            font-size: 1.2rem;
+            position: absolute;
+            bottom: -28px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0.85;
+            font-weight: 300;
+            letter-spacing: 1px;
         }
         
         .score-container {
             display: flex;
-            gap: 15px;
-            padding: 0 20px;
-            margin: 20px 0;
+            gap: 18px;
+            padding: 0 25px 15px;
+            margin: 10px 0 5px;
         }
         
         .score-box {
             flex: 1;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.14);
             backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 20px;
+            border-radius: 20px;
+            padding: 22px 15px;
             text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+            min-height: 110px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         
         .score-label {
-            font-size: 0.9rem;
-            opacity: 0.8;
-            margin-bottom: 10px;
+            font-size: 1.15rem;
+            opacity: 0.88;
+            margin-bottom: 8px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
         }
         
         .score-value {
-            font-size: 2.2rem;
-            font-weight: 700;
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(to bottom, #ffffff, #e0e0e0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1;
         }
         
         .blitz-question-container {
             flex: 1;
-            padding: 20px;
+            padding: 0 25px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .blitz-question-card {
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
-            padding: 40px 30px;
+            background: rgba(255, 255, 255, 0.13);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 45px 40px;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            min-height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .blitz-question-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 70%);
+            transform: scale(0.95);
+            z-index: -1;
         }
         
         .blitz-question-text {
-            font-size: 1.6rem;
+            font-size: 1.95rem;
             line-height: 1.5;
-            font-weight: 500;
+            font-weight: 400;
+            max-width: 95%;
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
         }
         
         .blitz-controls {
             display: flex;
-            gap: 15px;
-            padding: 0 20px 30px;
+            gap: 20px;
+            padding: 0 25px 35px;
+            margin-top: 5px;
         }
         
         .blitz-btn {
             flex: 1;
-            height: 70px;
+            height: 75px;
             border: none;
-            border-radius: 16px;
-            font-size: 1.2rem;
-            font-weight: 600;
+            border-radius: 22px;
+            font-size: 1.45rem;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.2s ease;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 10px;
+            text-align: center;
+            line-height: 1.3;
+            letter-spacing: -0.5px;
         }
         
         .blitz-btn:active {
-            transform: scale(0.95);
+            transform: scale(0.94) translateY(2px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
         }
         
         .blitz-btn.correct {
-            background: rgba(46, 204, 113, 0.9);
+            background: linear-gradient(to bottom, #28a745, #208636);
             color: white;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
         
         .blitz-btn.incorrect {
-            background: rgba(231, 76, 60, 0.9);
+            background: linear-gradient(to bottom, #dc3545, #bd2130);
             color: white;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
         
         /* Анимации свайпов */
@@ -376,62 +547,177 @@
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 2.5rem;
+            font-size: 3.2rem;
             opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 10;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 15;
+            font-weight: bold;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+            pointer-events: none;
+            filter: drop-shadow(0 0 8px rgba(255,255,255,0.7));
         }
         
         .swipe-feedback.left {
-            left: 20px;
+            left: 25px;
+            transform: translateY(-50%) translateX(-20px);
         }
         
         .swipe-feedback.right {
-            right: 20px;
+            right: 25px;
+            transform: translateY(-50%) translateX(20px);
         }
         
         .swipe-feedback.show {
-            opacity: 0.7;
+            opacity: 0.85;
+            transform: translateY(-50%) translateX(0);
+        }
+        
+        .swipe-feedback.show.left {
+            animation: swipeLeft 0.4s ease-out;
+        }
+        
+        .swipe-feedback.show.right {
+            animation: swipeRight 0.4s ease-out;
+        }
+        
+        @keyframes swipeLeft {
+            0% { transform: translateY(-50%) translateX(-30px); opacity: 0; }
+            50% { transform: translateY(-50%) translateX(5px); opacity: 0.9; }
+            100% { transform: translateY(-50%) translateX(0); opacity: 0.85; }
+        }
+        
+        @keyframes swipeRight {
+            0% { transform: translateY(-50%) translateX(30px); opacity: 0; }
+            50% { transform: translateY(-50%) translateX(-5px); opacity: 0.9; }
+            100% { transform: translateY(-50%) translateX(0); opacity: 0.85; }
         }
         
         /* Прогресс индикатор */
         .progress-indicator {
             display: flex;
             justify-content: center;
-            gap: 8px;
-            padding: 20px;
+            gap: 10px;
+            padding: 20px 0 25px;
+            z-index: 10;
         }
         
         .progress-dot {
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.4);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
         }
         
         .progress-dot.active {
             background: white;
-            transform: scale(1.3);
+            transform: scale(1.4);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+        }
+        
+        .progress-dot::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: white;
+            opacity: 0.7;
+            transform: scale(0.5);
+            transition: transform 0.4s ease;
+        }
+        
+        .progress-dot.active::after {
+            transform: scale(1.8);
+            opacity: 0;
+        }
+        
+        /* Анимация появления контента */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .categories-screen .category-slide,
+        .questions-screen .question-slide,
+        .blitz-screen .blitz-header {
+            animation: fadeIn 0.6s ease-out forwards;
+            animation-delay: calc(var(--index) * 0.1s);
         }
         
         /* Мобильная адаптация */
         @media (max-width: 480px) {
             .category-icon {
-                font-size: 3rem;
+                font-size: 3.8rem;
             }
             
             .category-name {
-                font-size: 1.4rem;
+                font-size: 1.65rem;
+            }
+            
+            .category-desc {
+                font-size: 1.05rem;
             }
             
             .question-text, .blitz-question-text {
-                font-size: 1.4rem;
+                font-size: 1.7rem;
+                padding: 0 10px;
             }
             
             .timer {
-                font-size: 3rem;
+                font-size: 3.8rem;
             }
+            
+            .score-value {
+                font-size: 2.5rem;
+            }
+            
+            .blitz-btn {
+                height: 70px;
+                font-size: 1.35rem;
+            }
+            
+            .back-btn {
+                width: 44px;
+                height: 44px;
+                font-size: 1.35rem;
+            }
+            
+            .categories-title {
+                font-size: 2rem;
+            }
+            
+            .swipe-hint {
+                font-size: 0.95rem;
+                padding: 15px 20px 20px;
+            }
+        }
+        
+        /* Анимация для главного экрана */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        
+        .category-card.active {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Улучшенная тень для контейнеров */
+        .categories-container, .questions-track {
+            box-shadow: 
+                0 10px 25px rgba(0, 0, 0, 0.3),
+                inset 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Плавное появление экранов */
+        .questions-screen, .blitz-screen {
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.4),
+                inset 0 0 30px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
@@ -532,42 +818,72 @@
                 "Какой твой самый смелый эротический фантазий?",
                 "Что ты считаешь идеальной прелюдией?",
                 "Какое место для интимной близости ты считаешь самым романтичным?",
-                "Как ты относишься к ролевым играм в отношениях?"
+                "Как ты относишься к ролевым играм в отношениях?",
+                "Какая часть тела партнера тебя больше всего привлекает?",
+                "Что для тебя значит настоящая страсть?",
+                "Какой самый запоминающийся интимный опыт у нас был?",
+                "Что бы ты хотел(а) попробовать в постели?",
+                "Как создать романтическую атмосферу для близости?"
             ],
             "отношенияНаРасстоянии": [
                 "Что самое сложное в отношениях на расстоянии?",
                 "Как мы можем сделать наши видеозвонки более романтичными?",
                 "Что помогает тебе чувствовать себя ближе ко мне, когда мы далеко?",
                 "Какой наш самый запоминающийся виртуальный свидание?",
-                "Что ты больше всего ждешь от нашей следующей встречи?"
+                "Что ты больше всего ждешь от нашей следующей встречи?",
+                "Как сохранять эмоциональную связь на расстоянии?",
+                "Что ты делаешь, когда скучаешь по мне?",
+                "Как мы можем удивлять друг друга на расстоянии?",
+                "Какие совместные ритуалы помогают нам оставаться близкими?",
+                "Что бы ты изменил(а) в наших отношениях на расстоянии?"
             ],
             "назадВБудущее": [
                 "Где ты видишь нас через 5 лет?",
                 "Какой наш общий самый большой жизненный цель?",
                 "Как ты представляешь наш идеальный совместный дом?",
                 "Хочешь ли ты детей и если да, то сколько?",
-                "Как ты видишь распределение обязанностей в нашей будущей семье?"
+                "Как ты видишь распределение обязанностей в нашей будущей семье?",
+                "Где бы ты хотел(а) жить через 10 лет?",
+                "Какие традиции мы создадим в нашей семье?",
+                "Как мы будем отмечать важные даты в будущем?",
+                "Какие качества ты хочешь воспитать в наших детях?",
+                "Как мы будем поддерживать друг друга в трудные времена?"
             ],
             "финансы": [
                 "Как ты относишься к совместному бюджету?",
                 "Какие у тебя финансовые цели на ближайшие 3 года?",
                 "Как ты считаешь, нужно ли нам иметь раздельные счета?",
                 "Что для тебя является разумной тратой денег, а что - расточительством?",
-                "Как мы должны принимать решение о крупных покупках?"
+                "Как мы должны принимать решение о крупных покупках?",
+                "Как ты относишься к накоплениям на черный день?",
+                "Какие финансовые привычки партнера тебя вдохновляют?",
+                "Как мы можем вместе инвестировать в наше будущее?",
+                "Как ты относишься к долгам в отношениях?",
+                "Какие финансовые уроки ты усвоил(а) в жизни?"
             ],
             "психология": [
                 "Что заставляет тебя чувствовать себя в безопасности?",
                 "Как я могу поддержать тебя в трудные моменты?",
                 "Что для тебя значит 'личное пространство' в отношениях?",
                 "Какой твой самый большой страх в отношениях?",
-                "Что помогает тебе справляться со стрессом?"
+                "Что помогает тебе справляться со стрессом?",
+                "Как ты выражаешь любовь и привязанность?",
+                "Что для тебя значит эмоциональная близость?",
+                "Какие качества в партнере для тебя наиболее важны?",
+                "Как ты справляешься с конфликтами в отношениях?",
+                "Что делает тебя по-настоящему счастливым(ой)?"
             ],
             "воспоминания": [
                 "Какое наше первое свидание тебе запомнилось больше всего?",
                 "Какой наш самый смешной совместный момент?",
                 "Когда ты впервые понял(а), что влюбился(а)?",
                 "Какая наша совместная поездка была самой запоминающейся?",
-                "Какой подарок от меня тебе запомнился больше всего?"
+                "Какой подарок от меня тебе запомнился больше всего?",
+                "Какое наше совместное достижение тебя больше всего гордит?",
+                "Какой момент в наших отношениях был самым трудным?",
+                "Что ты помнишь о нашем первом поцелуе?",
+                "Какая наша традиция самая важная для тебя?",
+                "Какой комплимент от меня тебе особенно запомнился?"
             ],
             "блиц": [
                 "Любимый цвет партнера?",
@@ -579,21 +895,36 @@
                 "Любимая песня партнера?",
                 "Хобби партнера?",
                 "Любимый сезон партнера?",
-                "Мечта детства партнера?"
+                "Мечта детства партнера?",
+                "Размер одежды партнера?",
+                "Любимый запах партнера?",
+                "Что партнер любит на завтрак?",
+                "Самый ценный подарок от партнера?",
+                "Что партнер делает, когда нервничает?"
             ],
             "редФлагИлиГринФлаг": [
                 "Партнер постоянно проверяет ваш телефон",
                 "Партнер поддерживает ваши увлечения и хобби",
                 "Партнер извиняется после ссор",
                 "Партнер контролирует ваше общение с друзьями",
-                "Партнер уважает ваши личные границы"
+                "Партнер уважает ваши личные границы",
+                "Партнер игнорирует ваши чувства",
+                "Партнер радуется вашим успехам",
+                "Партнер обесценивает ваши достижения",
+                "Партнер поддерживает в трудную минуту",
+                "Партнер манипулирует вашими эмоциями"
             ],
             "тимбилдинг": [
                 "Если бы вы были супергероями, какие бы у вас были силы?",
                 "Какое животное лучше всего описывает нашу пару?",
                 "Если бы мы открыли бизнес, чем бы мы занимались?",
                 "Какую песню можно считать саундтреком наших отношений?",
-                "Если бы нас пригласили на шоу талантов, что бы мы показали?"
+                "Если бы нас пригласили на шоу талантов, что бы мы показали?",
+                "Если бы мы жили в мире фильма, какого?",
+                "Какой суперспособностью вы бы хотели обладать?",
+                "Если бы мы были персонажами книги, какими?",
+                "Какой был бы наш девиз как команды?",
+                "Если бы мы создали свой праздник, как бы он выглядел?"
             ]
         };
 
@@ -619,8 +950,9 @@
         let currentX = 0;
         let blitzTimer = null;
         let timeLeft = 30;
-        let correctAnswers = 0;
-        let totalQuestions = 0;
+        let blitzCorrectAnswers = 0;
+        let blitzTotalAnswered = 0;
+        let blitzCurrentIndex = 0;
 
         // DOM элементы
         const categoriesScreen = document.getElementById('categoriesScreen');
@@ -653,6 +985,7 @@
                 // Создаем слайд категории
                 const slide = document.createElement('div');
                 slide.className = 'category-slide';
+                slide.style.setProperty('--index', index);
                 slide.innerHTML = `
                     <div class="category-card ${index === currentCategoryIndex ? 'active' : ''}">
                         <div class="category-icon">${category.icon}</div>
@@ -706,14 +1039,14 @@
                     if (currentCategoryIndex < categories.length - 1) {
                         currentCategoryIndex++;
                         updateCategoriesPosition();
-                        showSwipeFeedback('right');
+                        showSwipeFeedback('right', 'category');
                     }
                 },
                 onSwipeRight: () => {
                     if (currentCategoryIndex > 0) {
                         currentCategoryIndex--;
                         updateCategoriesPosition();
-                        showSwipeFeedback('left');
+                        showSwipeFeedback('left', 'category');
                     }
                 },
                 threshold: 50
@@ -726,7 +1059,7 @@
                     if (currentQuestionIndex < questions.length - 1) {
                         currentQuestionIndex++;
                         updateQuestionsPosition();
-                        showQuestionSwipeFeedback('right');
+                        showSwipeFeedback('right', 'question');
                         updateQuestionCounter();
                     }
                 },
@@ -734,7 +1067,7 @@
                     if (currentQuestionIndex > 0) {
                         currentQuestionIndex--;
                         updateQuestionsPosition();
-                        showQuestionSwipeFeedback('left');
+                        showSwipeFeedback('left', 'question');
                         updateQuestionCounter();
                     }
                 },
@@ -809,28 +1142,21 @@
             });
         }
 
-        // Показать анимацию свайпа для категорий
-        function showSwipeFeedback(direction) {
-            const feedback = direction === 'left' 
-                ? document.getElementById('swipeLeftFeedback')
-                : document.getElementById('swipeRightFeedback');
+        // Показать анимацию свайпа
+        function showSwipeFeedback(direction, type) {
+            const feedbackId = type === 'category' 
+                ? (direction === 'left' ? 'swipeLeftFeedback' : 'swipeRightFeedback')
+                : (direction === 'left' ? 'questionSwipeLeftFeedback' : 'questionSwipeRightFeedback');
             
+            const feedback = document.getElementById(feedbackId);
+            
+            feedback.classList.remove('show');
+            void feedback.offsetWidth; // Перезапуск анимации
             feedback.classList.add('show');
+            
             setTimeout(() => {
                 feedback.classList.remove('show');
-            }, 300);
-        }
-
-        // Показать анимацию свайпа для вопросов
-        function showQuestionSwipeFeedback(direction) {
-            const feedback = direction === 'left' 
-                ? document.getElementById('questionSwipeLeftFeedback')
-                : document.getElementById('questionSwipeRightFeedback');
-            
-            feedback.classList.add('show');
-            setTimeout(() => {
-                feedback.classList.remove('show');
-            }, 300);
+            }, 500);
         }
 
         // Выбор категории
@@ -851,8 +1177,10 @@
             renderQuestions();
             updateQuestionCounter();
             
-            categoriesScreen.style.display = 'none';
-            questionsScreen.classList.add('active');
+            // Плавный переход
+            setTimeout(() => {
+                questionsScreen.classList.add('active');
+            }, 50);
         }
 
         // Рендеринг вопросов
@@ -866,6 +1194,7 @@
                 // Создаем слайд вопроса
                 const slide = document.createElement('div');
                 slide.className = 'question-slide';
+                slide.style.setProperty('--index', index);
                 slide.innerHTML = `
                     <div class="question-card">
                         <div class="question-text">${question}</div>
@@ -901,32 +1230,36 @@
 
         // Запуск режима блиц
         function startBlitzMode() {
+            // Сброс переменных блица
             timeLeft = 30;
-            correctAnswers = 0;
-            totalQuestions = 0;
+            blitzCorrectAnswers = 0;
+            blitzTotalAnswered = 0;
+            blitzCurrentIndex = 0;
             
+            // Обновление UI
             updateBlitzUI();
             showNextBlitzQuestion();
             startBlitzTimer();
             
-            categoriesScreen.style.display = 'none';
-            blitzScreen.classList.add('active');
+            // Плавный переход на экран блица
+            setTimeout(() => {
+                blitzScreen.classList.add('active');
+            }, 50);
         }
 
         // Обновление UI блица
         function updateBlitzUI() {
             timerElement.textContent = timeLeft;
-            correctScore.textContent = correctAnswers;
-            totalScore.textContent = totalQuestions;
+            correctScore.textContent = blitzCorrectAnswers;
+            totalScore.textContent = blitzCurrentIndex + 1; // Показываем текущий номер вопроса
         }
 
         // Показать следующий вопрос блица
         function showNextBlitzQuestion() {
             const questions = questionsData['блиц'];
-            if (totalQuestions < questions.length) {
-                blitzQuestionText.textContent = questions[totalQuestions];
-                totalQuestions++;
-                totalScore.textContent = totalQuestions;
+            if (blitzCurrentIndex < questions.length) {
+                blitzQuestionText.textContent = questions[blitzCurrentIndex];
+                totalScore.textContent = blitzCurrentIndex + 1;
             } else {
                 endBlitzMode();
             }
@@ -940,6 +1273,12 @@
                 timeLeft--;
                 timerElement.textContent = timeLeft;
                 
+                // Визуальное предупреждение при малом времени
+                if (timeLeft <= 5) {
+                    timerElement.style.color = '#ff4d4d';
+                    timerElement.style.textShadow = '0 0 15px rgba(255, 77, 77, 0.7)';
+                }
+                
                 if (timeLeft <= 0) {
                     endBlitzMode();
                 }
@@ -949,33 +1288,65 @@
         // Завершение режима блиц
         function endBlitzMode() {
             clearInterval(blitzTimer);
+            
+            // Расчет результатов
+            const percentage = blitzTotalAnswered > 0 
+                ? Math.round((blitzCorrectAnswers / blitzTotalAnswered) * 100) 
+                : 0;
+            
+            // Показ результата
             setTimeout(() => {
-                alert(`Блиц завершен!\n\nПравильных ответов: ${correctAnswers} из ${totalQuestions - 1}\n\nРезультат: ${Math.round((correctAnswers / (totalQuestions - 1)) * 100)}%`);
+                const resultMessage = `Блиц завершен!\n\nПравильных ответов: ${blitzCorrectAnswers} из ${blitzTotalAnswered}\n\nРезультат: ${percentage}%`;
+                alert(resultMessage);
                 backToMain();
             }, 500);
         }
 
         // Возврат на главный экран
         function backToMain() {
+            // Скрытие текущих экранов
             questionsScreen.classList.remove('active');
             blitzScreen.classList.remove('active');
-            categoriesScreen.style.display = 'flex';
+            
+            // Очистка таймера блица, если он активен
+            if (blitzTimer) {
+                clearInterval(blitzTimer);
+                blitzTimer = null;
+            }
+            
+            // Возврат на главный экран через небольшую задержку для плавности
+            setTimeout(() => {
+                categoriesScreen.style.display = 'flex';
+            }, 400);
         }
 
         // Настройка обработчиков событий
         function setupEventListeners() {
             // Кнопки назад
             document.getElementById('backFromQuestions').addEventListener('click', backToMain);
-            document.getElementById('backFromBlitz').addEventListener('click', backToMain);
+            document.getElementById('backFromBlitz').addEventListener('click', () => {
+                if (blitzTimer) clearInterval(blitzTimer);
+                backToMain();
+            });
             
             // Кнопки блица
             document.getElementById('correctBtn').addEventListener('click', () => {
-                correctAnswers++;
-                correctScore.textContent = correctAnswers;
+                if (blitzCurrentIndex >= questionsData['блиц'].length) return;
+                
+                blitzCorrectAnswers++;
+                blitzTotalAnswered++;
+                blitzCurrentIndex++;
+                
+                correctScore.textContent = blitzCorrectAnswers;
                 showNextBlitzQuestion();
             });
             
             document.getElementById('incorrectBtn').addEventListener('click', () => {
+                if (blitzCurrentIndex >= questionsData['блиц'].length) return;
+                
+                blitzTotalAnswered++;
+                blitzCurrentIndex++;
+                
                 showNextBlitzQuestion();
             });
             
@@ -985,10 +1356,35 @@
                     e.preventDefault();
                 }
             }, { passive: false });
+            
+            // Обработка нажатия клавиш на десктопе для навигации
+            document.addEventListener('keydown', (e) => {
+                if (questionsScreen.classList.contains('active')) {
+                    if (e.key === 'ArrowLeft' && currentQuestionIndex > 0) {
+                        currentQuestionIndex--;
+                        updateQuestionsPosition();
+                        updateQuestionCounter();
+                        showSwipeFeedback('left', 'question');
+                    } else if (e.key === 'ArrowRight') {
+                        const questions = questionsData[selectedCategory.id] || [];
+                        if (currentQuestionIndex < questions.length - 1) {
+                            currentQuestionIndex++;
+                            updateQuestionsPosition();
+                            updateQuestionCounter();
+                            showSwipeFeedback('right', 'question');
+                        }
+                    }
+                }
+            });
         }
 
         // Запуск приложения
         document.addEventListener('DOMContentLoaded', init);
+        
+        // Дополнительная защита от масштабирования на мобильных
+        document.addEventListener('gesturestart', function (e) {
+            e.preventDefault();
+        });
     </script>
 </body>
 </html>
