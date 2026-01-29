@@ -370,7 +370,15 @@
             background: rgba(231, 76, 60, 0.9);
             color: white;
         }
-        
+
+        /* ИИ-экран */
+        #aiScreen {
+            transform: translateX(100%);
+        }
+        #aiScreen.active {
+            transform: translateX(0);
+        }
+
         /* Анимации свайпов */
         .swipe-feedback {
             position: absolute;
@@ -522,6 +530,32 @@
                 <button class="blitz-btn correct" id="correctBtn">✓ Правильно</button>
             </div>
         </div>
+
+        <!-- Экран ИИ-вопросов -->
+        <div class="questions-screen" id="aiScreen">
+            <div class="questions-header">
+                <button class="back-btn" id="backFromAI">←</button>
+                <div>
+                    <div class="question-title">ИИ-вопросы</div>
+                    <div class="question-counter">Уникальные вопросы от нейросети</div>
+                </div>
+            </div>
+
+            <div class="blitz-question-container" style="flex: 1; padding: 20px;">
+                <div class="blitz-question-card">
+                    <div class="blitz-question-text" id="aiQuestionText">
+                        Нажмите кнопку, чтобы сгенерировать вопрос
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding: 0 20px 30px; text-align: center;">
+                <button id="generateAIButton" class="blitz-btn correct" style="width: 100%; height: 60px; font-size: 1.3rem;">
+                    ✨ Сгенерировать вопрос
+                </button>
+                <div id="aiStatus" style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8;"></div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -607,7 +641,8 @@
             { id: "воспоминания", name: "Воспоминания", icon: "📸", desc: "О вашем прошлом" },
             { id: "блиц", name: "Блиц", icon: "⚡", desc: "Вопросы на время" },
             { id: "редФлагИлиГринФлаг", name: "Флаги", icon: "🚩", desc: "Здоровые отношения" },
-            { id: "тимбилдинг", name: "Тимбилдинг", icon: "👥", desc: "Веселые вопросы" }
+            { id: "тимбилдинг", name: "Тимбилдинг", icon: "👥", desc: "Веселые вопросы" },
+            { id: "ai", name: "ИИ-вопросы", icon: "🤖", desc: "Уникальные вопросы от нейросети" } // ← НОВАЯ КАТЕГОРИЯ
         ];
 
         // Глобальные переменные
@@ -626,6 +661,7 @@
         const categoriesScreen = document.getElementById('categoriesScreen');
         const questionsScreen = document.getElementById('questionsScreen');
         const blitzScreen = document.getElementById('blitzScreen');
+        const aiScreen = document.getElementById('aiScreen');
         const categoriesTrack = document.getElementById('categoriesTrack');
         const categoriesProgress = document.getElementById('categoriesProgress');
         const questionsSlider = document.getElementById('questionsSlider');
@@ -636,6 +672,12 @@
         const correctScore = document.getElementById('correctScore');
         const totalScore = document.getElementById('totalScore');
         const blitzQuestionText = document.getElementById('blitzQuestionText');
+        const aiQuestionText = document.getElementById('aiQuestionText');
+        const generateAIButton = document.getElementById('generateAIButton');
+        const aiStatus = document.getElementById('aiStatus');
+
+        // ⚠️ ЗАМЕНИТЕ ЭТОТ URL НА СВОЙ ПОСЛЕ РАЗВЕРТЫВАНИЯ БЭКЕНДА!
+        const AI_API_URL = 'https://kekuton-github-io.onrender.com';
 
         // Функция инициализации
         function init() {
@@ -650,7 +692,6 @@
             categoriesProgress.innerHTML = '';
             
             categories.forEach((category, index) => {
-                // Создаем слайд категории
                 const slide = document.createElement('div');
                 slide.className = 'category-slide';
                 slide.innerHTML = `
@@ -662,7 +703,6 @@
                     </div>
                 `;
                 
-                // Добавляем обработчик клика
                 slide.addEventListener('click', () => {
                     if (!isSwiping) {
                         selectCategory(category);
@@ -671,7 +711,6 @@
                 
                 categoriesTrack.appendChild(slide);
                 
-                // Создаем индикатор прогресса
                 const dot = document.createElement('div');
                 dot.className = `progress-dot ${index === currentCategoryIndex ? 'active' : ''}`;
                 categoriesProgress.appendChild(dot);
@@ -680,12 +719,10 @@
             updateCategoriesPosition();
         }
 
-        // Обновление позиции категорий
         function updateCategoriesPosition() {
             const translateX = -currentCategoryIndex * 100;
             categoriesTrack.style.transform = `translateX(${translateX}%)`;
             
-            // Обновляем активные элементы
             document.querySelectorAll('.category-card').forEach((card, index) => {
                 card.classList.toggle('active', index === currentCategoryIndex);
             });
@@ -695,12 +732,10 @@
             });
         }
 
-        // Настройка свайпов
         function setupSwipeGestures() {
             const categoriesContainer = document.getElementById('categoriesContainer');
             const questionsTrack = document.getElementById('questionsTrack');
             
-            // Свайпы для категорий
             setupHorizontalSwipe(categoriesContainer, {
                 onSwipeLeft: () => {
                     if (currentCategoryIndex < categories.length - 1) {
@@ -719,7 +754,6 @@
                 threshold: 50
             });
             
-            // Свайпы для вопросов
             setupHorizontalSwipe(questionsTrack, {
                 onSwipeLeft: () => {
                     const questions = questionsData[selectedCategory.id] || [];
@@ -742,13 +776,11 @@
             });
         }
 
-        // Универсальная функция для настройки горизонтального свайпа
         function setupHorizontalSwipe(element, handlers) {
             let startX = 0;
             let currentX = 0;
             let isDragging = false;
             
-            // Touch события
             element.addEventListener('touchstart', (e) => {
                 startX = e.touches[0].clientX;
                 currentX = startX;
@@ -776,7 +808,6 @@
                 }
             });
             
-            // Mouse события для десктопа
             element.addEventListener('mousedown', (e) => {
                 startX = e.clientX;
                 currentX = startX;
@@ -809,7 +840,6 @@
             });
         }
 
-        // Показать анимацию свайпа для категорий
         function showSwipeFeedback(direction) {
             const feedback = direction === 'left' 
                 ? document.getElementById('swipeLeftFeedback')
@@ -821,7 +851,6 @@
             }, 300);
         }
 
-        // Показать анимацию свайпа для вопросов
         function showQuestionSwipeFeedback(direction) {
             const feedback = direction === 'left' 
                 ? document.getElementById('questionSwipeLeftFeedback')
@@ -833,19 +862,52 @@
             }, 300);
         }
 
-        // Выбор категории
+        // 🔥 ФУНКЦИЯ ГЕНЕРАЦИИ ИИ-ВОПРОСА (работает с Qwen/OpenAI/любым бэкендом)
+        async function fetchAIQuestions(topic) {
+            aiStatus.textContent = 'Генерируем с помощью нейросети...';
+            generateAIButton.disabled = true;
+            generateAIButton.textContent = '⏳';
+
+            try {
+                const response = await fetch(AI_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ topic: topic, count: 1 })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Ошибка: ${response.status}`);
+                }
+
+                const data = await response.json();
+                if (data.questions && data.questions.length > 0) {
+                    return data.questions[0];
+                } else {
+                    throw new Error('Пустой ответ');
+                }
+            } catch (e) {
+                console.error('Ошибка ИИ:', e);
+                return "Расскажи партнёру о чём-то, что ты никогда не говорил(а) раньше.";
+            } finally {
+                generateAIButton.disabled = false;
+                generateAIButton.textContent = '✨ Сгенерировать вопрос';
+                aiStatus.textContent = '';
+            }
+        }
+
         function selectCategory(category) {
             selectedCategory = category;
             currentQuestionIndex = 0;
             
             if (category.id === 'блиц') {
                 startBlitzMode();
+            } else if (category.id === 'ai') {
+                showAIScreen();
             } else {
                 showQuestionsScreen();
             }
         }
 
-        // Показать экран вопросов
         function showQuestionsScreen() {
             currentCategoryName.textContent = selectedCategory.name;
             renderQuestions();
@@ -855,7 +917,12 @@
             questionsScreen.classList.add('active');
         }
 
-        // Рендеринг вопросов
+        function showAIScreen() {
+            categoriesScreen.style.display = 'none';
+            aiScreen.classList.add('active');
+            aiQuestionText.textContent = 'Нажмите кнопку, чтобы сгенерировать вопрос';
+        }
+
         function renderQuestions() {
             questionsSlider.innerHTML = '';
             questionsProgress.innerHTML = '';
@@ -863,7 +930,6 @@
             const questions = questionsData[selectedCategory.id] || [];
             
             questions.forEach((question, index) => {
-                // Создаем слайд вопроса
                 const slide = document.createElement('div');
                 slide.className = 'question-slide';
                 slide.innerHTML = `
@@ -873,7 +939,6 @@
                 `;
                 questionsSlider.appendChild(slide);
                 
-                // Создаем индикатор прогресса
                 const dot = document.createElement('div');
                 dot.className = `progress-dot ${index === currentQuestionIndex ? 'active' : ''}`;
                 questionsProgress.appendChild(dot);
@@ -882,24 +947,20 @@
             updateQuestionsPosition();
         }
 
-        // Обновление позиции вопросов
         function updateQuestionsPosition() {
             const translateX = -currentQuestionIndex * 100;
             questionsSlider.style.transform = `translateX(${translateX}%)`;
             
-            // Обновляем активные индикаторы
             document.querySelectorAll('#questionsProgress .progress-dot').forEach((dot, index) => {
                 dot.classList.toggle('active', index === currentQuestionIndex);
             });
         }
 
-        // Обновление счетчика вопросов
         function updateQuestionCounter() {
             const questions = questionsData[selectedCategory.id] || [];
             questionCounter.textContent = `Вопрос ${currentQuestionIndex + 1} из ${questions.length}`;
         }
 
-        // Запуск режима блиц
         function startBlitzMode() {
             timeLeft = 30;
             correctAnswers = 0;
@@ -913,14 +974,12 @@
             blitzScreen.classList.add('active');
         }
 
-        // Обновление UI блица
         function updateBlitzUI() {
             timerElement.textContent = timeLeft;
             correctScore.textContent = correctAnswers;
             totalScore.textContent = totalQuestions;
         }
 
-        // Показать следующий вопрос блица
         function showNextBlitzQuestion() {
             const questions = questionsData['блиц'];
             if (totalQuestions < questions.length) {
@@ -932,7 +991,6 @@
             }
         }
 
-        // Запуск таймера блица
         function startBlitzTimer() {
             if (blitzTimer) clearInterval(blitzTimer);
             
@@ -946,7 +1004,6 @@
             }, 1000);
         }
 
-        // Завершение режима блиц
         function endBlitzMode() {
             clearInterval(blitzTimer);
             setTimeout(() => {
@@ -955,20 +1012,18 @@
             }, 500);
         }
 
-        // Возврат на главный экран
         function backToMain() {
             questionsScreen.classList.remove('active');
             blitzScreen.classList.remove('active');
+            aiScreen.classList.remove('active');
             categoriesScreen.style.display = 'flex';
         }
 
-        // Настройка обработчиков событий
         function setupEventListeners() {
-            // Кнопки назад
             document.getElementById('backFromQuestions').addEventListener('click', backToMain);
             document.getElementById('backFromBlitz').addEventListener('click', backToMain);
+            document.getElementById('backFromAI').addEventListener('click', backToMain);
             
-            // Кнопки блица
             document.getElementById('correctBtn').addEventListener('click', () => {
                 correctAnswers++;
                 correctScore.textContent = correctAnswers;
@@ -978,8 +1033,14 @@
             document.getElementById('incorrectBtn').addEventListener('click', () => {
                 showNextBlitzQuestion();
             });
+
+            // 🔥 КНОПКА ГЕНЕРАЦИИ ИИ-ВОПРОСА
+            generateAIButton.addEventListener('click', async () => {
+                const topic = selectedCategory?.name || "глубокие отношения";
+                const question = await fetchAIQuestions(topic);
+                aiQuestionText.textContent = question;
+            });
             
-            // Предотвращаем стандартное поведение свайпов
             document.addEventListener('touchmove', (e) => {
                 if (e.target.closest('.categories-container') || e.target.closest('.questions-track')) {
                     e.preventDefault();
@@ -987,7 +1048,6 @@
             }, { passive: false });
         }
 
-        // Запуск приложения
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
