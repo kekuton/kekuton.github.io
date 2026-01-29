@@ -1,4 +1,4 @@
-// script.js
+// script.js - Полный исправленный файл
 
 // Конфигурация категорий (совпадает с ключами в questions.js)
 const categories = [
@@ -39,10 +39,22 @@ const totalScore = document.getElementById('totalScore');
 const blitzQuestionText = document.getElementById('blitzQuestionText');
 const themeToggle = document.getElementById('themeToggle');
 
+// Инициализация AudioContext
+let audioContext = null;
+let audioContextInitialized = false;
+
 // Звуковые эффекты
 function playSound(type) {
     try {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        
+        // Разрешаем аудио на iOS/Safari
+        if (audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
+        
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
         
@@ -50,26 +62,26 @@ function playSound(type) {
         gainNode.connect(audioContext.destination);
         
         if (type === 'click') {
-            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // До
+            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime);
             gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
             oscillator.start();
             oscillator.stop(audioContext.currentTime + 0.1);
         } else if (type === 'swipe') {
-            oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime); // Ми
+            oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime);
             gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
             oscillator.start();
             oscillator.stop(audioContext.currentTime + 0.2);
         } else if (type === 'correct') {
-            oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime); // Соль
+            oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime);
             gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
             oscillator.start();
             oscillator.stop(audioContext.currentTime + 0.3);
         }
     } catch (e) {
-        console.log('Аудио не доступно');
+        console.log('Аудио не доступно:', e.message);
     }
 }
 
@@ -81,10 +93,12 @@ function toggleTheme() {
     if (isLight) {
         body.classList.remove('light-theme');
         themeToggle.innerHTML = '🌙';
+        themeToggle.setAttribute('aria-label', 'Переключить на светлую тему');
         localStorage.setItem('theme', 'dark');
     } else {
         body.classList.add('light-theme');
         themeToggle.innerHTML = '☀️';
+        themeToggle.setAttribute('aria-label', 'Переключить на темную тему');
         localStorage.setItem('theme', 'light');
     }
     playSound('click');
@@ -96,9 +110,11 @@ function loadTheme() {
     if (savedTheme === 'light') {
         document.body.classList.add('light-theme');
         themeToggle.innerHTML = '☀️';
+        themeToggle.setAttribute('aria-label', 'Переключить на темную тему');
     } else {
         document.body.classList.remove('light-theme');
         themeToggle.innerHTML = '🌙';
+        themeToggle.setAttribute('aria-label', 'Переключить на светлую тему');
     }
 }
 
@@ -117,10 +133,19 @@ function checkQuestionsData() {
 function init() {
     if (!checkQuestionsData()) return;
     
-    loadTheme(); // Загружаем тему
+    loadTheme();
     renderCategories();
     setupSwipeGestures();
     setupEventListeners();
+    
+    // Инициализация аудио при первом клике
+    document.addEventListener('click', function initAudioOnClick() {
+        if (!audioContextInitialized) {
+            audioContextInitialized = true;
+            playSound('click');
+            document.removeEventListener('click', initAudioOnClick);
+        }
+    }, { once: true });
 }
 
 // Рендеринг категорий
@@ -227,42 +252,68 @@ function setupHorizontalSwipe(element, handlers) {
     let startX = 0;
     let currentX = 0;
     let isDragging = false;
+    let isClick = false;
+    let clickTimeout = null;
     
     element.addEventListener('touchstart', (e) => {
+        if (e.touches.length > 1) return; // Игнорируем мультитач
         startX = e.touches[0].clientX;
         currentX = startX;
         isDragging = true;
+        isClick = true;
+        
+        clickTimeout = setTimeout(() => {
+            isClick = false;
+        }, 200);
     }, { passive: true });
     
     element.addEventListener('touchmove', (e) => {
-        if (!isDragging) return;
+        if (!isDragging || e.touches.length > 1) return;
         currentX = e.touches[0].clientX;
     }, { passive: true });
     
-    element.addEventListener('touchend', () => {
+    element.addEventListener('touchend', (e) => {
         if (!isDragging) return;
         isDragging = false;
+        
+        if (clickTimeout) {
+            clearTimeout(clickTimeout);
+            clickTimeout = null;
+        }
+        
+        // Если это был клик, не обрабатываем как свайп
+        if (isClick) return;
         
         const diff = currentX - startX;
         const threshold = handlers.threshold || 50;
         
-        console.log(`Свайп: diff=${diff}, threshold=${threshold}`);
-        
         if (Math.abs(diff) > threshold) {
             if (diff < 0 && handlers.onSwipeLeft) {
-                console.log('Свайп влево сработал');
                 handlers.onSwipeLeft();
             } else if (diff > 0 && handlers.onSwipeRight) {
-                console.log('Свайп вправо сработал');
                 handlers.onSwipeRight();
             }
         }
     });
     
+    element.addEventListener('touchcancel', () => {
+        isDragging = false;
+        if (clickTimeout) {
+            clearTimeout(clickTimeout);
+            clickTimeout = null;
+        }
+    });
+    
+    // Поддержка мыши для десктопа
     element.addEventListener('mousedown', (e) => {
         startX = e.clientX;
         currentX = startX;
         isDragging = true;
+        isClick = true;
+        
+        clickTimeout = setTimeout(() => {
+            isClick = false;
+        }, 200);
     });
     
     element.addEventListener('mousemove', (e) => {
@@ -273,6 +324,13 @@ function setupHorizontalSwipe(element, handlers) {
     element.addEventListener('mouseup', () => {
         if (!isDragging) return;
         isDragging = false;
+        
+        if (clickTimeout) {
+            clearTimeout(clickTimeout);
+            clickTimeout = null;
+        }
+        
+        if (isClick) return;
         
         const diff = currentX - startX;
         const threshold = handlers.threshold || 50;
@@ -288,6 +346,10 @@ function setupHorizontalSwipe(element, handlers) {
     
     element.addEventListener('mouseleave', () => {
         isDragging = false;
+        if (clickTimeout) {
+            clearTimeout(clickTimeout);
+            clickTimeout = null;
+        }
     });
 }
 
@@ -315,14 +377,32 @@ function selectCategory(category) {
     
     console.log(`Выбрана категория: ${category.id}`);
     
-    if (category.id === 'Блиц') {
-        startBlitzMode();
-    } else {
-        // Проверяем, есть ли вопросы в категории
-        if (!questionsData[category.id] || questionsData[category.id].length === 0) {
-            alert('В этой категории пока нет вопросов!');
+    // Проверяем, есть ли категория в questionsData
+    if (!questionsData[category.id] || questionsData[category.id].length === 0) {
+        if (category.id === 'Блиц') {
+            // Для блица создаем вопросы по умолчанию
+            if (!questionsData['Блиц'] || questionsData['Блиц'].length === 0) {
+                questionsData['Блиц'] = [
+                    "Твой любимый цвет?",
+                    "Кофе или чай?",
+                    "Утро или вечер?",
+                    "Горы или море?",
+                    "Кино или сериал?",
+                    "Соленое или сладкое?",
+                    "Книга или фильм?",
+                    "Лето или зима?",
+                    "Собака или кошка?",
+                    "Пицца или суши?"
+                ];
+            }
+            startBlitzMode();
+        } else {
+            alert(`В категории "${category.name}" пока нет вопросов!\n\nДобавьте вопросы в файл questions.js`);
             return;
         }
+    } else if (category.id === 'Блиц') {
+        startBlitzMode();
+    } else {
         showQuestionsScreen();
     }
 }
@@ -331,15 +411,10 @@ function selectCategory(category) {
 function showQuestionsScreen() {
     if (!selectedCategory) return;
     
-    // Скрываем экран категорий
     categoriesScreen.style.display = 'none';
-    
     currentCategoryName.textContent = selectedCategory.name;
     renderQuestions();
     updateQuestionCounter();
-    
-    // Убедимся, что индексы сброшены
-    currentQuestionIndex = 0;
     
     setTimeout(() => {
         questionsScreen.classList.add('active');
@@ -390,7 +465,6 @@ function updateQuestionsPosition() {
     
     console.log(`Вопрос ${currentQuestionIndex + 1}, translateX: ${translateX}%`);
     
-    // Обновляем точки прогресса
     const dots = document.querySelectorAll('#questionsProgress .progress-dot');
     dots.forEach((dot, index) => {
         dot.classList.toggle('active', index === currentQuestionIndex);
@@ -411,7 +485,6 @@ function startBlitzMode() {
     blitzTotalAnswered = 0;
     blitzCurrentIndex = 0;
     
-    // Скрываем экран категорий
     categoriesScreen.style.display = 'none';
     
     updateBlitzUI();
@@ -445,6 +518,10 @@ function showNextBlitzQuestion() {
 function startBlitzTimer() {
     if (blitzTimer) clearInterval(blitzTimer);
     
+    // Сброс стилей таймера
+    timerElement.style.color = '';
+    timerElement.style.textShadow = '';
+    
     blitzTimer = setInterval(() => {
         timeLeft--;
         timerElement.textContent = timeLeft;
@@ -463,6 +540,7 @@ function startBlitzTimer() {
 // Завершение режима блиц
 function endBlitzMode() {
     clearInterval(blitzTimer);
+    blitzTimer = null;
     
     const percentage = blitzTotalAnswered > 0 
         ? Math.round((blitzCorrectAnswers / blitzTotalAnswered) * 100) 
@@ -477,7 +555,6 @@ function endBlitzMode() {
 
 // Возврат на главный экран
 function backToMain() {
-    // Сначала анимация
     questionsScreen.classList.remove('active');
     blitzScreen.classList.remove('active');
     
@@ -487,23 +564,18 @@ function backToMain() {
     }
     
     setTimeout(() => {
-        // Показываем экран категорий
         categoriesScreen.style.display = 'flex';
         
-        // Сбрасываем позиции
         const translateX = -currentCategoryIndex * 100;
         categoriesTrack.style.transform = `translateX(${translateX}%)`;
         
-        // Сбрасываем индексы вопросов
         currentQuestionIndex = 0;
         selectedCategory = null;
         
-        // Обновляем UI
         document.querySelectorAll('.category-card').forEach((card, index) => {
             card.classList.toggle('active', index === currentCategoryIndex);
         });
         
-        // Сбрасываем таймер блица
         timerElement.textContent = '30';
         timerElement.style.color = '';
         timerElement.style.textShadow = '';
@@ -549,10 +621,8 @@ function setupEventListeners() {
         showNextBlitzQuestion();
     });
     
-    // Переключение темы
     themeToggle.addEventListener('click', toggleTheme);
     
-    // Добавляем стрелки клавиатуры для навигации по вопросам
     document.addEventListener('keydown', (e) => {
         if (questionsScreen.classList.contains('active')) {
             const questions = questionsData[selectedCategory.id] || [];
@@ -569,9 +639,22 @@ function setupEventListeners() {
                 updateQuestionsPosition();
                 updateQuestionCounter();
                 showSwipeFeedback('right', 'question');
+            } else if (e.key === 'Escape') {
+                backToMain();
             }
         }
+        
+        if (e.key === 't' && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault();
+            toggleTheme();
+        }
     });
+    
+    document.addEventListener('touchmove', (e) => {
+        if (e.target.closest('.categories-container') || e.target.closest('.questions-track')) {
+            e.preventDefault();
+        }
+    }, { passive: false });
 }
 
 // Запуск приложения
