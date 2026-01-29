@@ -1,6 +1,6 @@
-// script.js - Полный исправленный файл
+// script.js - Исправленная версия с рабочими свайпами
 
-// Конфигурация категорий (совпадает с ключами в questions.js)
+// Конфигурация категорий
 const categories = [
     { id: "Интимные вопросы", name: "Интимные вопросы", icon: "🔞", desc: "Откровенные вопросы для близости" },
     { id: "На расстоянии", name: "На расстоянии", icon: "✈️", desc: "Для пар в разлуке" },
@@ -39,50 +39,10 @@ const totalScore = document.getElementById('totalScore');
 const blitzQuestionText = document.getElementById('blitzQuestionText');
 const themeToggle = document.getElementById('themeToggle');
 
-// Инициализация AudioContext
-let audioContext = null;
-let audioContextInitialized = false;
-
-// Звуковые эффекты
+// Упрощенная функция звука (без AudioContext проблем)
 function playSound(type) {
-    try {
-        if (!audioContext) {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        
-        // Разрешаем аудио на iOS/Safari
-        if (audioContext.state === 'suspended') {
-            audioContext.resume();
-        }
-        
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        if (type === 'click') {
-            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime);
-            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-            oscillator.start();
-            oscillator.stop(audioContext.currentTime + 0.1);
-        } else if (type === 'swipe') {
-            oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime);
-            gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-            oscillator.start();
-            oscillator.stop(audioContext.currentTime + 0.2);
-        } else if (type === 'correct') {
-            oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime);
-            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-            oscillator.start();
-            oscillator.stop(audioContext.currentTime + 0.3);
-        }
-    } catch (e) {
-        console.log('Аудио не доступно:', e.message);
-    }
+    // Просто консольный лог для отладки
+    console.log(`Sound: ${type}`);
 }
 
 // Функция переключения темы
@@ -137,15 +97,6 @@ function init() {
     renderCategories();
     setupSwipeGestures();
     setupEventListeners();
-    
-    // Инициализация аудио при первом клике
-    document.addEventListener('click', function initAudioOnClick() {
-        if (!audioContextInitialized) {
-            audioContextInitialized = true;
-            playSound('click');
-            document.removeEventListener('click', initAudioOnClick);
-        }
-    }, { once: true });
 }
 
 // Рендеринг категорий
@@ -195,35 +146,111 @@ function updateCategoriesPosition() {
     });
 }
 
-// Настройка свайпов
+// НАСТРОЙКА СВАЙПОВ - ИСПРАВЛЕННАЯ ВЕРСИЯ
 function setupSwipeGestures() {
     const categoriesContainer = document.getElementById('categoriesContainer');
     const questionsTrack = document.getElementById('questionsTrack');
     
+    // Простая функция для обработки свайпов
+    function setupSwipe(element, onSwipeLeft, onSwipeRight) {
+        let startX = 0;
+        let isSwiping = false;
+        
+        // Touch events для мобильных
+        element.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            isSwiping = true;
+        }, { passive: true });
+        
+        element.addEventListener('touchmove', (e) => {
+            if (!isSwiping) return;
+            // Просто позволяем скроллить, движение обработаем в touchend
+        }, { passive: true });
+        
+        element.addEventListener('touchend', (e) => {
+            if (!isSwiping) return;
+            isSwiping = false;
+            
+            const endX = e.changedTouches[0].clientX;
+            const diff = startX - endX;
+            const threshold = 50; // Минимальное расстояние для свайпа
+            
+            if (Math.abs(diff) > threshold) {
+                if (diff > 0 && onSwipeLeft) {
+                    // Свайп влево
+                    onSwipeLeft();
+                } else if (diff < 0 && onSwipeRight) {
+                    // Свайп вправо
+                    onSwipeRight();
+                }
+            }
+        });
+        
+        // Mouse events для десктопа
+        element.addEventListener('mousedown', (e) => {
+            startX = e.clientX;
+            isSwiping = true;
+            
+            const onMouseMove = (moveEvent) => {
+                if (!isSwiping) return;
+                // Просто следим за движением
+            };
+            
+            const onMouseUp = (upEvent) => {
+                if (!isSwiping) return;
+                isSwiping = false;
+                
+                const endX = upEvent.clientX;
+                const diff = startX - endX;
+                const threshold = 50;
+                
+                if (Math.abs(diff) > threshold) {
+                    if (diff > 0 && onSwipeLeft) {
+                        onSwipeLeft();
+                    } else if (diff < 0 && onSwipeRight) {
+                        onSwipeRight();
+                    }
+                }
+                
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            };
+            
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+    }
+    
     // Свайпы для категорий
-    setupHorizontalSwipe(categoriesContainer, {
-        onSwipeLeft: () => {
+    setupSwipe(
+        categoriesContainer,
+        // onSwipeLeft
+        () => {
             if (currentCategoryIndex < categories.length - 1) {
                 currentCategoryIndex++;
                 updateCategoriesPosition();
                 showSwipeFeedback('right', 'category');
                 playSound('swipe');
+                console.log('Свайп влево по категориям');
             }
         },
-        onSwipeRight: () => {
+        // onSwipeRight
+        () => {
             if (currentCategoryIndex > 0) {
                 currentCategoryIndex--;
                 updateCategoriesPosition();
                 showSwipeFeedback('left', 'category');
                 playSound('swipe');
+                console.log('Свайп вправо по категориям');
             }
-        },
-        threshold: 50
-    });
+        }
+    );
     
     // Свайпы для вопросов
-    setupHorizontalSwipe(questionsTrack, {
-        onSwipeLeft: () => {
+    setupSwipe(
+        questionsTrack,
+        // onSwipeLeft
+        () => {
             if (!selectedCategory) return;
             const questions = questionsData[selectedCategory.id] || [];
             if (currentQuestionIndex < questions.length - 1) {
@@ -232,125 +259,21 @@ function setupSwipeGestures() {
                 showSwipeFeedback('right', 'question');
                 updateQuestionCounter();
                 playSound('swipe');
+                console.log('Свайп влево по вопросам');
             }
         },
-        onSwipeRight: () => {
+        // onSwipeRight
+        () => {
             if (currentQuestionIndex > 0) {
                 currentQuestionIndex--;
                 updateQuestionsPosition();
                 showSwipeFeedback('left', 'question');
                 updateQuestionCounter();
                 playSound('swipe');
-            }
-        },
-        threshold: 50
-    });
-}
-
-// Универсальная функция для настройки горизонтального свайпа
-function setupHorizontalSwipe(element, handlers) {
-    let startX = 0;
-    let currentX = 0;
-    let isDragging = false;
-    let isClick = false;
-    let clickTimeout = null;
-    
-    element.addEventListener('touchstart', (e) => {
-        if (e.touches.length > 1) return; // Игнорируем мультитач
-        startX = e.touches[0].clientX;
-        currentX = startX;
-        isDragging = true;
-        isClick = true;
-        
-        clickTimeout = setTimeout(() => {
-            isClick = false;
-        }, 200);
-    }, { passive: true });
-    
-    element.addEventListener('touchmove', (e) => {
-        if (!isDragging || e.touches.length > 1) return;
-        currentX = e.touches[0].clientX;
-    }, { passive: true });
-    
-    element.addEventListener('touchend', (e) => {
-        if (!isDragging) return;
-        isDragging = false;
-        
-        if (clickTimeout) {
-            clearTimeout(clickTimeout);
-            clickTimeout = null;
-        }
-        
-        // Если это был клик, не обрабатываем как свайп
-        if (isClick) return;
-        
-        const diff = currentX - startX;
-        const threshold = handlers.threshold || 50;
-        
-        if (Math.abs(diff) > threshold) {
-            if (diff < 0 && handlers.onSwipeLeft) {
-                handlers.onSwipeLeft();
-            } else if (diff > 0 && handlers.onSwipeRight) {
-                handlers.onSwipeRight();
+                console.log('Свайп вправо по вопросам');
             }
         }
-    });
-    
-    element.addEventListener('touchcancel', () => {
-        isDragging = false;
-        if (clickTimeout) {
-            clearTimeout(clickTimeout);
-            clickTimeout = null;
-        }
-    });
-    
-    // Поддержка мыши для десктопа
-    element.addEventListener('mousedown', (e) => {
-        startX = e.clientX;
-        currentX = startX;
-        isDragging = true;
-        isClick = true;
-        
-        clickTimeout = setTimeout(() => {
-            isClick = false;
-        }, 200);
-    });
-    
-    element.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
-        currentX = e.clientX;
-    });
-    
-    element.addEventListener('mouseup', () => {
-        if (!isDragging) return;
-        isDragging = false;
-        
-        if (clickTimeout) {
-            clearTimeout(clickTimeout);
-            clickTimeout = null;
-        }
-        
-        if (isClick) return;
-        
-        const diff = currentX - startX;
-        const threshold = handlers.threshold || 50;
-        
-        if (Math.abs(diff) > threshold) {
-            if (diff < 0 && handlers.onSwipeLeft) {
-                handlers.onSwipeLeft();
-            } else if (diff > 0 && handlers.onSwipeRight) {
-                handlers.onSwipeRight();
-            }
-        }
-    });
-    
-    element.addEventListener('mouseleave', () => {
-        isDragging = false;
-        if (clickTimeout) {
-            clearTimeout(clickTimeout);
-            clickTimeout = null;
-        }
-    });
+    );
 }
 
 // Показать анимацию свайпа
@@ -362,6 +285,7 @@ function showSwipeFeedback(direction, type) {
     const feedback = document.getElementById(feedbackId);
     
     feedback.classList.remove('show');
+    // Принудительный reflow для перезапуска анимации
     void feedback.offsetWidth;
     feedback.classList.add('show');
     
@@ -623,6 +547,7 @@ function setupEventListeners() {
     
     themeToggle.addEventListener('click', toggleTheme);
     
+    // Клавиатурная навигация
     document.addEventListener('keydown', (e) => {
         if (questionsScreen.classList.contains('active')) {
             const questions = questionsData[selectedCategory.id] || [];
@@ -633,26 +558,33 @@ function setupEventListeners() {
                 updateQuestionsPosition();
                 updateQuestionCounter();
                 showSwipeFeedback('left', 'question');
+                console.log('Клавиша влево');
             } else if (e.key === 'ArrowRight' && currentQuestionIndex < questions.length - 1) {
                 playSound('swipe');
                 currentQuestionIndex++;
                 updateQuestionsPosition();
                 updateQuestionCounter();
                 showSwipeFeedback('right', 'question');
+                console.log('Клавиша вправо');
             } else if (e.key === 'Escape') {
                 backToMain();
             }
         }
         
+        // Быстрое переключение темы Ctrl+T
         if (e.key === 't' && (e.ctrlKey || e.metaKey)) {
             e.preventDefault();
             toggleTheme();
         }
     });
     
+    // Предотвращаем поведение по умолчанию для свайпов по вертикали
     document.addEventListener('touchmove', (e) => {
         if (e.target.closest('.categories-container') || e.target.closest('.questions-track')) {
-            e.preventDefault();
+            // Разрешаем вертикальный скролл, но предотвращаем горизонтальный
+            if (Math.abs(e.touches[0].clientX - e.touches[0].screenX) > 10) {
+                e.preventDefault();
+            }
         }
     }, { passive: false });
 }
@@ -660,6 +592,7 @@ function setupEventListeners() {
 // Запуск приложения
 document.addEventListener('DOMContentLoaded', init);
 
+// Предотвращаем масштабирование жестом
 document.addEventListener('gesturestart', function (e) {
     e.preventDefault();
 });
