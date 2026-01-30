@@ -9,7 +9,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Вопросы для двоих - Игра для близких</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
 </head>
 <body>
     <div class="container" id="container">
@@ -90,19 +89,7 @@
         </section>
     </div>
 
-    <!-- Подключаем файл с вопросами -->
     <script src="questions.js"></script>
     <script src="script.js"></script>
-    
-    <!-- Service Worker для оффлайн-работы -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch(err => {
-                    console.log('ServiceWorker регистрация не удалась: ', err);
-                });
-            });
-        }
-    </script>
 </body>
 </html>
