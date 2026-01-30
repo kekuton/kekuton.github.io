@@ -79,12 +79,12 @@ function loadTheme() {
 
 // Проверяем, что questionsData загружен
 function checkQuestionsData() {
-    if (typeof questionsData === 'undefined') {
+    if (typeof window.questionsData === 'undefined') {
         console.error('questionsData не загружен! Проверьте файл questions.js');
         alert('Ошибка загрузки вопросов. Проверьте наличие файла questions.js');
         return false;
     }
-    console.log('questionsData загружен успешно, категорий:', Object.keys(questionsData).length);
+    console.log('questionsData загружен успешно, категорий:', Object.keys(window.questionsData).length);
     return true;
 }
 
@@ -94,7 +94,7 @@ function init() {
     
     loadTheme();
     renderCategories();
-    setupSimpleSwipeGestures(); // Используем упрощенную версию
+    setupSimpleSwipeGestures();
     setupEventListeners();
     console.log('Приложение инициализировано');
 }
@@ -182,7 +182,7 @@ function setupSimpleSwipeGestures() {
         () => {
             console.log('Свайп влево по вопросам');
             if (!selectedCategory) return;
-            const questions = questionsData[selectedCategory.id] || [];
+            const questions = window.questionsData[selectedCategory.id] || [];
             if (currentQuestionIndex < questions.length - 1) {
                 currentQuestionIndex++;
                 updateQuestionsPosition();
@@ -321,7 +321,7 @@ function selectCategory(category) {
     if (category.id === 'Блиц') {
         startBlitzMode();
     } else {
-        if (!questionsData[category.id] || questionsData[category.id].length === 0) {
+        if (!window.questionsData[category.id] || window.questionsData[category.id].length === 0) {
             alert(`В категории "${category.name}" пока нет вопросов!`);
             return;
         }
@@ -350,7 +350,7 @@ function renderQuestions() {
     questionsSlider.innerHTML = '';
     questionsProgress.innerHTML = '';
     
-    const questions = questionsData[selectedCategory.id] || [];
+    const questions = window.questionsData[selectedCategory.id] || [];
     
     if (questions.length === 0) {
         console.error('Нет вопросов в категории:', selectedCategory.id);
@@ -396,7 +396,7 @@ function updateQuestionsPosition() {
 // Обновление счетчика вопросов
 function updateQuestionCounter() {
     if (!selectedCategory) return;
-    const questions = questionsData[selectedCategory.id] || [];
+    const questions = window.questionsData[selectedCategory.id] || [];
     questionCounter.textContent = `Вопрос ${currentQuestionIndex + 1} из ${questions.length}`;
 }
 
@@ -427,7 +427,7 @@ function updateBlitzUI() {
 
 // Показать следующий вопрос блица
 function showNextBlitzQuestion() {
-    const questions = questionsData['Блиц'] || [];
+    const questions = window.questionsData['Блиц'] || [];
     if (blitzCurrentIndex < questions.length) {
         blitzQuestionText.textContent = questions[blitzCurrentIndex];
         totalScore.textContent = blitzCurrentIndex + 1;
@@ -520,7 +520,7 @@ function setupEventListeners() {
     
     document.getElementById('correctBtn').addEventListener('click', () => {
         playSound('correct');
-        const questions = questionsData['Блиц'] || [];
+        const questions = window.questionsData['Блиц'] || [];
         if (blitzCurrentIndex >= questions.length) return;
         
         blitzCorrectAnswers++;
@@ -533,7 +533,7 @@ function setupEventListeners() {
     
     document.getElementById('incorrectBtn').addEventListener('click', () => {
         playSound('click');
-        const questions = questionsData['Блиц'] || [];
+        const questions = window.questionsData['Блиц'] || [];
         if (blitzCurrentIndex >= questions.length) return;
         
         blitzTotalAnswered++;
@@ -547,7 +547,7 @@ function setupEventListeners() {
     // Клавиатурная навигация для тестирования
     document.addEventListener('keydown', (e) => {
         if (questionsScreen.classList.contains('active')) {
-            const questions = questionsData[selectedCategory.id] || [];
+            const questions = window.questionsData[selectedCategory.id] || [];
             
             if (e.key === 'ArrowLeft' && currentQuestionIndex > 0) {
                 playSound('swipe');
@@ -631,7 +631,7 @@ function addTestButtons() {
         nextBtn.onclick = () => {
             if (questionsScreen.classList.contains('active')) {
                 if (!selectedCategory) return;
-                const questions = questionsData[selectedCategory.id] || [];
+                const questions = window.questionsData[selectedCategory.id] || [];
                 if (currentQuestionIndex < questions.length - 1) {
                     currentQuestionIndex++;
                     updateQuestionsPosition();
