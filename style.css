@@ -11,7 +11,7 @@
     --back-btn-bg-dark: rgba(255, 255, 255, 0.18);
     --progress-dot-dark: rgba(255, 255, 255, 0.4);
     
-    /* Светлая тема */
+    /* ИСПРАВЛЕННЫЕ значения для светлой темы */
     --primary-light: #f5f7fa;
     --secondary-light: #c3cfe2;
     --card-bg-light: rgba(255, 255, 255, 0.95);
