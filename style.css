@@ -1,0 +1,1148 @@
+/* style.css - ПОЛНЫЙ ИСПРАВЛЕННЫЙ ФАЙЛ */
+
+:root {
+    /* Темная тема (по умолчанию) */
+    --primary-dark: #667eea;
+    --secondary-dark: #764ba2;
+    --card-bg-dark: rgba(255, 255, 255, 0.12);
+    --card-border-dark: rgba(255, 255, 255, 0.18);
+    --text-dark: #ffffff;
+    --shadow-dark: rgba(0, 0, 0, 0.25);
+    --back-btn-bg-dark: rgba(255, 255, 255, 0.18);
+    --progress-dot-dark: rgba(255, 255, 255, 0.4);
+    
+    /* ИСПРАВЛЕННЫЕ значения для светлой темы */
+    --primary-light: #f5f7fa;
+    --secondary-light: #c3cfe2;
+    --card-bg-light: rgba(255, 255, 255, 0.95);
+    --card-border-light: rgba(102, 126, 234, 0.3);
+    --text-light: #2c3e50;
+    --text-light-secondary: #5d6d7e;
+    --shadow-light: rgba(0, 0, 0, 0.1);
+    --back-btn-bg-light: rgba(102, 126, 234, 0.15);
+    --progress-dot-light: rgba(102, 126, 234, 0.4);
+}
+
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent; /* Убирает синий фон при касании на iOS */
+    user-select: none; /* Предотвращает выделение текста */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* Убираем стандартное поведение выделения и вызова контекстного меню */
+*:not(input):not(textarea) {
+    user-select: none;
+    -webkit-touch-callout: none; /* Убирает вызов контекстного меню на iOS */
+}
+
+body {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-dark) 100%);
+    color: var(--text-dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-attachment: fixed;
+    touch-action: manipulation; /* Улучшает отзывчивость касаний */
+}
+
+body.light-theme {
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary-light) 100%);
+    color: var(--text-light);
+}
+
+.container {
+    width: 100%;
+    min-height: 100vh;
+    max-width: 500px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+}
+
+/* КАТЕГОРИИ */
+.categories-screen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-top: 20px;
+}
+
+.categories-header {
+    padding: 30px 20px 20px;
+    text-align: center;
+    z-index: 10;
+    position: relative;
+}
+
+.categories-title {
+    font-size: 2.2rem;
+    margin-bottom: 8px;
+    font-weight: 800;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    letter-spacing: -0.5px;
+}
+
+body.light-theme .categories-title {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    color: var(--text-light);
+}
+
+.categories-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.95;
+    margin-top: 5px;
+    font-weight: 300;
+}
+
+body.light-theme .categories-subtitle {
+    color: var(--text-light-secondary);
+}
+
+/* КОНТЕЙНЕР ДЛЯ КАТЕГОРИЙ - ВАЖНО ДЛЯ СВАЙПОВ */
+.categories-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    margin: 20px 15px;
+    border-radius: 24px;
+    background-image: url(/"../Снимок экрана 2025-09-05 в 17.08.33.png");
+    box-shadow: 0 10px 30px var(--shadow-dark);
+    /* КРИТИЧЕСКИ ВАЖНО ДЛЯ СВАЙПОВ: */
+    touch-action: pan-y; /* Разрешаем только вертикальный скролл */
+    -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
+}
+
+body.light-theme .categories-container {
+    background: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 10px 30px var(--shadow-light);
+    border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.categories-track {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    transition: transform 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+    will-change: transform;
+    backface-visibility: hidden;
+    /* Разрешаем свайпы внутри: */
+    touch-action: pan-y pinch-zoom;
+}
+
+.category-slide {
+    flex: 0 0 100%;
+    height: 100%;
+    padding: 35px 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    /* Улучшаем отклик: */
+    touch-action: manipulation;
+}
+
+.category-card {
+    width: 100%;
+    max-width: 340px;
+    background: var(--card-bg-dark);
+    backdrop-filter: blur(12px);
+    border-radius: 28px;
+    padding: 45px 35px;
+    text-align: center;
+    border: 2px solid var(--card-border-dark);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 8px 25px var(--shadow-dark);
+    position: relative;
+    overflow: hidden;
+    /* ОЧЕНЬ ВАЖНО для мобильных: */
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    cursor: pointer; /* Для десктопа */
+}
+
+/* Улучшаем отклик при касании */
+.category-card:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+    transition: transform 0.1s ease, opacity 0.1s ease;
+}
+
+body.light-theme .category-card {
+    background: var(--card-bg-light);
+    color: var(--text-light);
+    border: 2px solid var(--card-border-light);
+    box-shadow: 0 8px 25px var(--shadow-light);
+}
+
+.category-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+    transform: scale(0.8);
+    transition: transform 0.5s ease;
+    z-index: -1;
+}
+
+body.light-theme .category-card::before {
+    background: radial-gradient(circle, rgba(102,126,234,0.1) 0%, rgba(102,126,234,0) 70%);
+}
+
+.category-card.active {
+    transform: scale(1.03);
+    border-color: rgba(255, 255, 255, 0.45);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+    background: rgba(255, 255, 255, 0.18);
+}
+
+body.light-theme .category-card.active {
+    border-color: rgba(102, 126, 234, 0.6);
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.category-card.active::before {
+    transform: scale(1.2);
+}
+
+.category-icon {
+    font-size: 4.2rem;
+    margin-bottom: 22px;
+    display: block;
+    text-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+    line-height: 1;
+}
+
+body.light-theme .category-icon {
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.category-name {
+    font-size: 1.8rem;
+    margin-bottom: 18px;
+    font-weight: 700;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+body.light-theme .category-name {
+    text-shadow: none;
+    color: var(--text-light);
+}
+
+.category-desc {
+    font-size: 1.15rem;
+    opacity: 0.92;
+    line-height: 1.5;
+    margin-bottom: 22px;
+    font-weight: 300;
+}
+
+body.light-theme .category-desc {
+    color: var(--text-light-secondary);
+}
+
+.category-counter {
+    font-size: 1.05rem;
+    opacity: 0.85;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+body.light-theme .category-counter {
+    color: #7f8c8d;
+}
+
+.swipe-hint {
+    text-align: center;
+    padding: 15px 20px 25px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-weight: 300;
+    letter-spacing: -0.3px;
+}
+
+body.light-theme .swipe-hint {
+    color: var(--text-light-secondary);
+}
+
+.swipe-arrow {
+    font-size: 1.5rem;
+    animation: swipeHint 1.8s infinite;
+    font-weight: bold;
+}
+
+.swipe-arrow.left {
+    animation-direction: reverse;
+}
+
+@keyframes swipeHint {
+    0%, 100% { opacity: 0.4; transform: translateX(0); }
+    50% { opacity: 1; transform: translateX(8px); }
+}
+
+/* ЭКРАН ВОПРОСОВ */
+.questions-screen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+    background: linear-gradient(135deg, #475faa 0%, #5a3d92 100%);
+    border-radius: 0 0 24px 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    padding-top: 20px;
+}
+
+body.light-theme .questions-screen {
+    background: linear-gradient(135deg, #e3e8f0 0%, #d1d8e8 100%);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.questions-screen.active {
+    transform: translateX(0);
+}
+
+.questions-header {
+    padding: 30px 20px 20px;
+    text-align: center;
+    position: relative;
+    z-index: 10;
+}
+
+.back-btn {
+    position: absolute;
+    left: 20px;
+    top: 30px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--back-btn-bg-dark);
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 20;
+    /* Для мобильных: */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body.light-theme .back-btn {
+    background: var(--back-btn-bg-light);
+    color: var(--text-light);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.back-btn:active {
+    transform: scale(0.88) rotate(-90deg);
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+body.light-theme .back-btn:active {
+    background: rgba(102, 126, 234, 0.25);
+}
+
+.question-title {
+    font-size: 1.75rem;
+    margin-bottom: 8px;
+    font-weight: 700;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+body.light-theme .question-title {
+    color: var(--text-light);
+    text-shadow: none;
+}
+
+.question-counter {
+    font-size: 1.1rem;
+    opacity: 0.92;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+}
+
+body.light-theme .question-counter {
+    color: var(--text-light-secondary);
+}
+
+/* КОНТЕЙНЕР ДЛЯ ВОПРОСОВ - КРИТИЧЕСКИ ВАЖНО ДЛЯ СВАЙПОВ */
+.questions-track {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    margin: 0 20px 25px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 25px var(--shadow-dark);
+    /* КРИТИЧЕСКИ ВАЖНО ДЛЯ СВАЙПОВ: */
+    touch-action: pan-y; /* Разрешаем только вертикальный скролл */
+    -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
+}
+
+body.light-theme .questions-track {
+    background: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 8px 25px var(--shadow-light);
+    border: 1px solid rgba(71, 95, 170, 0.1);
+}
+
+.questions-slider {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    transition: transform 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+    will-change: transform;
+    backface-visibility: hidden;
+    /* Разрешаем свайпы: */
+    touch-action: pan-y pinch-zoom;
+}
+
+.question-slide {
+    flex: 0 0 100%;
+    height: 100%;
+    padding: 25px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    /* Улучшаем отклик: */
+    touch-action: manipulation;
+}
+
+.question-card {
+    width: 90%;
+    height: 90%;
+    background: rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(12px);
+    border-radius: 28px;
+    padding: 50px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border: 2px solid rgba(255, 255, 255, 0.22);
+    box-shadow: 0 10px 30px var(--shadow-dark);
+    position: relative;
+    overflow: hidden;
+    margin: 0 auto;
+    /* Для мобильных: */
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    user-select: none;
+}
+
+/* Улучшаем отклик при касании */
+.question-card:active {
+    opacity: 0.9;
+    transition: opacity 0.1s ease;
+}
+
+body.light-theme .question-card {
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--text-light);
+    border: 2px solid rgba(71, 95, 170, 0.3);
+    box-shadow: 0 10px 30px var(--shadow-light);
+}
+
+.question-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+    transform: scale(0.9);
+    z-index: -1;
+}
+
+body.light-theme .question-card::before {
+    background: radial-gradient(circle, rgba(71,95,170,0.1) 0%, rgba(71,95,170,0) 70%);
+}
+
+.question-text {
+    font-size: 1.85rem;
+    line-height: 1.55;
+    font-weight: 400;
+    max-width: 95%;
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    animation: textFadeIn 0.8s ease-out;
+    /* Предотвращаем выделение: */
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body.light-theme .question-text {
+    text-shadow: none;
+    color: var(--text-light);
+}
+
+@keyframes textFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* БЛИЦ-ЭКРАН */
+.blitz-screen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+    background: linear-gradient(135deg, #2c3e50 0%, #4a235a 100%);
+    border-radius: 0 0 24px 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    padding-top: 20px;
+}
+
+body.light-theme .blitz-screen {
+    background: linear-gradient(135deg, #34495e 0%, #5d2d79 100%);
+}
+
+.blitz-screen.active {
+    transform: translateX(0);
+}
+
+.blitz-header {
+    padding: 30px 20px 15px;
+    text-align: center;
+    z-index: 10;
+}
+
+.blitz-title {
+    font-size: 2.1rem;
+    margin-bottom: 5px;
+    font-weight: 800;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(to right, #ffd700, #ffa500, #ff4500);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: -0.5px;
+}
+
+.blitz-subtitle {
+    font-size: 1.25rem;
+    opacity: 0.95;
+    margin-top: 3px;
+    font-weight: 300;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+body.light-theme .blitz-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.timer-container {
+    text-align: center;
+    margin: 15px 0 10px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 5;
+}
+
+body.light-theme .timer-container {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.timer {
+    font-size: 4.2rem;
+    font-weight: 800;
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(to bottom, #ff4d4d, #cc0000);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 3px 10px rgba(255, 77, 77, 0.4);
+    letter-spacing: -2px;
+    line-height: 1;
+    position: relative;
+}
+
+body.light-theme .timer {
+    text-shadow: 0 3px 10px rgba(255, 77, 77, 0.6);
+}
+
+.timer::after {
+    content: 'сек';
+    font-size: 1.2rem;
+    position: absolute;
+    bottom: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0.85;
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+body.light-theme .timer::after {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.score-container {
+    display: flex;
+    gap: 18px;
+    padding: 0 25px 15px;
+    margin: 10px 0 5px;
+}
+
+.score-box {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 22px 15px;
+    text-align: center;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+body.light-theme .score-box {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.score-label {
+    font-size: 1.15rem;
+    opacity: 0.88;
+    margin-bottom: 8px;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+}
+
+body.light-theme .score-label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.score-value {
+    font-size: 2.8rem;
+    font-weight: 800;
+    background: linear-gradient(to bottom, #ffffff, #e0e0e0);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    line-height: 1;
+}
+
+body.light-theme .score-value {
+    background: linear-gradient(to bottom, #ffffff, #cccccc);
+    -webkit-background-clip: text;
+}
+
+.blitz-question-container {
+    flex: 1;
+    padding: 0 25px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.blitz-question-card {
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.13);
+    backdrop-filter: blur(12px);
+    border-radius: 28px;
+    padding: 45px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    min-height: 200px;
+    position: relative;
+    overflow: hidden;
+}
+
+body.light-theme .blitz-question-card {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.35);
+}
+
+.blitz-question-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 70%);
+    transform: scale(0.95);
+    z-index: -1;
+}
+
+.blitz-question-text {
+    font-size: 1.95rem;
+    line-height: 1.5;
+    font-weight: 400;
+    max-width: 95%;
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+body.light-theme .blitz-question-text {
+    color: white;
+}
+
+.blitz-controls {
+    display: flex;
+    gap: 20px;
+    padding: 0 25px 35px;
+    margin-top: 5px;
+}
+
+.blitz-btn {
+    flex: 1;
+    height: 75px;
+    border: none;
+    border-radius: 22px;
+    font-size: 1.45rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
+    text-align: center;
+    line-height: 1.3;
+    letter-spacing: -0.5px;
+    /* Для мобильных: */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    min-height: 44px; /* Минимальный размер для касания */
+}
+
+.blitz-btn:active {
+    transform: scale(0.94) translateY(2px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    opacity: 0.9;
+}
+
+.blitz-btn.correct {
+    background: linear-gradient(to bottom, #28a745, #208636);
+    color: white;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.blitz-btn.incorrect {
+    background: linear-gradient(to bottom, #dc3545, #bd2130);
+    color: white;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* АНИМАЦИИ СВАЙПОВ */
+.swipe-feedback {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 3.2rem;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 15;
+    font-weight: bold;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+    filter: drop-shadow(0 0 8px rgba(255,255,255,0.7));
+}
+
+body.light-theme .swipe-feedback {
+    filter: drop-shadow(0 0 8px rgba(102,126,234,0.7));
+}
+
+.swipe-feedback.left {
+    left: 25px;
+    transform: translateY(-50%) translateX(-20px);
+}
+
+.swipe-feedback.right {
+    right: 25px;
+    transform: translateY(-50%) translateX(20px);
+}
+
+.swipe-feedback.show {
+    opacity: 0.85;
+    transform: translateY(-50%) translateX(0);
+}
+
+.swipe-feedback.show.left {
+    animation: swipeLeft 0.4s ease-out;
+}
+
+.swipe-feedback.show.right {
+    animation: swipeRight 0.4s ease-out;
+}
+
+@keyframes swipeLeft {
+    0% { transform: translateY(-50%) translateX(-30px); opacity: 0; }
+    50% { transform: translateY(-50%) translateX(5px); opacity: 0.9; }
+    100% { transform: translateY(-50%) translateX(0); opacity: 0.85; }
+}
+
+@keyframes swipeRight {
+    0% { transform: translateY(-50%) translateX(30px); opacity: 0; }
+    50% { transform: translateY(-50%) translateX(-5px); opacity: 0.9; }
+    100% { transform: translateY(-50%) translateX(0); opacity: 0.85; }
+}
+
+/* ИНДИКАТОРЫ ПРОГРЕССА */
+.progress-indicator {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px 0 25px;
+    z-index: 10;
+}
+
+.progress-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--progress-dot-dark);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+body.light-theme .progress-dot {
+    background: var(--progress-dot-light);
+    box-shadow: 0 0 5px rgba(102, 126, 234, 0.5);
+}
+
+.progress-dot.active {
+    background: white;
+    transform: scale(1.4);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+}
+
+body.light-theme .progress-dot.active {
+    background: #667eea;
+    box-shadow: 0 0 8px rgba(102, 126, 234, 0.9);
+}
+
+.progress-dot::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: white;
+    opacity: 0.7;
+    transform: scale(0.5);
+    transition: transform 0.4s ease;
+}
+
+body.light-theme .progress-dot::after {
+    background: #667eea;
+}
+
+.progress-dot.active::after {
+    transform: scale(1.8);
+    opacity: 0;
+}
+
+/* КНОПКА ПЕРЕКЛЮЧЕНИЯ ТЕМЫ */
+.theme-toggle {
+    position: absolute;
+    right: 20px;
+    top: 30px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--back-btn-bg-dark);
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 20;
+    /* Для мобильных: */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 44px;
+    min-width: 44px;
+}
+
+body.light-theme .theme-toggle {
+    background: var(--back-btn-bg-light);
+    color: var(--text-light);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle:active {
+    transform: scale(0.88) rotate(90deg);
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+body.light-theme .theme-toggle:active {
+    background: rgba(102, 126, 234, 0.25);
+}
+
+/* МЕДИА-ЗАПРОСЫ */
+@media (max-width: 480px) {
+    .category-icon {
+        font-size: 3.8rem;
+    }
+    
+    .category-name {
+        font-size: 1.65rem;
+    }
+    
+    .category-desc {
+        font-size: 1.05rem;
+    }
+    
+    .question-text, .blitz-question-text {
+        font-size: 1.7rem;
+        padding: 0 10px;
+    }
+    
+    .timer {
+        font-size: 3.8rem;
+    }
+    
+    .score-value {
+        font-size: 2.5rem;
+    }
+    
+    .blitz-btn {
+        height: 70px;
+        font-size: 1.35rem;
+        min-height: 50px; /* Больше для мобильных */
+    }
+    
+    .back-btn, .theme-toggle {
+        width: 44px;
+        height: 44px;
+        font-size: 1.35rem;
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    .categories-title {
+        font-size: 2rem;
+    }
+    
+    .swipe-hint {
+        font-size: 0.95rem;
+        padding: 15px 20px 20px;
+    }
+    
+    /* Улучшаем отклик на мобильных */
+    .category-card,
+    .question-card {
+        padding: 35px 25px;
+    }
+    
+    .category-card:active,
+    .question-card:active {
+        transform: scale(0.97);
+    }
+}
+
+/* АНИМАЦИИ */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+}
+
+.category-card.active {
+    animation: pulse 2s infinite;
+}
+
+/* ТЕНИ И ГРАДИЕНТЫ */
+.categories-container, .questions-track {
+    box-shadow: 
+        0 10px 25px rgba(0, 0, 0, 0.3),
+        inset 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+body.light-theme .categories-container,
+body.light-theme .questions-track {
+    box-shadow: 
+        0 10px 25px rgba(0, 0, 0, 0.1),
+        inset 0 0 20px rgba(102, 126, 234, 0.05);
+}
+
+.questions-screen, .blitz-screen {
+    box-shadow: 
+        0 15px 35px rgba(0, 0, 0, 0.4),
+        inset 0 0 30px rgba(0, 0, 0, 0.2);
+}
+
+body.light-theme .questions-screen {
+    box-shadow: 
+        0 15px 35px rgba(0, 0, 0, 0.15),
+        inset 0 0 30px rgba(0, 0, 0, 0.1);
+}
+
+/* ЭФФЕКТ ПАРАЛЛАКСА ДЛЯ ФОНА */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.05) 0%, transparent 50%);
+    z-index: -1;
+    animation: backgroundFloat 20s ease-in-out infinite;
+}
+
+body.light-theme::before {
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(102,126,234,0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(102,126,234,0.05) 0%, transparent 50%);
+}
+
+@keyframes backgroundFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(-10px, 10px) scale(1.02); }
+    66% { transform: translate(10px, -10px) scale(0.98); }
+}
+
+/* ОЧЕНЬ ВАЖНО: УЛУЧШЕНИЯ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
+@media (hover: none) and (pointer: coarse) {
+    /* Для устройств с касанием (мобильные) */
+    
+    .category-card,
+    .question-card,
+    .blitz-btn,
+    .back-btn,
+    .theme-toggle {
+        min-height: 44px; /* Минимальный размер для касания по рекомендациям Apple */
+        min-width: 44px;
+    }
+    
+    /* Увеличиваем зону касания для маленьких элементов */
+    .progress-dot {
+        min-height: 12px;
+        min-width: 12px;
+    }
+    
+    /* Улучшаем отклик при касании */
+    .category-card:active,
+    .question-card:active,
+    .blitz-btn:active,
+    .back-btn:active,
+    .theme-toggle:active {
+        opacity: 0.7;
+        transition: opacity 0.1s ease;
+    }
+    
+    /* Убираем ховер-эффекты на мобильных */
+    .category-card:hover,
+    .question-card:hover,
+    .blitz-btn:hover,
+    .back-btn:hover,
+    .theme-toggle:hover {
+        transform: none;
+    }
+}
+
+/* ДОПОЛНИТЕЛЬНЫЕ УЛУЧШЕНИЯ ДЛЯ СВАЙПОВ */
+/* Показываем, что элемент можно свайпать */
+.categories-container,
+.questions-track {
+    cursor: grab;
+}
+
+.categories-container:active,
+.questions-track:active {
+    cursor: grabbing;
+}
+
+/* Улучшаем производительность анимаций */
+.category-slide,
+.question-slide,
+.categories-track,
+.questions-slider {
+    will-change: transform;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+}
+
+/* Предотвращаем выделение при долгом касании */
+.category-card,
+.question-card,
+.blitz-question-card,
+.question-text,
+.blitz-question-text {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Гарантируем, что кнопки будут достаточно большими для касания на всех устройствах */
+button, 
+[role="button"] {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    tap-highlight-color: transparent;
+}
+
+/* Фикс для iOS: предотвращаем зум при двойном касании */
+@media (touch-enabled), (-moz-touch-enabled), (-webkit-touch-enabled) {
+    * {
+        -ms-touch-action: manipulation;
+        touch-action: manipulation;
+    }
+}
