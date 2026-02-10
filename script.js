@@ -1,5 +1,10 @@
 // script.js - УПРОЩЕННЫЙ КОД С РАБОЧИМИ СВАЙПАМИ ДЛЯ ТЕЛЕФОНА
 
+const DEBUG = false;
+const debug = (...args) => {
+    if (DEBUG) console.log(...args);
+};
+
 // Конфигурация категорий
 const categories = [
     { id: "Интимные вопросы", name: "Интимные вопросы", icon: "🔞", desc: "Откровенные вопросы для близости" },
@@ -39,9 +44,45 @@ const totalScore = document.getElementById('totalScore');
 const blitzQuestionText = document.getElementById('blitzQuestionText');
 const themeToggle = document.getElementById('themeToggle');
 
+
+function setAppHeight(heightPx) {
+    const safeHeight = Math.max(320, Math.floor(heightPx || window.innerHeight));
+    document.documentElement.style.setProperty('--app-height', `${safeHeight}px`);
+}
+
+function initTelegramFullscreen() {
+    const tg = window.Telegram?.WebApp;
+
+    if (!tg) {
+        setAppHeight(window.innerHeight);
+        window.addEventListener('resize', () => setAppHeight(window.innerHeight));
+        return;
+    }
+
+    tg.ready();
+    tg.expand();
+
+    if (typeof tg.disableVerticalSwipes === 'function') {
+        tg.disableVerticalSwipes();
+    }
+
+    const applyTelegramHeight = () => {
+        const telegramHeight = tg.viewportStableHeight || tg.viewportHeight || window.innerHeight;
+        setAppHeight(telegramHeight);
+    };
+
+    applyTelegramHeight();
+
+    if (typeof tg.onEvent === 'function') {
+        tg.onEvent('viewportChanged', applyTelegramHeight);
+    }
+
+    window.addEventListener('resize', applyTelegramHeight);
+}
+
 // Простая функция звука
 function playSound(type) {
-    console.log(`Sound: ${type}`);
+    debug(`Sound: ${type}`);
 }
 
 // Функция переключения темы
@@ -51,12 +92,12 @@ function toggleTheme() {
     
     if (isLight) {
         body.classList.remove('light-theme');
-        themeToggle.innerHTML = '🌙';
+        themeToggle.textContent = '🌙';
         themeToggle.setAttribute('aria-label', 'Переключить на светлую тему');
         localStorage.setItem('theme', 'dark');
     } else {
         body.classList.add('light-theme');
-        themeToggle.innerHTML = '☀️';
+        themeToggle.textContent = '☀️';
         themeToggle.setAttribute('aria-label', 'Переключить на темную тему');
         localStorage.setItem('theme', 'light');
     }
@@ -68,11 +109,11 @@ function loadTheme() {
     const savedTheme = localStorage.getItem('theme') || 'dark';
     if (savedTheme === 'light') {
         document.body.classList.add('light-theme');
-        themeToggle.innerHTML = '☀️';
+        themeToggle.textContent = '☀️';
         themeToggle.setAttribute('aria-label', 'Переключить на темную тему');
     } else {
         document.body.classList.remove('light-theme');
-        themeToggle.innerHTML = '🌙';
+        themeToggle.textContent = '🌙';
         themeToggle.setAttribute('aria-label', 'Переключить на светлую тему');
     }
 }
@@ -84,7 +125,7 @@ function checkQuestionsData() {
         alert('Ошибка загрузки вопросов. Проверьте наличие файла questions.js');
         return false;
     }
-    console.log('questionsData загружен успешно, категорий:', Object.keys(window.questionsData).length);
+    debug('questionsData загружен успешно, категорий:', Object.keys(window.questionsData).length);
     return true;
 }
 
@@ -92,11 +133,12 @@ function checkQuestionsData() {
 function init() {
     if (!checkQuestionsData()) return;
     
+    initTelegramFullscreen();
     loadTheme();
     renderCategories();
     setupSimpleSwipeGestures();
     setupEventListeners();
-    console.log('Приложение инициализировано');
+    debug('Приложение инициализировано');
 }
 
 // Рендеринг категорий
@@ -137,25 +179,25 @@ function updateCategoriesPosition() {
     const translateX = -currentCategoryIndex * 100;
     categoriesTrack.style.transform = `translateX(${translateX}%)`;
     
-    document.querySelectorAll('.category-card').forEach((card, index) => {
-        card.classList.toggle('active', index === currentCategoryIndex);
+    Array.from(categoriesTrack.children).forEach((slide, index) => {
+        slide.firstElementChild?.classList.toggle('active', index === currentCategoryIndex);
     });
-    
-    document.querySelectorAll('.progress-dot').forEach((dot, index) => {
+
+    Array.from(categoriesProgress.children).forEach((dot, index) => {
         dot.classList.toggle('active', index === currentCategoryIndex);
     });
 }
 
 // САМЫЕ ПРОСТЫЕ СВАЙПЫ ДЛЯ ТЕЛЕФОНА
 function setupSimpleSwipeGestures() {
-    console.log('Настройка простых свайпов для телефона');
+    debug('Настройка простых свайпов для телефона');
     
     // Свайпы для категорий
     const categoriesContainer = document.getElementById('categoriesContainer');
     setupTouchSwipe(categoriesContainer, 
         // Свайп влево
         () => {
-            console.log('Свайп влево по категориям');
+            debug('Свайп влево по категориям');
             if (currentCategoryIndex < categories.length - 1) {
                 currentCategoryIndex++;
                 updateCategoriesPosition();
@@ -165,7 +207,7 @@ function setupSimpleSwipeGestures() {
         },
         // Свайп вправо
         () => {
-            console.log('Свайп вправо по категориям');
+            debug('Свайп вправо по категориям');
             if (currentCategoryIndex > 0) {
                 currentCategoryIndex--;
                 updateCategoriesPosition();
@@ -180,7 +222,7 @@ function setupSimpleSwipeGestures() {
     setupTouchSwipe(questionsTrack,
         // Свайп влево
         () => {
-            console.log('Свайп влево по вопросам');
+            debug('Свайп влево по вопросам');
             if (!selectedCategory) return;
             const questions = window.questionsData[selectedCategory.id] || [];
             if (currentQuestionIndex < questions.length - 1) {
@@ -193,7 +235,7 @@ function setupSimpleSwipeGestures() {
         },
         // Свайп вправо
         () => {
-            console.log('Свайп вправо по вопросам');
+            debug('Свайп вправо по вопросам');
             if (currentQuestionIndex > 0) {
                 currentQuestionIndex--;
                 updateQuestionsPosition();
@@ -211,13 +253,13 @@ function setupTouchSwipe(element, onSwipeLeft, onSwipeRight) {
     let startY = 0;
     
     element.addEventListener('touchstart', function(e) {
-        console.log('touchstart на элементе');
+        debug('touchstart на элементе');
         startX = e.touches[0].clientX;
         startY = e.touches[0].clientY;
     }, { passive: true });
     
     element.addEventListener('touchend', function(e) {
-        console.log('touchend на элементе');
+        debug('touchend на элементе');
         if (!startX) return;
         
         const endX = e.changedTouches[0].clientX;
@@ -229,7 +271,7 @@ function setupTouchSwipe(element, onSwipeLeft, onSwipeRight) {
         
         // Игнорируем вертикальные свайпы (скролл)
         if (Math.abs(diffY) > Math.abs(diffX)) {
-            console.log('Вертикальный свайп, игнорируем');
+            debug('Вертикальный свайп, игнорируем');
             return;
         }
         
@@ -238,10 +280,10 @@ function setupTouchSwipe(element, onSwipeLeft, onSwipeRight) {
         
         if (Math.abs(diffX) > threshold) {
             if (diffX > 0) {
-                console.log('Определен свайп влево, diffX:', diffX);
+                debug('Определен свайп влево, diffX:', diffX);
                 if (onSwipeLeft) onSwipeLeft();
             } else {
-                console.log('Определен свайп вправо, diffX:', diffX);
+                debug('Определен свайп вправо, diffX:', diffX);
                 if (onSwipeRight) onSwipeRight();
             }
         }
@@ -253,13 +295,13 @@ function setupTouchSwipe(element, onSwipeLeft, onSwipeRight) {
     
     // Для тестирования на компьютере (мышь)
     element.addEventListener('mousedown', function(e) {
-        console.log('mousedown на элементе');
+        debug('mousedown на элементе');
         startX = e.clientX;
         startY = e.clientY;
     });
     
     element.addEventListener('mouseup', function(e) {
-        console.log('mouseup на элементе');
+        debug('mouseup на элементе');
         if (!startX) return;
         
         const endX = e.clientX;
@@ -276,10 +318,10 @@ function setupTouchSwipe(element, onSwipeLeft, onSwipeRight) {
         
         if (Math.abs(diffX) > threshold) {
             if (diffX > 0) {
-                console.log('Мышь: свайп влево');
+                debug('Мышь: свайп влево');
                 if (onSwipeLeft) onSwipeLeft();
             } else {
-                console.log('Мышь: свайп вправо');
+                debug('Мышь: свайп вправо');
                 if (onSwipeRight) onSwipeRight();
             }
         }
@@ -316,7 +358,7 @@ function selectCategory(category) {
     selectedCategory = category;
     currentQuestionIndex = 0;
     
-    console.log(`Выбрана категория: ${category.id}`);
+    debug(`Выбрана категория: ${category.id}`);
     
     if (category.id === 'Блиц') {
         startBlitzMode();
@@ -385,10 +427,9 @@ function updateQuestionsPosition() {
     const translateX = -currentQuestionIndex * 100;
     questionsSlider.style.transform = `translateX(${translateX}%)`;
     
-    console.log(`Вопрос ${currentQuestionIndex + 1}, translateX: ${translateX}%`);
+    debug(`Вопрос ${currentQuestionIndex + 1}, translateX: ${translateX}%`);
     
-    const dots = document.querySelectorAll('#questionsProgress .progress-dot');
-    dots.forEach((dot, index) => {
+    Array.from(questionsProgress.children).forEach((dot, index) => {
         dot.classList.toggle('active', index === currentQuestionIndex);
     });
 }
@@ -493,15 +534,15 @@ function backToMain() {
         currentQuestionIndex = 0;
         selectedCategory = null;
         
-        document.querySelectorAll('.category-card').forEach((card, index) => {
-            card.classList.toggle('active', index === currentCategoryIndex);
+        Array.from(categoriesTrack.children).forEach((slide, index) => {
+            slide.firstElementChild?.classList.toggle('active', index === currentCategoryIndex);
         });
         
         timerElement.textContent = '30';
         timerElement.style.color = '';
         timerElement.style.textShadow = '';
         
-        console.log('Вернулись на главный экран');
+        debug('Вернулись на главный экран');
     }, 450);
 }
 
@@ -555,14 +596,14 @@ function setupEventListeners() {
                 updateQuestionsPosition();
                 updateQuestionCounter();
                 showSwipeFeedback('left', 'question');
-                console.log('Клавиша влево');
+                debug('Клавиша влево');
             } else if (e.key === 'ArrowRight' && currentQuestionIndex < questions.length - 1) {
                 playSound('swipe');
                 currentQuestionIndex++;
                 updateQuestionsPosition();
                 updateQuestionCounter();
                 showSwipeFeedback('right', 'question');
-                console.log('Клавиша вправо');
+                debug('Клавиша вправо');
             } else if (e.key === 'Escape') {
                 backToMain();
             }

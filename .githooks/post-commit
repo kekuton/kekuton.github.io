@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+branch="$(git branch --show-current 2>/dev/null || true)"
+if [[ -z "${branch}" ]]; then
+  exit 0
+fi
+
+# Skip auto-push if there is no remote configured yet.
+if ! git remote get-url origin >/dev/null 2>&1; then
+  echo "[post-commit] origin remote is not configured, skip push."
+  exit 0
+fi
+
+# Ensure branch has upstream; first push wires it automatically.
+if ! git rev-parse --abbrev-ref "${branch}@{upstream}" >/dev/null 2>&1; then
+  echo "[post-commit] First push for '${branch}' -> origin/${branch}"
+  git push -u origin "${branch}"
+  exit 0
+fi
+
+echo "[post-commit] Auto-push '${branch}'"
+git push
