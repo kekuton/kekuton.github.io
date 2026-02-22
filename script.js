@@ -5,6 +5,20 @@ const debug = (...args) => {
     if (DEBUG) console.log(...args);
 };
 
+// Загрузка вопросов из questions.json (облегчает фронт и ускоряет старт)
+async function loadQuestions() {
+    try {
+        const res = await fetch('questions.json', { cache: 'force-cache' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        window.questionsData = await res.json();
+        return true;
+    } catch (err) {
+        console.error('Не удалось загрузить questions.json:', err);
+        alert('Ошибка загрузки вопросов (questions.json). Проверьте, что проект открыт через сервер/Telegram WebApp, а файл questions.json рядом с index.html.');
+        return false;
+    }
+}
+
 // Конфигурация категорий
 const categories = [
     { id: "Интимные вопросы", name: "Интимные вопросы", icon: "🔞", desc: "Откровенные вопросы для близости" },
@@ -18,6 +32,14 @@ const categories = [
     { id: "Тимбилдинг", name: "Тимбилдинг", icon: "👥", desc: "Веселые вопросы" }
 ];
 
+
+// Утилита: безопасно получить массив вопросов по id категории
+function getQuestions(categoryId) {
+    return (window.questionsData && window.questionsData[categoryId]) ? window.questionsData[categoryId] : [];
+}
+
+// Максимум точек прогресса (чтобы не лагало на больших категориях)
+const MAX_PROGRESS_DOTS = 12;
 // Глобальные переменные
 let currentCategoryIndex = 0;
 let currentQuestionIndex = 0;
@@ -130,12 +152,26 @@ function checkQuestionsData() {
 }
 
 // Функция инициализации
-function init() {
+async function init() {
+    const loaded = await loadQuestions();
+    if (!loaded) return;
     if (!checkQuestionsData()) return;
-    
     initTelegramFullscreen();
     loadTheme();
     renderCategories();
+
+    // Делегирование клика по категориям (не создаём сотни обработчиков)
+    categoriesTrack.addEventListener('click', (e) => {
+        const slide = e.target.closest('.category-slide');
+        if (!slide) return;
+        const idx = Number(slide.dataset.index);
+        if (Number.isNaN(idx)) return;
+        currentCategoryIndex = idx;
+        updateCategoriesPosition();
+        selectCategory(categories[idx]);
+        playSound('tap');
+    });
+
     setupSimpleSwipeGestures();
     setupEventListeners();
     debug('Приложение инициализировано');
@@ -145,10 +181,14 @@ function init() {
 function renderCategories() {
     categoriesTrack.innerHTML = '';
     categoriesProgress.innerHTML = '';
-    
+
+    const fragSlides = document.createDocumentFragment();
+    const fragDots = document.createDocumentFragment();
+
     categories.forEach((category, index) => {
         const slide = document.createElement('div');
         slide.className = 'category-slide';
+        slide.dataset.index = String(index);
         slide.style.setProperty('--index', index);
         slide.innerHTML = `
             <div class="category-card ${index === currentCategoryIndex ? 'active' : ''}">
@@ -158,19 +198,16 @@ function renderCategories() {
                 <div class="category-counter">${index + 1} / ${categories.length}</div>
             </div>
         `;
-        
-        slide.addEventListener('click', () => {
-            playSound('click');
-            selectCategory(category);
-        });
-        
-        categoriesTrack.appendChild(slide);
-        
+        fragSlides.appendChild(slide);
+
         const dot = document.createElement('div');
         dot.className = `progress-dot ${index === currentCategoryIndex ? 'active' : ''}`;
-        categoriesProgress.appendChild(dot);
+        fragDots.appendChild(dot);
     });
-    
+
+    categoriesTrack.appendChild(fragSlides);
+    categoriesProgress.appendChild(fragDots);
+
     updateCategoriesPosition();
 }
 
@@ -224,7 +261,7 @@ function setupSimpleSwipeGestures() {
         () => {
             debug('Свайп влево по вопросам');
             if (!selectedCategory) return;
-            const questions = window.questionsData[selectedCategory.id] || [];
+            const questions = getQuestions(selectedCategory.id);
             if (currentQuestionIndex < questions.length - 1) {
                 currentQuestionIndex++;
                 updateQuestionsPosition();
@@ -363,7 +400,7 @@ function selectCategory(category) {
     if (category.id === 'Блиц') {
         startBlitzMode();
     } else {
-        if (!window.questionsData[category.id] || window.questionsData[category.id].length === 0) {
+        if (!getQuestions(category.id) || getQuestions(category.id).length === 0) {
             alert(`В категории "${category.name}" пока нет вопросов!`);
             return;
         }
@@ -388,56 +425,90 @@ function showQuestionsScreen() {
 // Рендеринг вопросов
 function renderQuestions() {
     if (!selectedCategory) return;
-    
-    questionsSlider.innerHTML = '';
-    questionsProgress.innerHTML = '';
-    
-    const questions = window.questionsData[selectedCategory.id] || [];
-    
-    if (questions.length === 0) {
+
+    const questions = getQuestions(selectedCategory.id);
+
+    if (!questions || questions.length === 0) {
         console.error('Нет вопросов в категории:', selectedCategory.id);
         alert('Нет вопросов в этой категории!');
         backToMain();
         return;
     }
-    
-    questions.forEach((question, index) => {
-        const slide = document.createElement('div');
-        slide.className = 'question-slide';
-        slide.style.setProperty('--index', index);
-        slide.innerHTML = `
+
+    // Виртуализация: держим в DOM только 1 карточку (без сотен элементов)
+    questionsSlider.innerHTML = `
+        <div class="question-slide">
             <div class="question-card">
-                <div class="question-text">${question}</div>
+                <div class="question-text" id="activeQuestionText"></div>
             </div>
-        `;
-        questionsSlider.appendChild(slide);
-        
-        const dot = document.createElement('div');
-        dot.className = `progress-dot ${index === currentQuestionIndex ? 'active' : ''}`;
-        questionsProgress.appendChild(dot);
-    });
-    
+        </div>
+    `;
+
+    // Рендерим ограниченное число точек прогресса (или все, если мало)
+    renderQuestionsProgress(questions.length);
+
+    // Обновляем контент
     updateQuestionsPosition();
+}
+
+function renderQuestionsProgress(total) {
+    questionsProgress.innerHTML = '';
+    if (!total || total <= 1) return;
+
+    const dotsCount = Math.min(total, MAX_PROGRESS_DOTS);
+    const frag = document.createDocumentFragment();
+
+    for (let i = 0; i < dotsCount; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'progress-dot';
+        // Свяжем точку с реальным индексом вопроса (для длинных списков это "сэмпл")
+        const mappedIndex = (dotsCount === 1) ? 0 : Math.round(i * (total - 1) / (dotsCount - 1));
+        dot.dataset.qIndex = String(mappedIndex);
+        frag.appendChild(dot);
+    }
+
+    questionsProgress.appendChild(frag);
 }
 
 // Обновление позиции вопросов
 function updateQuestionsPosition() {
     if (!questionsSlider || !selectedCategory) return;
-    
-    const translateX = -currentQuestionIndex * 100;
-    questionsSlider.style.transform = `translateX(${translateX}%)`;
-    
-    debug(`Вопрос ${currentQuestionIndex + 1}, translateX: ${translateX}%`);
-    
-    Array.from(questionsProgress.children).forEach((dot, index) => {
-        dot.classList.toggle('active', index === currentQuestionIndex);
-    });
-}
 
-// Обновление счетчика вопросов
+    const questions = getQuestions(selectedCategory.id);
+    if (!questions || questions.length === 0) return;
+
+    // Обновляем текст вопроса
+    const textEl = document.getElementById('activeQuestionText');
+    if (textEl) textEl.textContent = questions[currentQuestionIndex] ?? '';
+
+    debug(`Вопрос ${currentQuestionIndex + 1}`);
+
+    // Подсветка прогресс-точек (для длинных списков — ближайшая точка)
+    const dots = Array.from(questionsProgress.children);
+    if (dots.length) {
+        let activeDotIdx = 0;
+
+        if (questions.length <= MAX_PROGRESS_DOTS) {
+            activeDotIdx = currentQuestionIndex;
+        } else {
+            // Находим точку с ближайшим dataset.qIndex
+            let bestDiff = Infinity;
+            dots.forEach((dot, idx) => {
+                const qIdx = Number(dot.dataset.qIndex || 0);
+                const diff = Math.abs(qIdx - currentQuestionIndex);
+                if (diff < bestDiff) {
+                    bestDiff = diff;
+                    activeDotIdx = idx;
+                }
+            });
+        }
+
+        dots.forEach((dot, idx) => dot.classList.toggle('active', idx === activeDotIdx));
+    }
+}
 function updateQuestionCounter() {
     if (!selectedCategory) return;
-    const questions = window.questionsData[selectedCategory.id] || [];
+    const questions = getQuestions(selectedCategory.id);
     questionCounter.textContent = `Вопрос ${currentQuestionIndex + 1} из ${questions.length}`;
 }
 
@@ -588,7 +659,7 @@ function setupEventListeners() {
     // Клавиатурная навигация для тестирования
     document.addEventListener('keydown', (e) => {
         if (questionsScreen.classList.contains('active')) {
-            const questions = window.questionsData[selectedCategory.id] || [];
+            const questions = getQuestions(selectedCategory.id);
             
             if (e.key === 'ArrowLeft' && currentQuestionIndex > 0) {
                 playSound('swipe');
@@ -672,7 +743,7 @@ function addTestButtons() {
         nextBtn.onclick = () => {
             if (questionsScreen.classList.contains('active')) {
                 if (!selectedCategory) return;
-                const questions = window.questionsData[selectedCategory.id] || [];
+                const questions = getQuestions(selectedCategory.id);
                 if (currentQuestionIndex < questions.length - 1) {
                     currentQuestionIndex++;
                     updateQuestionsPosition();
