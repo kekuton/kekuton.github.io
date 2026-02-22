@@ -26,11 +26,24 @@ const categories = [
     { id: "Будущее", name: "Будущее", icon: "🔮", desc: "Планы и мечты" },
     { id: "Финансы", name: "Финансы", icon: "💰", desc: "Вопросы о деньгах" },
     { id: "Психология", name: "Психология", icon: "🧠", desc: "Глубокие вопросы" },
-    { id: "Воспоминания", name: "Воспоминания", icon: "📸", desc: "О вашем прошлом" },
-    { id: "Блиц", name: "Блиц", icon: "⚡", desc: "Вопросы на время" },
+    { id: "Воспоминания", name: "Воспоминания", icon: "📸", desc: "О вашем прошлом" }
     { id: "Флаги", name: "Флаги", icon: "🚩", desc: "Здоровые отношения" },
     { id: "Тимбилдинг", name: "Тимбилдинг", icon: "👥", desc: "Веселые вопросы" }
 ];
+
+function buildRandomPool() {
+    randomPool = [];
+    for (const cat of categories) {
+        const qs = getQuestions(cat.id);
+        if (!qs || !qs.length) continue;
+        for (const q of qs) {
+            randomPool.push({ categoryId: cat.id, categoryName: cat.name, question: q });
+        }
+    }
+    debug('Random pool size:', randomPool.length);
+}
+
+
 
 
 // Утилита: безопасно получить массив вопросов по id категории
@@ -40,144 +53,84 @@ function getQuestions(categoryId) {
 
 // Максимум точек прогресса (чтобы не лагало на больших категориях)
 const MAX_PROGRESS_DOTS = 12;
-// Глобальные переменные
+
+// ===== Состояние приложения =====
 let currentCategoryIndex = 0;
 let currentQuestionIndex = 0;
 let selectedCategory = null;
-let blitzTimer = null;
-let timeLeft = 30;
-let blitzCorrectAnswers = 0;
-let blitzTotalAnswered = 0;
-let blitzCurrentIndex = 0;
 
-// DOM элементы
+// mode: 'category' | 'random'
+let mode = 'category';
+
+// Данные текущей "сессии" для подсчёта совместимости
+let sessionStats = null; // { id, name, decisions: Array<'match'|'mismatch'|'skip'|null>, matches, mismatches, skipped }
+
+// Пул для рандом-режима (плоский список вопросов)
+let randomPool = [];
+let randomStats = { matches: 0, mismatches: 0, skipped: 0, totalShown: 0 };
+let lastRandomItem = null;
+
+// ===== DOM элементы =====
+
 const categoriesScreen = document.getElementById('categoriesScreen');
 const questionsScreen = document.getElementById('questionsScreen');
-const blitzScreen = document.getElementById('blitzScreen');
+const resultsScreen = document.getElementById('resultsScreen');
+
 const categoriesTrack = document.getElementById('categoriesTrack');
 const categoriesProgress = document.getElementById('categoriesProgress');
+
 const questionsSlider = document.getElementById('questionsSlider');
 const questionsProgress = document.getElementById('questionsProgress');
+
 const currentCategoryName = document.getElementById('currentCategoryName');
 const questionCounter = document.getElementById('questionCounter');
-const timerElement = document.getElementById('timer');
-const correctScore = document.getElementById('correctScore');
-const totalScore = document.getElementById('totalScore');
-const blitzQuestionText = document.getElementById('blitzQuestionText');
+const modeBadge = document.getElementById('modeBadge');
+
 const themeToggle = document.getElementById('themeToggle');
+const randomModeBtn = document.getElementById('randomModeBtn');
+const finishBtn = document.getElementById('finishBtn');
 
+const backFromQuestions = document.getElementById('backFromQuestions');
 
-function setAppHeight(heightPx) {
-    const safeHeight = Math.max(320, Math.floor(heightPx || window.innerHeight));
-    document.documentElement.style.setProperty('--app-height', `${safeHeight}px`);
+// Results UI
+const resultsTitle = document.getElementById('resultsTitle');
+const resultsSubtitle = document.getElementById('resultsSubtitle');
+const resultsPercent = document.getElementById('resultsPercent');
+const resultsMatches = document.getElementById('resultsMatches');
+const resultsMismatches = document.getElementById('resultsMismatches');
+const resultsSkipped = document.getElementById('resultsSkipped');
+const shareResultsBtn = document.getElementById('shareResultsBtn');
+const restartCategoryBtn = document.getElementById('restartCategoryBtn');
+const backToCategoriesBtn = document.getElementById('backToCategoriesBtn');
+
+// ===== Theme =====
+function applyTheme(theme) {
+    if (!theme) return;
+    const isLight = theme === 'light';
+    document.body.classList.toggle('light-theme', isLight);
+
+    if (themeToggle) themeToggle.textContent = isLight ? '☀️' : '🌙';
+    try { localStorage.setItem('dating_theme', theme); } catch (e) {}
 }
 
-function initTelegramFullscreen() {
-    const tg = window.Telegram?.WebApp;
+function initTheme() {
+    let saved = null;
+    try { saved = localStorage.getItem('dating_theme'); } catch (e) {}
 
-    if (!tg) {
-        setAppHeight(window.innerHeight);
-        window.addEventListener('resize', () => setAppHeight(window.innerHeight));
+    if (saved === 'light' || saved === 'dark') {
+        applyTheme(saved);
         return;
     }
 
-    tg.ready();
-    tg.expand();
-
-    if (typeof tg.disableVerticalSwipes === 'function') {
-        tg.disableVerticalSwipes();
-    }
-
-    const applyTelegramHeight = () => {
-        const telegramHeight = tg.viewportStableHeight || tg.viewportHeight || window.innerHeight;
-        setAppHeight(telegramHeight);
-    };
-
-    applyTelegramHeight();
-
-    if (typeof tg.onEvent === 'function') {
-        tg.onEvent('viewportChanged', applyTelegramHeight);
-    }
-
-    window.addEventListener('resize', applyTelegramHeight);
+    // по умолчанию — тёмная
+    applyTheme('dark');
 }
 
-// Простая функция звука
-function playSound(type) {
-    debug(`Sound: ${type}`);
-}
-
-// Функция переключения темы
 function toggleTheme() {
-    const body = document.body;
-    const isLight = body.classList.contains('light-theme');
-    
-    if (isLight) {
-        body.classList.remove('light-theme');
-        themeToggle.textContent = '🌙';
-        themeToggle.setAttribute('aria-label', 'Переключить на светлую тему');
-        localStorage.setItem('theme', 'dark');
-    } else {
-        body.classList.add('light-theme');
-        themeToggle.textContent = '☀️';
-        themeToggle.setAttribute('aria-label', 'Переключить на темную тему');
-        localStorage.setItem('theme', 'light');
-    }
-    playSound('click');
+    const isLight = document.body.classList.contains('light-theme');
+    applyTheme(isLight ? 'dark' : 'light');
 }
 
-// Загрузка сохраненной темы
-function loadTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    if (savedTheme === 'light') {
-        document.body.classList.add('light-theme');
-        themeToggle.textContent = '☀️';
-        themeToggle.setAttribute('aria-label', 'Переключить на темную тему');
-    } else {
-        document.body.classList.remove('light-theme');
-        themeToggle.textContent = '🌙';
-        themeToggle.setAttribute('aria-label', 'Переключить на светлую тему');
-    }
-}
-
-// Проверяем, что questionsData загружен
-function checkQuestionsData() {
-    if (typeof window.questionsData === 'undefined') {
-        console.error('questionsData не загружен! Проверьте файл questions.js');
-        alert('Ошибка загрузки вопросов. Проверьте наличие файла questions.js');
-        return false;
-    }
-    debug('questionsData загружен успешно, категорий:', Object.keys(window.questionsData).length);
-    return true;
-}
-
-// Функция инициализации
-async function init() {
-    const loaded = await loadQuestions();
-    if (!loaded) return;
-    if (!checkQuestionsData()) return;
-    initTelegramFullscreen();
-    loadTheme();
-    renderCategories();
-
-    // Делегирование клика по категориям (не создаём сотни обработчиков)
-    categoriesTrack.addEventListener('click', (e) => {
-        const slide = e.target.closest('.category-slide');
-        if (!slide) return;
-        const idx = Number(slide.dataset.index);
-        if (Number.isNaN(idx)) return;
-        currentCategoryIndex = idx;
-        updateCategoriesPosition();
-        selectCategory(categories[idx]);
-        playSound('tap');
-    });
-
-    setupSimpleSwipeGestures();
-    setupEventListeners();
-    debug('Приложение инициализировано');
-}
-
-// Рендеринг категорий
 function renderCategories() {
     categoriesTrack.innerHTML = '';
     categoriesProgress.innerHTML = '';
@@ -228,61 +181,54 @@ function updateCategoriesPosition() {
 // САМЫЕ ПРОСТЫЕ СВАЙПЫ ДЛЯ ТЕЛЕФОНА
 function setupSimpleSwipeGestures() {
     debug('Настройка простых свайпов для телефона');
-    
+
     // Свайпы для категорий
     const categoriesContainer = document.getElementById('categoriesContainer');
-    setupTouchSwipe(categoriesContainer, 
-        // Свайп влево
-        () => {
-            debug('Свайп влево по категориям');
-            if (currentCategoryIndex < categories.length - 1) {
-                currentCategoryIndex++;
-                updateCategoriesPosition();
-                showSwipeFeedback('right', 'category');
-                playSound('swipe');
+    if (categoriesContainer) {
+        setupTouchSwipe(categoriesContainer,
+            // Свайп влево
+            () => {
+                debug('Свайп влево по категориям');
+                if (currentCategoryIndex < categories.length - 1) {
+                    currentCategoryIndex++;
+                    updateCategoriesPosition();
+                    showSwipeFeedback('right', 'category');
+                    playSound('swipe');
+                }
+            },
+            // Свайп вправо
+            () => {
+                debug('Свайп вправо по категориям');
+                if (currentCategoryIndex > 0) {
+                    currentCategoryIndex--;
+                    updateCategoriesPosition();
+                    showSwipeFeedback('left', 'category');
+                    playSound('swipe');
+                }
             }
-        },
-        // Свайп вправо
-        () => {
-            debug('Свайп вправо по категориям');
-            if (currentCategoryIndex > 0) {
-                currentCategoryIndex--;
-                updateCategoriesPosition();
-                showSwipeFeedback('left', 'category');
-                playSound('swipe');
-            }
-        }
-    );
-    
+        );
+    }
+
     // Свайпы для вопросов
-    const questionsTrack = document.getElementById('questionsTrack');
-    setupTouchSwipe(questionsTrack,
-        // Свайп влево
-        () => {
-            debug('Свайп влево по вопросам');
-            if (!selectedCategory) return;
-            const questions = getQuestions(selectedCategory.id);
-            if (currentQuestionIndex < questions.length - 1) {
-                currentQuestionIndex++;
-                updateQuestionsPosition();
+    const questionsTrackEl = document.getElementById('questionsTrack');
+    if (questionsTrackEl) {
+        setupTouchSwipe(questionsTrackEl,
+            () => {
+                debug('Свайп влево по вопросам');
+                nextQuestion();
                 showSwipeFeedback('right', 'question');
-                updateQuestionCounter();
                 playSound('swipe');
-            }
-        },
-        // Свайп вправо
-        () => {
-            debug('Свайп вправо по вопросам');
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                updateQuestionsPosition();
+            },
+            () => {
+                debug('Свайп вправо по вопросам');
+                prevQuestion();
                 showSwipeFeedback('left', 'question');
-                updateQuestionCounter();
                 playSound('swipe');
             }
-        }
-    );
+        );
+    }
 }
+
 
 // ОЧЕНЬ ПРОСТАЯ ФУНКЦИЯ СВАЙПА ДЛЯ ТЕЛЕФОНА
 function setupTouchSwipe(element, onSwipeLeft, onSwipeRight) {
@@ -392,35 +338,47 @@ function showSwipeFeedback(direction, type) {
 
 // Выбор категории
 function selectCategory(category) {
+    mode = 'category';
     selectedCategory = category;
     currentQuestionIndex = 0;
-    
+    sessionStats = null;
+
     debug(`Выбрана категория: ${category.id}`);
-    
-    if (category.id === 'Блиц') {
-        startBlitzMode();
-    } else {
-        if (!getQuestions(category.id) || getQuestions(category.id).length === 0) {
-            alert(`В категории "${category.name}" пока нет вопросов!`);
-            return;
-        }
-        showQuestionsScreen();
+
+    if (!getQuestions(category.id) || getQuestions(category.id).length === 0) {
+        alert(`В категории "${category.name}" пока нет вопросов!`);
+        return;
     }
+
+    showQuestionsScreen();
 }
+
 
 // Показать экран вопросов
 function showQuestionsScreen() {
+    if (mode === 'random') {
+        startRandomMode();
+        return;
+    }
     if (!selectedCategory) return;
-    
-    categoriesScreen.style.display = 'none';
-    currentCategoryName.textContent = selectedCategory.name;
+
+    hideResults();
+
+    if (categoriesScreen) categoriesScreen.style.display = 'none';
+    if (resultsScreen) resultsScreen.classList.remove('show');
+    if (questionsScreen) {
+        questionsScreen.style.display = 'block';
+        questionsScreen.classList.add('active');
+    }
+
+    if (currentCategoryName) currentCategoryName.textContent = selectedCategory.name;
+    if (modeBadge) modeBadge.textContent = 'Совместимость';
+    if (finishBtn) finishBtn.style.display = 'inline-flex';
+
     renderQuestions();
     updateQuestionCounter();
-    
-    setTimeout(() => {
-        questionsScreen.classList.add('active');
-    }, 50);
 }
+
 
 // Рендеринг вопросов
 function renderQuestions() {
@@ -436,10 +394,19 @@ function renderQuestions() {
     }
 
     // Виртуализация: держим в DOM только 1 карточку (без сотен элементов)
-    questionsSlider.innerHTML = `
+        questionsSlider.innerHTML = `
         <div class="question-slide">
             <div class="question-card">
                 <div class="question-text" id="activeQuestionText"></div>
+                <div class="answer-controls" id="answerControls">
+                    <button class="answer-btn match" id="matchBtn">✅ Совпало</button>
+                    <button class="answer-btn mismatch" id="mismatchBtn">❌ Не совпало</button>
+                    <button class="answer-btn skip" id="skipBtn">⏭ Пропуск</button>
+                </div>
+                <div class="secondary-row" id="secondaryRow">
+                    <button class="small-btn" id="prevBtn">← Предыдущий</button>
+                    <button class="small-btn" id="nextBtn">Следующий →</button>
+                </div>
             </div>
         </div>
     `;
@@ -449,7 +416,11 @@ function renderQuestions() {
 
     // Обновляем контент
     updateQuestionsPosition();
+
+    // Привязываем кнопки управления (один раз после рендера)
+    bindQuestionControls();
 }
+
 
 function renderQuestionsProgress(total) {
     questionsProgress.innerHTML = '';
@@ -469,6 +440,258 @@ function renderQuestionsProgress(total) {
 
     questionsProgress.appendChild(frag);
 }
+
+
+function ensureSessionStats(totalQuestions) {
+    if (mode === 'random') return; // random uses randomStats
+    if (!selectedCategory) return;
+    if (!sessionStats || sessionStats.id !== selectedCategory.id || !sessionStats.decisions || sessionStats.decisions.length !== totalQuestions) {
+        sessionStats = {
+            id: selectedCategory.id,
+            name: selectedCategory.name,
+            decisions: Array.from({ length: totalQuestions }, () => null),
+            matches: 0,
+            mismatches: 0,
+            skipped: 0
+        };
+    }
+}
+
+function applyDecision(decision) {
+    if (mode === 'random') {
+        // decision just increments counters and shows next random
+        if (decision === 'match') randomStats.matches++;
+        else if (decision === 'mismatch') randomStats.mismatches++;
+        else if (decision === 'skip') randomStats.skipped++;
+        randomStats.totalShown++;
+        nextRandomQuestion();
+        return;
+    }
+
+    if (!selectedCategory) return;
+    const questions = getQuestions(selectedCategory.id);
+    if (!questions || !questions.length) return;
+
+    ensureSessionStats(questions.length);
+
+    const prev = sessionStats.decisions[currentQuestionIndex];
+    if (prev === decision) {
+        // повторно нажали — просто двигаемся дальше
+    } else {
+        // откатываем прошлое
+        if (prev === 'match') sessionStats.matches--;
+        if (prev === 'mismatch') sessionStats.mismatches--;
+        if (prev === 'skip') sessionStats.skipped--;
+
+        // применяем новое
+        sessionStats.decisions[currentQuestionIndex] = decision;
+        if (decision === 'match') sessionStats.matches++;
+        if (decision === 'mismatch') sessionStats.mismatches++;
+        if (decision === 'skip') sessionStats.skipped++;
+    }
+
+    // Автопереход вперёд или результаты
+    if (currentQuestionIndex >= questions.length - 1) {
+        showResults();
+    } else {
+        currentQuestionIndex++;
+        updateQuestionsPosition();
+        updateQuestionCounter();
+    }
+}
+
+function bindQuestionControls() {
+    const matchBtn = document.getElementById('matchBtn');
+    const mismatchBtn = document.getElementById('mismatchBtn');
+    const skipBtn = document.getElementById('skipBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    if (matchBtn && !matchBtn.dataset.bound) {
+        matchBtn.dataset.bound = '1';
+        matchBtn.addEventListener('click', () => applyDecision('match'));
+    }
+    if (mismatchBtn && !mismatchBtn.dataset.bound) {
+        mismatchBtn.dataset.bound = '1';
+        mismatchBtn.addEventListener('click', () => applyDecision('mismatch'));
+    }
+    if (skipBtn && !skipBtn.dataset.bound) {
+        skipBtn.dataset.bound = '1';
+        skipBtn.addEventListener('click', () => applyDecision('skip'));
+    }
+    if (prevBtn && !prevBtn.dataset.bound) {
+        prevBtn.dataset.bound = '1';
+        prevBtn.addEventListener('click', () => prevQuestion());
+    }
+    if (nextBtn && !nextBtn.dataset.bound) {
+        nextBtn.dataset.bound = '1';
+        nextBtn.addEventListener('click', () => nextQuestion());
+    }
+}
+
+function computeCompatibilityPercent(stats) {
+    const answered = (stats.matches || 0) + (stats.mismatches || 0);
+    if (!answered) return 0;
+    return Math.round((stats.matches / answered) * 100);
+}
+
+function showResults() {
+    // Считаем и рисуем
+    let stats;
+    let title = 'Результаты';
+    let subtitle = '';
+
+    if (mode === 'random') {
+        stats = randomStats;
+        title = 'Рандом-режим';
+        subtitle = 'Случайные вопросы';
+    } else {
+        if (!selectedCategory) return;
+        const questions = getQuestions(selectedCategory.id);
+        ensureSessionStats(questions.length);
+        stats = sessionStats;
+        subtitle = selectedCategory.name;
+    }
+
+    const percent = computeCompatibilityPercent(stats);
+
+    if (resultsTitle) resultsTitle.textContent = title;
+    if (resultsSubtitle) resultsSubtitle.textContent = subtitle;
+    if (resultsPercent) resultsPercent.textContent = `${percent}%`;
+    if (resultsMatches) resultsMatches.textContent = String(stats.matches || 0);
+    if (resultsMismatches) resultsMismatches.textContent = String(stats.mismatches || 0);
+    if (resultsSkipped) resultsSkipped.textContent = String(stats.skipped || 0);
+
+    // Показ/скрытие экранов
+    if (questionsScreen) questionsScreen.style.display = 'none';
+    if (categoriesScreen) categoriesScreen.style.display = 'none';
+    if (resultsScreen) {
+        resultsScreen.classList.add('show');
+        resultsScreen.setAttribute('aria-hidden', 'false');
+    }
+}
+
+function hideResults() {
+    if (resultsScreen) {
+        resultsScreen.classList.remove('show');
+        resultsScreen.setAttribute('aria-hidden', 'true');
+    }
+}
+
+async function shareResults() {
+    let stats;
+    let subtitle = '';
+
+    if (mode === 'random') {
+        stats = randomStats;
+        subtitle = 'Рандом-режим';
+    } else {
+        stats = sessionStats;
+        subtitle = selectedCategory ? selectedCategory.name : 'Категория';
+    }
+
+    const percent = computeCompatibilityPercent(stats);
+    const text = `Мы прошли: ${subtitle}\nСовместимость: ${percent}%\nСовпало: ${stats.matches || 0}, Не совпало: ${stats.mismatches || 0}, Пропуск: ${stats.skipped || 0}`;
+
+    // Telegram WebApp (если доступен)
+    try {
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=&text=${encodeURIComponent(text)}`);
+            return;
+        }
+    } catch (e) {}
+
+    // Clipboard fallback
+    try {
+        await navigator.clipboard.writeText(text);
+        alert('Результаты скопированы в буфер обмена!');
+    } catch (e) {
+        prompt('Скопируй текст:', text);
+    }
+}
+
+function startRandomMode() {
+    mode = 'random';
+    randomStats = { matches: 0, mismatches: 0, skipped: 0, totalShown: 0 };
+    lastRandomItem = null;
+
+    hideResults();
+    if (resultsScreen) resultsScreen.classList.remove('show');
+
+    if (categoriesScreen) categoriesScreen.style.display = 'none';
+    if (questionsScreen) questionsScreen.style.display = 'block';
+
+    if (modeBadge) modeBadge.textContent = 'Рандом';
+    if (currentCategoryName) currentCategoryName.textContent = '🎲 Рандом';
+    currentQuestionIndex = 0;
+
+    nextRandomQuestion(true);
+}
+
+function nextRandomQuestion(initial = false) {
+    if (!randomPool || !randomPool.length) {
+        alert('Список вопросов пуст. Проверь questions.json');
+        backToMain();
+        return;
+    }
+
+    let item = null;
+    // попытаемся не повторяться подряд
+    for (let i = 0; i < 6; i++) {
+        const candidate = randomPool[Math.floor(Math.random() * randomPool.length)];
+        if (!lastRandomItem || candidate.question !== lastRandomItem.question) {
+            item = candidate;
+            break;
+        }
+    }
+    item = item || randomPool[Math.floor(Math.random() * randomPool.length)];
+    lastRandomItem = item;
+
+    // Рисуем один вопрос
+    questionsSlider.innerHTML = `
+        <div class="question-slide">
+            <div class="question-card">
+                <div class="question-text" id="activeQuestionText"></div>
+                <div class="answer-controls" id="answerControls">
+                    <button class="answer-btn match" id="matchBtn">✅ Совпало</button>
+                    <button class="answer-btn mismatch" id="mismatchBtn">❌ Не совпало</button>
+                    <button class="answer-btn skip" id="skipBtn">⏭ Пропуск</button>
+                </div>
+                <div class="secondary-row" id="secondaryRow">
+                    <button class="small-btn" id="randomNextBtn">🎲 Следующий случайный</button>
+                    <button class="small-btn" id="finishRandomBtn">🏁 Результаты</button>
+                </div>
+                <div class="results-note" style="margin-top:12px; text-align:left;">
+                    Категория: <b>${item.categoryName}</b>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const textEl = document.getElementById('activeQuestionText');
+    if (textEl) textEl.textContent = item.question;
+
+    // counter
+    if (questionCounter) questionCounter.textContent = `Случайный вопрос № ${randomStats.totalShown + 1}`;
+    if (questionsProgress) questionsProgress.innerHTML = '';
+
+    bindQuestionControls();
+
+    const randomNextBtn = document.getElementById('randomNextBtn');
+    const finishRandomBtn = document.getElementById('finishRandomBtn');
+    if (randomNextBtn && !randomNextBtn.dataset.bound) {
+        randomNextBtn.dataset.bound = '1';
+        randomNextBtn.addEventListener('click', () => nextRandomQuestion());
+    }
+    if (finishRandomBtn && !finishRandomBtn.dataset.bound) {
+        finishRandomBtn.dataset.bound = '1';
+        finishRandomBtn.addEventListener('click', () => showResults());
+    }
+
+    if (finishBtn) finishBtn.style.display = 'none';
+    if (initial && finishBtn) finishBtn.style.display = 'none';
+}
+
 
 // Обновление позиции вопросов
 function updateQuestionsPosition() {
@@ -507,10 +730,47 @@ function updateQuestionsPosition() {
     }
 }
 function updateQuestionCounter() {
+    if (mode === 'random') {
+        if (questionCounter) questionCounter.textContent = `Случайный вопрос № ${randomStats.totalShown + 1}`;
+        return;
+    }
     if (!selectedCategory) return;
     const questions = getQuestions(selectedCategory.id);
-    questionCounter.textContent = `Вопрос ${currentQuestionIndex + 1} из ${questions.length}`;
+    if (questionCounter) questionCounter.textContent = `Вопрос ${currentQuestionIndex + 1} из ${questions.length}`;
 }
+
+
+function nextQuestion() {
+    if (mode === 'random') {
+        nextRandomQuestion();
+        return;
+    }
+    if (!selectedCategory) return;
+    const questions = getQuestions(selectedCategory.id);
+    if (!questions || !questions.length) return;
+
+    if (currentQuestionIndex >= questions.length - 1) {
+        showResults();
+        return;
+    }
+    currentQuestionIndex++;
+    updateQuestionsPosition();
+    updateQuestionCounter();
+}
+
+function prevQuestion() {
+    if (mode === 'random') {
+        // в рандоме предыдущего нет — просто ещё один случайный
+        nextRandomQuestion();
+        return;
+    }
+    if (currentQuestionIndex <= 0) return;
+    currentQuestionIndex--;
+    updateQuestionsPosition();
+    updateQuestionCounter();
+}
+
+
 
 // Запуск режима блиц
 function startBlitzMode() {
@@ -588,107 +848,101 @@ function endBlitzMode() {
 
 // Возврат на главный экран
 function backToMain() {
-    questionsScreen.classList.remove('active');
-    blitzScreen.classList.remove('active');
-    
-    if (blitzTimer) {
-        clearInterval(blitzTimer);
-        blitzTimer = null;
+    // Скрываем всё, показываем категории
+    hideResults();
+
+    mode = 'category';
+    selectedCategory = null;
+    currentQuestionIndex = 0;
+
+    if (questionsScreen) {
+        questionsScreen.classList.remove('active');
+        questionsScreen.style.display = 'none';
     }
-    
-    setTimeout(() => {
+    if (resultsScreen) resultsScreen.classList.remove('show');
+
+    if (categoriesScreen) {
         categoriesScreen.style.display = 'flex';
-        
+    }
+
+    // Вернём позицию категорий
+    if (categoriesTrack) {
         const translateX = -currentCategoryIndex * 100;
         categoriesTrack.style.transform = `translateX(${translateX}%)`;
-        
-        currentQuestionIndex = 0;
-        selectedCategory = null;
-        
-        Array.from(categoriesTrack.children).forEach((slide, index) => {
-            slide.firstElementChild?.classList.toggle('active', index === currentCategoryIndex);
-        });
-        
-        timerElement.textContent = '30';
-        timerElement.style.color = '';
-        timerElement.style.textShadow = '';
-        
-        debug('Вернулись на главный экран');
-    }, 450);
+    }
 }
+
 
 // Настройка обработчиков событий
 function setupEventListeners() {
-    document.getElementById('backFromQuestions').addEventListener('click', () => {
-        playSound('click');
-        backToMain();
-    });
-    
-    document.getElementById('backFromBlitz').addEventListener('click', () => {
-        playSound('click');
-        if (blitzTimer) clearInterval(blitzTimer);
-        backToMain();
-    });
-    
-    document.getElementById('correctBtn').addEventListener('click', () => {
-        playSound('correct');
-        const questions = window.questionsData['Блиц'] || [];
-        if (blitzCurrentIndex >= questions.length) return;
-        
-        blitzCorrectAnswers++;
-        blitzTotalAnswered++;
-        blitzCurrentIndex++;
-        
-        correctScore.textContent = blitzCorrectAnswers;
-        showNextBlitzQuestion();
-    });
-    
-    document.getElementById('incorrectBtn').addEventListener('click', () => {
-        playSound('click');
-        const questions = window.questionsData['Блиц'] || [];
-        if (blitzCurrentIndex >= questions.length) return;
-        
-        blitzTotalAnswered++;
-        blitzCurrentIndex++;
-        
-        showNextBlitzQuestion();
-    });
-    
-    themeToggle.addEventListener('click', toggleTheme);
-    
-    // Клавиатурная навигация для тестирования
-    document.addEventListener('keydown', (e) => {
-        if (questionsScreen.classList.contains('active')) {
-            const questions = getQuestions(selectedCategory.id);
-            
-            if (e.key === 'ArrowLeft' && currentQuestionIndex > 0) {
-                playSound('swipe');
-                currentQuestionIndex--;
-                updateQuestionsPosition();
-                updateQuestionCounter();
-                showSwipeFeedback('left', 'question');
-                debug('Клавиша влево');
-            } else if (e.key === 'ArrowRight' && currentQuestionIndex < questions.length - 1) {
-                playSound('swipe');
-                currentQuestionIndex++;
-                updateQuestionsPosition();
-                updateQuestionCounter();
-                showSwipeFeedback('right', 'question');
-                debug('Клавиша вправо');
-            } else if (e.key === 'Escape') {
-                backToMain();
+    if (backFromQuestions) {
+        backFromQuestions.addEventListener('click', () => {
+            playSound('click');
+            backToMain();
+        });
+    }
+
+    if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
+
+    if (randomModeBtn) {
+        randomModeBtn.addEventListener('click', () => {
+            playSound('click');
+            startRandomMode();
+        });
+    }
+
+    if (finishBtn) {
+        finishBtn.addEventListener('click', () => {
+            playSound('click');
+            showResults();
+        });
+    }
+
+    if (shareResultsBtn) {
+        shareResultsBtn.addEventListener('click', () => {
+            playSound('click');
+            shareResults();
+        });
+    }
+
+    if (restartCategoryBtn) {
+        restartCategoryBtn.addEventListener('click', () => {
+            playSound('click');
+            if (mode === 'random') {
+                startRandomMode();
+                return;
             }
-        }
-        
-        if (e.key === 't' && (e.ctrlKey || e.metaKey)) {
-            e.preventDefault();
-            toggleTheme();
+            // перезапуск категории
+            if (!selectedCategory) {
+                backToMain();
+                return;
+            }
+            currentQuestionIndex = 0;
+            sessionStats = null;
+            showQuestionsScreen();
+        });
+    }
+
+    if (backToCategoriesBtn) {
+        backToCategoriesBtn.addEventListener('click', () => {
+            playSound('click');
+            backToMain();
+        });
+    }
+
+    // Клавиатурная навигация (удобно на ПК)
+    document.addEventListener('keydown', (e) => {
+        if (resultsScreen && resultsScreen.classList.contains('show')) return;
+
+        if (questionsScreen && (questionsScreen.classList.contains('active') || questionsScreen.style.display === 'block')) {
+            if (e.key === 'ArrowRight') nextQuestion();
+            if (e.key === 'ArrowLeft') prevQuestion();
+            if (e.key === 'Enter') applyDecision('match');
+            if (e.key === 'Backspace') applyDecision('skip');
         }
     });
-    
-    // Добавим кнопки для тестирования на ПК
-    addTestButtons();
 }
+
 
 // Добавляем кнопки для тестирования свайпов на ПК
 function addTestButtons() {
@@ -763,6 +1017,33 @@ function addTestButtons() {
         testDiv.appendChild(nextBtn);
         document.body.appendChild(testDiv);
     }
+}
+
+
+async function init() {
+    const ok = await loadQuestions();
+    if (!ok) return;
+
+    // Пул для рандома
+    buildRandomPool();
+
+    // Рендер категорий
+    renderCategories();
+    updateCategoriesPosition();
+
+    // Свайпы
+    setupSimpleSwipeGestures();
+
+    // Слушатели
+    setupEventListeners();
+
+    // Тема
+    initTheme();
+
+    // Экран старта
+    if (questionsScreen) questionsScreen.style.display = 'none';
+    if (resultsScreen) resultsScreen.classList.remove('show');
+    if (categoriesScreen) categoriesScreen.style.display = 'flex';
 }
 
 // Запуск приложения

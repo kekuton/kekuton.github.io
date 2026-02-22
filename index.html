@@ -14,7 +14,10 @@
     <div class="container" id="container">
         <header class="categories-screen" id="categoriesScreen">
             <div class="categories-header">
-                <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">🌙</button>
+                <div class="top-actions">
+    <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">🌙</button>
+    <button class="random-btn" id="randomModeBtn" aria-label="Случайный вопрос">🎲</button>
+</div>
                 <h1 class="categories-title">Вопросы для двоих</h1>
                 <div class="categories-subtitle">Игра для близких отношений</div>
             </div>
@@ -38,9 +41,12 @@
             <div class="questions-header">
                 <button class="back-btn" id="backFromQuestions" aria-label="Назад">←</button>
                 <div>
+
                     <h2 class="question-title" id="currentCategoryName">Категория</h2>
                     <div class="question-counter" id="questionCounter">Вопрос 1 из 10</div>
+                    <div class="mode-badge" id="modeBadge">Совместимость</div>
                 </div>
+                <button class="finish-btn" id="finishBtn" aria-label="Завершить">🏁</button>
             </div>
             
             <div class="questions-track" id="questionsTrack">
@@ -51,43 +57,47 @@
             
             <nav class="progress-indicator" id="questionsProgress"></nav>
         </section>
-        
-        <section class="blitz-screen" id="blitzScreen">
-            <div class="questions-header">
-                <button class="back-btn" id="backFromBlitz" aria-label="Назад">←</button>
-                <div>
-                    <h2 class="blitz-title">Блиц-опрос</h2>
-                    <div class="blitz-subtitle">30 секунд на ответы</div>
+
+        <section class="results-screen" id="resultsScreen" aria-hidden="true">
+            <div class="results-card">
+                <div class="results-header">
+                    <h2 class="results-title" id="resultsTitle">Результаты</h2>
+                    <div class="results-subtitle" id="resultsSubtitle">Категория</div>
                 </div>
-            </div>
-            
-            <div class="timer-container">
-                <div class="timer" id="timer">30</div>
-            </div>
-            
-            <div class="score-container">
-                <div class="score-box">
-                    <div class="score-label">Правильно</div>
-                    <div class="score-value" id="correctScore">0</div>
+
+                <div class="results-score">
+                    <div class="results-percent" id="resultsPercent">0%</div>
+                    <div class="results-caption">совместимости</div>
                 </div>
-                <div class="score-box">
-                    <div class="score-label">Всего</div>
-                    <div class="score-value" id="totalScore">0</div>
+
+                <div class="results-grid">
+                    <div class="results-metric">
+                        <div class="metric-label">Совпало</div>
+                        <div class="metric-value" id="resultsMatches">0</div>
+                    </div>
+                    <div class="results-metric">
+                        <div class="metric-label">Не совпало</div>
+                        <div class="metric-value" id="resultsMismatches">0</div>
+                    </div>
+                    <div class="results-metric">
+                        <div class="metric-label">Пропущено</div>
+                        <div class="metric-value" id="resultsSkipped">0</div>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="blitz-question-container">
-                <div class="blitz-question-card">
-                    <div class="blitz-question-text" id="blitzQuestionText">Вопрос блица</div>
+
+                <div class="results-actions">
+                    <button class="primary-action" id="shareResultsBtn">📤 Поделиться</button>
+                    <button class="secondary-action" id="restartCategoryBtn">🔁 Ещё раз</button>
+                    <button class="secondary-action" id="backToCategoriesBtn">🏠 К категориям</button>
                 </div>
-            </div>
-            
-            <div class="blitz-controls">
-                <button class="blitz-btn incorrect" id="incorrectBtn">✗ Неправильно</button>
-                <button class="blitz-btn correct" id="correctBtn">✓ Правильно</button>
+
+                <div class="results-note" id="resultsNote">
+                    Подсказка: отвечайте вместе и отмечайте “Совпало/Не совпало” — так считается процент.
+                </div>
             </div>
         </section>
-    </div>
-    <script src="script.js" defer></script>
+
+</div>
+    <script src="script.js" defer></script
 </body>
 </html>
