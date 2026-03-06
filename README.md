@@ -27,4 +27,43 @@ git remote add origin https://github.com/<user>/<repo>.git
 ### Важно
 
 - Для работы нужен доступ к GitHub (SSH key или token).
-- Hook работает локально в этом репозитории после запуска `./scripts/setup-auto-push.sh`.
+- Hook работает локально в этом репозитории
+ после запуска `./scripts/setup-auto-
+push.sh`.
+
+
+{% extends 'main/base.html' %}
+
+{% block title %}Контакты{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Контакты</h1>
+
+{% if success %}
+    <div class="alert alert-success">
+        Сообщение успешно отправлено!
+    </div>
+{% endif %}
+
+<form method="post" class="card p-4 shadow-sm">
+    {% csrf_token %}
+    
+    <div class="mb-3">
+        <label class="form-label">Имя</label>
+        {{ form.name }}
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        {{ form.email }}
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Сообщение</label>
+        {{ form.message }}
+    </div>
+
+    <button type="submit" class="btn btn-success">Отправить</button>
+</form>
+{% endblock %}
+
