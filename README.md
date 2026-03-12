@@ -1,69 +1,37 @@
-# kekuton.github.io
+# Вопросы для двоих — GitHub Pages
 
-## Автосохранение на GitHub после каждого коммита
+Готовая версия для деплоя на **GitHub Pages**.
 
-Чтобы каждый новый `git commit` автоматически пушился в GitHub:
+## Быстрый запуск через GitHub
 
-1. Добавь `origin` (если еще не добавлен):
+1. Создай новый репозиторий на GitHub.
+2. Залей в него все файлы из этой папки.
+3. Открой **Settings → Pages**.
+4. В разделе **Build and deployment** выбери:
+   - **Source**: `GitHub Actions`
+5. Запушь изменения в ветку `main`.
+6. GitHub сам соберёт и опубликует сайт.
+
+После деплоя сайт будет доступен по адресу вида:
+
+`https://USERNAME.github.io/REPO-NAME/`
+
+## Важно
+
+- Все пути уже сделаны относительными, поэтому сайт работает в подпапке GitHub Pages.
+- `questions.json` загружается через `fetch`, поэтому локально проект тоже нужно открывать через сервер.
+- Для локальной проверки:
 
 ```bash
-git remote add origin https://github.com/<user>/<repo>.git
+python -m http.server 8000
 ```
 
-2. Включи авто‑push hooks:
+Потом открой:
 
-```bash
-./scripts/setup-auto-push.sh
+```text
+http://localhost:8000
 ```
 
-После этого локальный hook `.githooks/post-commit` будет выполнять `git push` после каждого коммита.
+## Telegram Mini App
 
-### Что делает hook
-
-- Если `origin` не настроен — выводит предупреждение и ничего не ломает.
-- Если для текущей ветки еще нет upstream — делает первый push как `git push -u origin <branch>`.
-- Для всех следующих коммитов в этой ветке делает обычный `git push`.
-
-### Важно
-
-- Для работы нужен доступ к GitHub (SSH key или token).
-- Hook работает локально в этом репозитории
- после запуска `./scripts/setup-auto-
-push.sh`.
-
-
-{% extends 'main/base.html' %}
-
-{% block title %}Контакты{% endblock %}
-
-{% block content %}
-<h1 class="mb-4">Контакты</h1>
-
-{% if success %}
-    <div class="alert alert-success">
-        Сообщение успешно отправлено!
-    </div>
-{% endif %}
-
-<form method="post" class="card p-4 shadow-sm">
-    {% csrf_token %}
-    
-    <div class="mb-3">
-        <label class="form-label">Имя</label>
-        {{ form.name }}
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Email</label>
-        {{ form.email }}
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Сообщение</label>
-        {{ form.message }}
-    </div>
-
-    <button type="submit" class="btn btn-success">Отправить</button>
-</form>
-{% endblock %}
-
+Если захочешь использовать тот же проект в Telegram Mini App, укажи в BotFather ссылку на опубликованный GitHub Pages сайт.
