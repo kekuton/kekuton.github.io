@@ -7,54 +7,54 @@
     <meta name="theme-color" content="#f5f7fa" media="(prefers-color-scheme: light)">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Вопросы для двоих - Игра для близких</title>
+    <title>Вопросы для двоих — Игра для близких</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
     <div class="container" id="container">
         <header class="categories-screen" id="categoriesScreen">
             <div class="categories-header">
                 <div class="top-actions">
-    <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">🌙</button>
-    <button class="random-btn" id="randomModeBtn" aria-label="Случайный вопрос">🎲</button>
-</div>
+                    <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">🌙</button>
+                    <button class="random-btn" id="randomModeBtn" aria-label="Случайный вопрос">🎲</button>
+                </div>
                 <h1 class="categories-title">Вопросы для двоих</h1>
                 <div class="categories-subtitle">Игра для близких отношений</div>
             </div>
-            
+
             <main class="categories-container" id="categoriesContainer">
                 <div class="swipe-feedback left" id="swipeLeftFeedback">←</div>
                 <div class="swipe-feedback right" id="swipeRightFeedback">→</div>
                 <div class="categories-track" id="categoriesTrack"></div>
             </main>
-            
+
             <footer class="swipe-hint">
                 <span class="swipe-arrow left">←</span>
                 Свайпайте для переключения категорий
                 <span class="swipe-arrow">→</span>
             </footer>
-            
+
             <nav class="progress-indicator" id="categoriesProgress"></nav>
         </header>
-        
+
         <section class="questions-screen" id="questionsScreen">
             <div class="questions-header">
                 <button class="back-btn" id="backFromQuestions" aria-label="Назад">←</button>
                 <div>
-
                     <h2 class="question-title" id="currentCategoryName">Категория</h2>
                     <div class="question-counter" id="questionCounter">Вопрос 1 из 10</div>
                     <div class="mode-badge" id="modeBadge">Совместимость</div>
                 </div>
                 <button class="finish-btn" id="finishBtn" aria-label="Завершить">🏁</button>
             </div>
-            
+
             <div class="questions-track" id="questionsTrack">
                 <div class="swipe-feedback left" id="questionSwipeLeftFeedback">←</div>
                 <div class="swipe-feedback right" id="questionSwipeRightFeedback">→</div>
                 <div class="questions-slider" id="questionsSlider"></div>
             </div>
-            
+
             <nav class="progress-indicator" id="questionsProgress"></nav>
         </section>
 
@@ -92,12 +92,12 @@
                 </div>
 
                 <div class="results-note" id="resultsNote">
-                    Подсказка: отвечайте вместе и отмечайте “Совпало/Не совпало” — так считается процент.
+                    Подсказка: отвечайте вместе и отмечайте «Совпало / Не совпало».
                 </div>
             </div>
         </section>
+    </div>
 
-</div>
-    <script src="script.js" defer></script
+    <script src="script.js" defer></script>
 </body>
 </html>
