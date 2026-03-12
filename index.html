@@ -3,86 +3,143 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1f1b4d" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Вопросы для двоих" />
   <title>Вопросы для двоих</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
   <link rel="stylesheet" href="style.css" />
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-  <div class="app">
-    <section id="categoriesScreen" class="screen active">
-      <header class="topbar">
-        <button id="themeToggle" class="icon-btn" aria-label="Тема">🌙</button>
-        <div class="title-wrap">
-          <h1>Вопросы для двоих</h1>
-          <p>Игра для пары</p>
+  <div class="app-shell">
+    <div class="app" id="appRoot">
+      <section id="categoriesScreen" class="screen active">
+        <header class="topbar">
+          <button id="themeToggle" class="icon-btn" aria-label="Тема">🌙</button>
+          <div class="title-wrap">
+            <h1>Вопросы для двоих</h1>
+            <p>Игра для пары • GitHub Pages / Telegram Mini App</p>
+          </div>
+          <div class="header-actions">
+            <button id="fullscreenBtn" class="icon-btn" aria-label="Полный экран">⛶</button>
+            <button id="randomBtn" class="icon-btn" aria-label="Рандом">🎲</button>
+          </div>
+        </header>
+
+        <div class="toolbar-row">
+          <button id="createRoomBtn" class="pill-btn">🧩 Создать комнату</button>
+          <button id="joinRoomBtn" class="pill-btn">🔑 Ввести код</button>
+          <button id="installBtn" class="pill-btn hidden">📲 Установить</button>
         </div>
-        <button id="randomBtn" class="icon-btn" aria-label="Рандом">🎲</button>
-      </header>
 
-      <div class="categories-grid" id="categoriesGrid"></div>
-    </section>
+        <div class="notice-card hidden" id="roomBanner"></div>
 
-    <section id="questionsScreen" class="screen hidden">
-      <header class="topbar questions-bar">
-        <button id="backBtn" class="icon-btn" aria-label="Назад">←</button>
-        <div class="title-wrap compact">
-          <h2 id="categoryTitle">Категория</h2>
-          <p id="questionCounter">Вопрос 1</p>
+        <div class="categories-grid" id="categoriesGrid"></div>
+      </section>
+
+      <section id="questionsScreen" class="screen hidden">
+        <header class="topbar questions-bar">
+          <button id="backBtn" class="icon-btn" aria-label="Назад">←</button>
+          <div class="title-wrap compact">
+            <h2 id="categoryTitle">Категория</h2>
+            <p id="questionCounter">Вопрос 1</p>
+          </div>
+          <button id="finishBtn" class="icon-btn" aria-label="Результаты">🏁</button>
+        </header>
+
+        <div class="chips-row">
+          <div class="mode-chip" id="modeChip">Категория</div>
+          <div class="mode-chip hidden" id="roomChip">Комната</div>
         </div>
-        <button id="finishBtn" class="icon-btn" aria-label="Результаты">🏁</button>
-      </header>
 
-      <div class="mode-chip" id="modeChip">Категория</div>
-
-      <div class="card-stack">
-        <div id="tinderCard" class="tinder-card" tabindex="0" aria-live="polite">
-          <div class="stamp like" id="likeStamp">Совпало</div>
-          <div class="stamp nope" id="nopeStamp">Не совпало</div>
-          <div class="question-text" id="questionText">Загрузка...</div>
-          <div class="subhint" id="questionSubhint">Свайп влево/вправо или кнопки ниже</div>
+        <div class="card-stack">
+          <div id="tinderCard" class="tinder-card" tabindex="0" aria-live="polite">
+            <div class="stamp like" id="likeStamp">Совпало</div>
+            <div class="stamp nope" id="nopeStamp">Не совпало</div>
+            <div class="question-text" id="questionText">Загрузка...</div>
+            <div class="subhint" id="questionSubhint">Свайп влево/вправо или кнопки ниже</div>
+          </div>
         </div>
-      </div>
 
-      <div class="progress-wrap">
-        <div id="progressText">0 / 0</div>
-        <div class="progress-bar"><div id="progressFill"></div></div>
-      </div>
-
-      <div class="actions">
-        <button id="prevBtn" class="secondary-btn">← Назад</button>
-        <button id="skipBtn" class="secondary-btn">Пропуск</button>
-      </div>
-      <div class="actions actions-main">
-        <button id="mismatchBtn" class="danger-btn">✖ Не совпало</button>
-        <button id="matchBtn" class="success-btn">❤ Совпало</button>
-      </div>
-    </section>
-
-    <section id="resultsScreen" class="screen hidden">
-      <header class="topbar questions-bar">
-        <button id="backToCategoriesTop" class="icon-btn" aria-label="Назад">←</button>
-        <div class="title-wrap compact">
-          <h2>Результаты</h2>
-          <p id="resultsSubtitle">Категория</p>
+        <div class="progress-wrap">
+          <div id="progressText">0 / 0</div>
+          <div class="progress-bar"><div id="progressFill"></div></div>
         </div>
-        <div style="width:44px"></div>
-      </header>
 
-      <div class="results-card">
-        <div class="percent" id="resultsPercent">0%</div>
-        <div class="results-grid">
-          <div><span>Совпало</span><strong id="resultsMatches">0</strong></div>
-          <div><span>Не совпало</span><strong id="resultsMismatches">0</strong></div>
-          <div><span>Пропущено</span><strong id="resultsSkipped">0</strong></div>
+        <div class="actions">
+          <button id="prevBtn" class="secondary-btn">← Назад</button>
+          <button id="skipBtn" class="secondary-btn">Пропуск</button>
         </div>
-        <div class="actions stack">
-          <button id="shareBtn" class="success-btn wide">Поделиться</button>
-          <button id="restartBtn" class="secondary-btn wide">Пройти заново</button>
-          <button id="backToCategoriesBtn" class="secondary-btn wide">К категориям</button>
+        <div class="actions actions-main">
+          <button id="mismatchBtn" class="danger-btn">✖ Не совпало</button>
+          <button id="matchBtn" class="success-btn">❤ Совпало</button>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <section id="resultsScreen" class="screen hidden">
+        <header class="topbar questions-bar">
+          <button id="backToCategoriesTop" class="icon-btn" aria-label="Назад">←</button>
+          <div class="title-wrap compact">
+            <h2>Результаты</h2>
+            <p id="resultsSubtitle">Категория</p>
+          </div>
+          <div style="width:44px"></div>
+        </header>
+
+        <div class="results-card">
+          <div class="percent" id="resultsPercent">0%</div>
+          <p class="results-copy" id="resultsCopy">Вы хорошо совпали.</p>
+          <div class="results-grid">
+            <div><span>Совпало</span><strong id="resultsMatches">0</strong></div>
+            <div><span>Не совпало</span><strong id="resultsMismatches">0</strong></div>
+            <div><span>Пропущено</span><strong id="resultsSkipped">0</strong></div>
+          </div>
+          <div class="actions stack">
+            <button id="shareBtn" class="success-btn wide">📤 Поделиться результатом</button>
+            <button id="saveImageBtn" class="secondary-btn wide">🖼 Сохранить картинку</button>
+            <button id="restartBtn" class="secondary-btn wide">🔁 Пройти заново</button>
+            <button id="backToCategoriesBtn" class="secondary-btn wide">🏠 К категориям</button>
+          </div>
+        </div>
+      </section>
+    </div>
   </div>
+
+  <div class="modal hidden" id="ageModal" aria-hidden="true">
+    <div class="modal-card">
+      <h3>Контент 18+</h3>
+      <p>В этой категории откровенные вопросы. Подтвердите, что вам есть 18 лет.</p>
+      <div class="actions">
+        <button id="ageDeclineBtn" class="secondary-btn">Отмена</button>
+        <button id="ageConfirmBtn" class="success-btn">Мне 18+</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="roomModal" aria-hidden="true">
+    <div class="modal-card room-card">
+      <h3>Мультиплеер-комната</h3>
+      <p>Можно создать код комнаты, отправить его другу и проходить одинаковый набор вопросов в одинаковом порядке.</p>
+      <div class="room-box">
+        <div class="room-code" id="roomCodeText">------</div>
+        <button id="copyRoomBtn" class="pill-btn">Скопировать код</button>
+      </div>
+      <img id="roomQr" class="qr-image hidden" alt="QR код комнаты" />
+      <div class="input-wrap">
+        <input id="joinRoomInput" placeholder="Вставь код комнаты" />
+      </div>
+      <div class="actions stack">
+        <button id="createCategoryRoomBtn" class="success-btn wide">Создать комнату по текущей категории</button>
+        <button id="joinRoomConfirmBtn" class="secondary-btn wide">Войти в комнату</button>
+        <button id="closeRoomModalBtn" class="secondary-btn wide">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="shareCanvas" width="1080" height="1920" class="hidden"></canvas>
 
   <script src="script.js"></script>
 </body>
