@@ -160,7 +160,7 @@ function shuffle(list) {
   return arr;
 }
 function showScreen(name) {
-  Object.values(screens).forEach((screen) => screen.classList.remove('screen-active'));
+  Object.values(screens).forEach((screen) => { screen.classList.remove('screen-active'); screen.scrollTop = 0; });
   screens[name].classList.add('screen-active');
   if (navStack[navStack.length - 1] !== name) navStack.push(name);
   ui.backBtn.classList.toggle('hidden', ['home', 'categories'].includes(name));
@@ -222,8 +222,8 @@ function openCategory(categoryId) {
     <p class="muted">${category.desc}</p>
     <p class="muted">${total} вопросов в архиве. В игру пойдут 8 случайных карточек.</p>
     <div class="stacked-actions">
-      <button class="primary-btn full" id="startCategoryBtn">Начать игру</button>
-      ${premiumState.isPremium ? '<button class="secondary-btn full" id="openArchiveBtn">Открыть архив вопросов</button>' : ''}
+      <button class="primary-btn full" type="button" id="startCategoryBtn">Начать игру</button>
+      ${premiumState.isPremium ? '<button class="secondary-btn full" type="button" id="openArchiveBtn">Открыть архив вопросов</button>' : ''}
     </div>`;
   ui.introCard.querySelector('#startCategoryBtn').addEventListener('click', startCategoryGame);
   if (premiumState.isPremium && ui.introCard.querySelector('#openArchiveBtn')) {
@@ -553,5 +553,24 @@ async function init() {
     lastTouchEnd = now;
   }, { passive: false });
 }
+
+
+
+// Резервная делегация кликов для динамических кнопок, чтобы они работали и в Telegram WebView
+document.addEventListener('click', (e) => {
+  const startBtn = e.target.closest('#startCategoryBtn');
+  if (startBtn) {
+    e.preventDefault();
+    e.stopPropagation();
+    startCategoryGame();
+    return;
+  }
+  const archiveBtn = e.target.closest('#openArchiveBtn');
+  if (archiveBtn) {
+    e.preventDefault();
+    e.stopPropagation();
+    showArchive();
+  }
+});
 
 document.addEventListener('DOMContentLoaded', init);
