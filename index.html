@@ -2,145 +2,144 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#1f1b4d" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#8b5cf6" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Вопросы для двоих" />
   <title>Вопросы для двоих</title>
-  <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
   <link rel="stylesheet" href="style.css" />
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
   <div class="app-shell">
-    <div class="app" id="appRoot">
-      <section id="categoriesScreen" class="screen active">
-        <header class="topbar">
-          <button id="themeToggle" class="icon-btn" aria-label="Тема">🌙</button>
-          <div class="title-wrap">
-            <h1>Выбери категорию вопросов</h1>
-            <p>Поговорите откровенно, весело и по-настоящему близко</p>
-          </div>
-          <div class="header-actions">
-            <button id="fullscreenBtn" class="icon-btn" aria-label="Полный экран">⛶</button>
-            <button id="randomBtn" class="icon-btn" aria-label="Рандом">🎲</button>
-          </div>
-        </header>
+    <header class="topbar">
+      <button class="icon-btn hidden" id="backBtn" aria-label="Назад">←</button>
+      <div class="brand">
+        <div class="brand-pill">Вопросы для двоих</div>
+      </div>
+      <button class="icon-btn" id="themeBtn" aria-label="Сменить тему">☼</button>
+    </header>
 
-        <div class="toolbar-row">
-          <button id="createRoomBtn" class="pill-btn black-btn">🧩 Создать комнату</button>
-          <button id="joinRoomBtn" class="pill-btn black-btn">🔑 Ввести код</button>
-          <button id="installBtn" class="pill-btn black-btn hidden">📲 Установить</button>
+    <main class="screen-wrap">
+      <section class="screen screen-active" id="homeScreen">
+        <div class="hero-card">
+          <span class="eyebrow">Игра для пары</span>
+          <h1>Поговорим откровенно?</h1>
+          <p>
+            Проходите красивые категории вопросов, отмечайте совпадения и смотрите вашу совместимость.
+          </p>
+          <div class="hero-actions">
+            <button class="primary-btn" id="startBtn">Начать игру</button>
+            <button class="secondary-btn" id="historyBtn">История</button>
+          </div>
         </div>
 
-        <div class="notice-card hidden" id="roomBanner"></div>
+        <div class="feature-row">
+          <article class="feature-chip">
+            <span>💞</span>
+            <div>
+              <strong>Совместимость</strong>
+              <small>Процент по вашим ответам</small>
+            </div>
+          </article>
+          <article class="feature-chip">
+            <span>📱</span>
+            <div>
+              <strong>Telegram-ready</strong>
+              <small>Работает как Mini App</small>
+            </div>
+          </article>
+        </div>
+      </section>
 
+      <section class="screen" id="categoriesScreen">
+        <div class="section-head">
+          <span class="eyebrow">Выбор категории</span>
+          <h2>Выбери настроение игры</h2>
+          <p>Сначала выберите тему, потом начните новую игру.</p>
+        </div>
         <div class="categories-grid" id="categoriesGrid"></div>
       </section>
 
-      <section id="questionsScreen" class="screen hidden">
-        <header class="topbar questions-bar">
-          <button id="backBtn" class="icon-btn" aria-label="Назад">←</button>
-          <div class="title-wrap compact">
-            <h2 id="categoryTitle">Категория</h2>
-            <p id="questionCounter">Вопрос 1</p>
+      <section class="screen" id="categoryIntroScreen">
+        <div class="intro-card" id="categoryIntroCard"></div>
+      </section>
+
+      <section class="screen" id="gameScreen">
+        <div class="game-head">
+          <div>
+            <span class="eyebrow" id="gameCategory">Категория</span>
+            <h2 id="gameTitle">Вопрос</h2>
           </div>
-          <button id="finishBtn" class="icon-btn" aria-label="Результаты">🏁</button>
-        </header>
-
-        <div class="chips-row">
-          <div class="mode-chip" id="modeChip">Категория</div>
-          <div class="mode-chip hidden" id="roomChip">Комната</div>
+          <div class="progress-badge" id="progressLabel">1 / 10</div>
         </div>
 
-        <div class="card-stack">
-          <div id="tinderCard" class="tinder-card" tabindex="0" aria-live="polite">
-            <div class="stamp like" id="likeStamp">Совпало</div>
-            <div class="stamp nope" id="nopeStamp">Не совпало</div>
-            <div class="question-text" id="questionText">Загрузка...</div>
-            <div class="subhint" id="questionSubhint">Свайп влево/вправо или кнопки ниже</div>
-          </div>
+        <div class="progress-bar">
+          <span id="progressFill"></span>
         </div>
 
-        <div class="progress-wrap">
-          <div id="progressText">0 / 0</div>
-          <div class="progress-bar"><div id="progressFill"></div></div>
-        </div>
+        <article class="question-card" id="questionCard">
+          <p class="question-text" id="questionText"></p>
+        </article>
 
-        <div class="actions">
-          <button id="prevBtn" class="secondary-btn">← Назад</button>
-          <button id="skipBtn" class="secondary-btn">Пропуск</button>
-        </div>
-        <div class="actions actions-main">
-          <button id="mismatchBtn" class="danger-btn">✖ Не совпало</button>
-          <button id="matchBtn" class="success-btn">❤ Совпало</button>
+        <div class="answer-actions">
+          <button class="answer-btn answer-match" id="matchBtn">Совпало</button>
+          <button class="answer-btn answer-mismatch" id="mismatchBtn">Не совпало</button>
+          <button class="answer-btn answer-skip" id="skipBtn">Пропуск</button>
         </div>
       </section>
 
-      <section id="resultsScreen" class="screen hidden">
-        <header class="topbar questions-bar">
-          <button id="backToCategoriesTop" class="icon-btn" aria-label="Назад">←</button>
-          <div class="title-wrap compact">
-            <h2>Результаты</h2>
-            <p id="resultsSubtitle">Категория</p>
-          </div>
-          <div style="width:44px"></div>
-        </header>
-
+      <section class="screen" id="resultsScreen">
         <div class="results-card">
-          <div class="percent" id="resultsPercent">0%</div>
-          <p class="results-copy" id="resultsCopy">Вы хорошо совпали.</p>
-          <div class="results-grid">
-            <div><span>Совпало</span><strong id="resultsMatches">0</strong></div>
-            <div><span>Не совпало</span><strong id="resultsMismatches">0</strong></div>
-            <div><span>Пропущено</span><strong id="resultsSkipped">0</strong></div>
+          <span class="eyebrow">Результат</span>
+          <h2 id="resultsCategory">Категория</h2>
+          <div class="results-score" id="resultsScore">0%</div>
+          <p class="results-message" id="resultsMessage"></p>
+
+          <div class="stats-grid">
+            <div class="stat-box">
+              <small>Совпало</small>
+              <strong id="statMatch">0</strong>
+            </div>
+            <div class="stat-box">
+              <small>Не совпало</small>
+              <strong id="statMismatch">0</strong>
+            </div>
+            <div class="stat-box">
+              <small>Пропуск</small>
+              <strong id="statSkip">0</strong>
+            </div>
           </div>
-          <div class="actions stack">
-            <button id="shareBtn" class="success-btn wide">📤 Поделиться результатом</button>
-            <button id="saveImageBtn" class="secondary-btn wide">🖼 Сохранить картинку</button>
-            <button id="restartBtn" class="secondary-btn wide">🔁 Пройти заново</button>
-            <button id="backToCategoriesBtn" class="secondary-btn wide">🏠 К категориям</button>
+
+          <div class="hero-actions stacked">
+            <button class="primary-btn" id="restartBtn">Пройти ещё раз</button>
+            <button class="secondary-btn" id="changeCategoryBtn">Другая категория</button>
+            <button class="secondary-btn" id="shareBtn">Поделиться результатом</button>
           </div>
         </div>
       </section>
-    </div>
+
+      <section class="screen" id="historyScreen">
+        <div class="section-head compact">
+          <span class="eyebrow">История</span>
+          <h2>Последние игры</h2>
+        </div>
+        <div class="history-list" id="historyList"></div>
+      </section>
+    </main>
   </div>
 
-  <div class="modal hidden" id="ageModal" aria-hidden="true">
+  <div class="modal hidden" id="adultModal" aria-hidden="true">
     <div class="modal-card">
-      <h3>Контент 18+</h3>
-      <p>В этой категории откровенные вопросы. Подтвердите, что вам есть 18 лет.</p>
-      <div class="actions">
-        <button id="ageDeclineBtn" class="secondary-btn">Отмена</button>
-        <button id="ageConfirmBtn" class="success-btn">Мне 18+</button>
+      <span class="eyebrow">18+</span>
+      <h3>Подтверждение возраста</h3>
+      <p>Эта категория содержит откровенные вопросы. Продолжайте только если вам есть 18 лет.</p>
+      <div class="hero-actions stacked">
+        <button class="primary-btn" id="adultConfirmBtn">Мне есть 18</button>
+        <button class="secondary-btn" id="adultCancelBtn">Назад</button>
       </div>
     </div>
   </div>
 
-  <div class="modal hidden" id="roomModal" aria-hidden="true">
-    <div class="modal-card room-card">
-      <h3>Мультиплеер-комната</h3>
-      <p>Можно создать код комнаты, отправить его другу и проходить одинаковый набор вопросов в одинаковом порядке.</p>
-      <div class="room-box">
-        <div class="room-code" id="roomCodeText">------</div>
-        <button id="copyRoomBtn" class="pill-btn">Скопировать код</button>
-      </div>
-      <img id="roomQr" class="qr-image hidden" alt="QR код комнаты" />
-      <div class="input-wrap">
-        <input id="joinRoomInput" placeholder="Вставь код комнаты" />
-      </div>
-      <div class="actions stack">
-        <button id="createCategoryRoomBtn" class="success-btn wide">Создать комнату по текущей категории</button>
-        <button id="joinRoomConfirmBtn" class="secondary-btn wide">Войти в комнату</button>
-        <button id="closeRoomModalBtn" class="secondary-btn wide">Закрыть</button>
-      </div>
-    </div>
-  </div>
-
-  <canvas id="shareCanvas" width="1080" height="1920" class="hidden"></canvas>
-
-  <script src="script.js"></script>
+  <script src="app.js" defer></script>
 </body>
 </html>
