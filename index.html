@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#8b5cf6">
-  <title>Вопросы для двоих</title>
+  <title>Вопросы для двоих Premium</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,17 +16,28 @@
     </header>
 
     <main class="screen-wrap">
-      <section class="screen screen-active" id="onboardingScreen">
+      <section class="screen screen-active" id="homeScreen">
         <div class="panel hero-panel">
-          <span class="eyebrow">Mini App</span>
-          <h1>Начните новую игру</h1>
-          <p class="muted">Выберите режим и нажмите продолжить. Я сделал этот экран заново, чтобы кнопка точно работала.</p>
+          <span class="eyebrow">Monetized build</span>
+          <h1>Игра для пары с premium доступом</h1>
+          <p class="muted">Бесплатно доступен вопрос дня и базовые категории. Premium открывает архив, AI-анализ, красивые карточки результата и дополнительные паки.</p>
+
+          <div class="mini-grid">
+            <button class="mini-card" id="dailyBtn">
+              <strong>💌 Вопрос дня</strong>
+              <span>Бесплатно каждый день</span>
+            </button>
+            <button class="mini-card" id="premiumBtn">
+              <strong>💎 Premium</strong>
+              <span id="premiumStatusLabel">Не активирован</span>
+            </button>
+          </div>
 
           <div class="mode-card">
             <label class="switch-row">
               <div>
                 <strong>Анонимный режим</strong>
-                <small>Имена не сохраняются в истории.</small>
+                <small>Можно играть без указания имён.</small>
               </div>
               <input type="checkbox" id="anonymousToggle">
             </label>
@@ -95,10 +106,67 @@
             <div class="stat-box"><small>Не совпало</small><strong id="statMismatch">0</strong></div>
             <div class="stat-box"><small>Пропуск</small><strong id="statSkip">0</strong></div>
           </div>
+          <div class="analysis-box" id="analysisBox">
+            <strong>AI-анализ</strong>
+            <p id="analysisText" class="muted">Открой Premium, чтобы получить разбор пары.</p>
+          </div>
           <div class="stacked-actions">
             <button class="primary-btn full" id="restartBtn">Пройти ещё раз</button>
             <button class="secondary-btn full" id="changeCategoryBtn">Другая категория</button>
             <button class="secondary-btn full" id="shareBtn">Поделиться</button>
+            <button class="secondary-btn full" id="shareCardBtn">Скачать share-card</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="dailyScreen">
+        <div class="panel intro-panel">
+          <span class="eyebrow">Бесплатно</span>
+          <h2>Вопрос дня</h2>
+          <p class="daily-question" id="dailyQuestionText"></p>
+          <div class="stacked-actions">
+            <button class="primary-btn full" id="dailyPlayBtn">Играть категорию вопроса дня</button>
+            <button class="secondary-btn full" id="dailyArchiveBtn">Открыть Premium архив</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="premiumScreen">
+        <div class="panel premium-panel">
+          <span class="eyebrow">Монетизация</span>
+          <h2>Premium и паки</h2>
+          <p class="muted">Подписка открывает весь архив, AI-анализ и красивые share-card. Паки можно купить отдельно.</p>
+
+          <div class="premium-status" id="premiumStatusBig"></div>
+
+          <div class="feature-list">
+            <div class="feature-item">💎 3 дня trial</div>
+            <div class="feature-item">🧠 Premium AI-анализ</div>
+            <div class="feature-item">🖼 Premium share-card</div>
+            <div class="feature-item">📚 Premium архив вопросов</div>
+            <div class="feature-item">🔥 Hard Talk</div>
+            <div class="feature-item">🔞 18+</div>
+            <div class="feature-item">🧠 Психология+</div>
+          </div>
+
+          <div class="stacked-actions">
+            <button class="primary-btn full" id="startTrialBtn">Попробовать 3 дня бесплатно</button>
+            <button class="primary-btn full" id="buySubscriptionBtn">Активировать Premium</button>
+          </div>
+
+          <div class="pack-grid">
+            <button class="pack-card" data-pack="hard">
+              <strong>Hard Talk</strong>
+              <span>Разовая покупка</span>
+            </button>
+            <button class="pack-card" data-pack="adult">
+              <strong>18+</strong>
+              <span>Разовая покупка</span>
+            </button>
+            <button class="pack-card" data-pack="psyplus">
+              <strong>Психология+</strong>
+              <span>Разовая покупка</span>
+            </button>
           </div>
         </div>
       </section>
@@ -109,7 +177,7 @@
     <div class="panel modal-panel">
       <span class="eyebrow">18+</span>
       <h3>Подтверждение возраста</h3>
-      <p class="muted">Эта категория содержит откровенные вопросы.</p>
+      <p class="muted">Эта категория доступна только после подтверждения возраста.</p>
       <div class="stacked-actions">
         <button class="primary-btn full" id="adultConfirmBtn">Мне есть 18</button>
         <button class="secondary-btn full" id="adultCancelBtn">Назад</button>
