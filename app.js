@@ -402,8 +402,7 @@ function createShareImage() {
   ctx.font = '600 40px Inter, sans-serif';
   ctx.fillText(appState.lang === 'ru' ? 'AI-анализ пары' : 'AI couple analysis', 130, 820);
   ctx.font = '400 34px Inter, sans-serif';
-  wrapText(ctx, analysis.join('
-'), 130, 890, 820, 48);
+  wrapText(ctx, analysis.join('\n'), 130, 890, 820, 48);
   return canvas.toDataURL('image/png');
 }
 
