@@ -6,106 +6,64 @@
   <meta name="theme-color" content="#8b5cf6" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>Couple Flow</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <title>Вопросы для двоих</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
-
   <div class="app-shell">
     <header class="topbar">
-      <button class="icon-btn hidden" id="backBtn" aria-label="Назад">←</button>
-      <div class="brand">
-        <div class="brand-pill" id="brandTitle">Couple Flow</div>
-      </div>
+      <button class="icon-btn hidden" id="backBtn" aria-label="Back">←</button>
+      <div class="brand"><div class="brand-pill" id="brandPill">Вопросы для двоих</div></div>
       <div class="topbar-actions">
         <button class="icon-btn" id="langBtn" aria-label="Language">EN</button>
-        <button class="icon-btn" id="themeBtn" aria-label="Сменить тему">☼</button>
+        <button class="icon-btn" id="themeBtn" aria-label="Theme">☼</button>
       </div>
     </header>
 
     <main class="screen-wrap">
       <section class="screen screen-active" id="onboardingScreen">
-        <div class="hero-card onboarding-card">
-          <div class="onboarding-progress">
-            <span class="active"></span><span></span><span></span>
+        <div class="hero-card onboard-card">
+          <span class="eyebrow" data-i18n="onboardEyebrow">Добро пожаловать</span>
+          <h1 data-i18n="onboardTitle">Игра, которая помогает говорить честно</h1>
+          <p data-i18n="onboardText">Выберите категорию, отвечайте вместе и смотрите, где вы совпадаете сильнее всего.</p>
+          <div class="onboard-steps">
+            <article><strong>1</strong><span data-i18n="onboardStep1">Выберите настроение</span></article>
+            <article><strong>2</strong><span data-i18n="onboardStep2">Отвечайте свайпами или кнопками</span></article>
+            <article><strong>3</strong><span data-i18n="onboardStep3">Получите анализ пары</span></article>
           </div>
-          <div id="onboardingContent"></div>
-          <div class="hero-actions onboarding-actions">
-            <button class="secondary-btn" id="onboardingSkipBtn"></button>
-            <button class="primary-btn" id="onboardingNextBtn"></button>
+          <div class="hero-actions stacked">
+            <button class="primary-btn" id="onboardingStartBtn" data-i18n="continue">Продолжить</button>
+            <label class="toggle-row"><input type="checkbox" id="anonymousModeToggle" /> <span data-i18n="anonymousMode">Анонимный режим</span></label>
           </div>
         </div>
       </section>
 
       <section class="screen" id="homeScreen">
-        <div class="hero-card hero-home">
-          <div class="hero-topline">
-            <span class="eyebrow" id="homeEyebrow"></span>
-            <label class="switch-row" id="anonymousSwitchWrap">
-              <span id="anonymousLabel"></span>
-              <input type="checkbox" id="anonymousModeToggle" />
-              <span class="switch-ui"></span>
-            </label>
-          </div>
-          <h1 id="homeTitle"></h1>
-          <p id="homeSubtitle"></p>
-
-          <div class="daily-card" id="dailyCard">
-            <div>
-              <small id="dailyQuestionLabel"></small>
-              <strong id="dailyQuestionText"></strong>
-            </div>
-            <button class="secondary-btn compact-btn" id="dailyOpenBtn"></button>
-          </div>
-
+        <div class="hero-card">
+          <span class="eyebrow" data-i18n="heroEyebrow">Mini App для пары</span>
+          <h1 data-i18n="heroTitle">Поговорим откровенно?</h1>
+          <p data-i18n="heroText">Проходите категории, отвечайте свайпами, обсуждайте важные темы и сохраняйте историю пары в облако или локально.</p>
           <div class="hero-actions">
-            <button class="primary-btn" id="startBtn"></button>
-            <button class="secondary-btn" id="historyBtn"></button>
+            <button class="primary-btn" id="startBtn" data-i18n="startGame">Начать игру</button>
+            <button class="secondary-btn" id="roomsBtn" data-i18n="rooms">Комнаты</button>
           </div>
         </div>
 
-        <div class="dashboard-grid">
-          <article class="stat-card clickable" id="roomCard">
-            <div class="stat-icon">🫶</div>
-            <div>
-              <strong id="roomTitle"></strong>
-              <small id="roomSubtitle"></small>
-            </div>
-          </article>
-          <article class="stat-card clickable" id="favoritesCard">
-            <div class="stat-icon">⭐</div>
-            <div>
-              <strong id="favoritesTitle"></strong>
-              <small id="favoritesSubtitle"></small>
-            </div>
-          </article>
-          <article class="stat-card clickable" id="achievementsCard">
-            <div class="stat-icon">🏆</div>
-            <div>
-              <strong id="achievementsTitle"></strong>
-              <small id="achievementsSubtitle"></small>
-            </div>
-          </article>
-          <article class="stat-card clickable" id="premiumCard">
-            <div class="stat-icon">💎</div>
-            <div>
-              <strong id="premiumTitle"></strong>
-              <small id="premiumSubtitle"></small>
-            </div>
-          </article>
+        <div class="feature-row">
+          <article class="feature-chip"><span>💞</span><div><strong data-i18n="compatibility">Совместимость</strong><small data-i18n="compatibilityDesc">AI-анализ по результатам</small></div></article>
+          <article class="feature-chip"><span>🔥</span><div><strong>Hard Talk</strong><small data-i18n="hardTalkDesc">Сложные, честные разговоры</small></div></article>
+        </div>
+
+        <div class="secondary-grid">
+          <button class="menu-card" id="dailyBtn"><span>☀️</span><strong data-i18n="dailyQuestion">Вопрос дня</strong><small data-i18n="dailyQuestionDesc">Один вопрос каждый день</small></button>
+          <button class="menu-card" id="historyBtn"><span>🕘</span><strong data-i18n="history">История</strong><small data-i18n="historyDesc">Последние игры и достижения</small></button>
+          <button class="menu-card" id="favoritesBtn"><span>⭐</span><strong data-i18n="favorites">Любимые</strong><small data-i18n="favoritesDesc">Сохраняйте лучшие вопросы</small></button>
+          <button class="menu-card" id="premiumBtn"><span>💎</span><strong>Premium</strong><small data-i18n="premiumDesc">Премиум категории и функции</small></button>
         </div>
       </section>
 
       <section class="screen" id="categoriesScreen">
-        <div class="section-head">
-          <span class="eyebrow" id="categoriesEyebrow"></span>
-          <h2 id="categoriesTitle"></h2>
-          <p id="categoriesSubtitle"></p>
-        </div>
+        <div class="section-head"><span class="eyebrow" data-i18n="categoryEyebrow">Выбор категории</span><h2 data-i18n="categoryTitle">Выберите настроение игры</h2><p data-i18n="categoryText">Можно пройти обычную категорию, Hard Talk или ритуалы.</p></div>
         <div class="categories-grid" id="categoriesGrid"></div>
       </section>
 
@@ -115,143 +73,101 @@
 
       <section class="screen" id="gameScreen">
         <div class="game-head">
-          <div>
-            <span class="eyebrow" id="gameCategory"></span>
-            <h2 id="gameTitle"></h2>
-          </div>
-          <div class="progress-badge" id="progressLabel"></div>
+          <div><span class="eyebrow" id="gameCategory">Категория</span><h2 id="gameTitle">Вопрос</h2></div>
+          <div class="progress-badge" id="progressLabel">1 / 8</div>
         </div>
-
         <div class="progress-bar"><span id="progressFill"></span></div>
-
-        <div class="game-meta-row">
-          <button class="glass-chip" id="favoriteQuestionBtn">☆</button>
-          <button class="glass-chip" id="rateCategoryBtn">★</button>
-          <span class="glass-chip" id="roomStatusPill"></span>
-        </div>
-
-        <article class="question-card" id="questionCard">
+        <article class="question-card" id="questionCard" data-swipe="none">
+          <div class="swipe-label swipe-like">MATCH</div>
+          <div class="swipe-label swipe-nope">NOPE</div>
+          <div class="swipe-label swipe-skip">SKIP</div>
+          <button class="fav-chip" id="favoriteQuestionBtn" aria-label="Favorite">☆</button>
           <p class="question-text" id="questionText"></p>
         </article>
-
         <div class="answer-actions">
-          <button class="answer-btn answer-match" id="matchBtn"></button>
-          <button class="answer-btn answer-mismatch" id="mismatchBtn"></button>
-          <button class="answer-btn answer-skip" id="skipBtn"></button>
+          <button class="answer-btn answer-mismatch" id="mismatchBtn" data-i18n="mismatch">Не совпало</button>
+          <button class="answer-btn answer-skip" id="skipBtn" data-i18n="skip">Пропуск</button>
+          <button class="answer-btn answer-match" id="matchBtn" data-i18n="match">Совпало</button>
+        </div>
+        <div class="hero-actions stacked game-extra-actions">
+          <button class="secondary-btn" id="discussBtn" data-i18n="discuss">Обсудить этот вопрос</button>
+          <button class="secondary-btn" id="showRoomStatusBtn" data-i18n="roomStatus">Статус комнаты</button>
         </div>
       </section>
 
       <section class="screen" id="resultsScreen">
         <div class="results-card">
-          <span class="eyebrow" id="resultsEyebrow"></span>
-          <h2 id="resultsCategory"></h2>
+          <span class="eyebrow" data-i18n="results">Результат</span>
+          <h2 id="resultsCategory">Категория</h2>
           <div class="results-score" id="resultsScore">0%</div>
           <p class="results-message" id="resultsMessage"></p>
-          <div class="analysis-box" id="analysisBox"></div>
-
           <div class="stats-grid">
-            <div class="stat-box"><small id="statMatchLabel"></small><strong id="statMatch">0</strong></div>
-            <div class="stat-box"><small id="statMismatchLabel"></small><strong id="statMismatch">0</strong></div>
-            <div class="stat-box"><small id="statSkipLabel"></small><strong id="statSkip">0</strong></div>
+            <div class="stat-box"><small data-i18n="match">Совпало</small><strong id="statMatch">0</strong></div>
+            <div class="stat-box"><small data-i18n="mismatch">Не совпало</small><strong id="statMismatch">0</strong></div>
+            <div class="stat-box"><small data-i18n="skip">Пропуск</small><strong id="statSkip">0</strong></div>
           </div>
-
+          <div class="analysis-card">
+            <h3 data-i18n="analysis">AI-анализ пары</h3>
+            <ul id="analysisList"></ul>
+          </div>
           <div class="hero-actions stacked">
-            <button class="primary-btn" id="restartBtn"></button>
-            <button class="secondary-btn" id="changeCategoryBtn"></button>
-            <button class="secondary-btn" id="shareBtn"></button>
-            <button class="secondary-btn" id="saveCardBtn"></button>
+            <button class="primary-btn" id="restartBtn" data-i18n="playAgain">Пройти ещё раз</button>
+            <button class="secondary-btn" id="shareBtn" data-i18n="share">Поделиться результатом</button>
+            <button class="secondary-btn" id="shareImageBtn" data-i18n="shareImage">Сохранить картинку</button>
+            <button class="secondary-btn" id="changeCategoryBtn" data-i18n="changeCategory">Другая категория</button>
           </div>
         </div>
       </section>
 
       <section class="screen" id="historyScreen">
-        <div class="section-head compact">
-          <span class="eyebrow" id="historyEyebrow"></span>
-          <h2 id="historyTitle"></h2>
-          <p id="historySubtitle"></p>
-        </div>
+        <div class="section-head compact"><span class="eyebrow" data-i18n="history">История</span><h2 data-i18n="historyTitle">Последние игры</h2></div>
         <div class="history-list" id="historyList"></div>
-      </section>
-
-      <section class="screen" id="roomScreen">
-        <div class="panel-card">
-          <div class="section-head compact no-pad">
-            <span class="eyebrow" id="roomEyebrow"></span>
-            <h2 id="roomScreenTitle"></h2>
-            <p id="roomScreenSubtitle"></p>
-          </div>
-          <div class="room-code-box">
-            <small id="roomCodeLabel"></small>
-            <strong id="roomCodeValue">—</strong>
-          </div>
-          <div class="hero-actions stacked">
-            <button class="primary-btn" id="createRoomBtn"></button>
-            <button class="secondary-btn" id="joinRoomBtn"></button>
-            <button class="secondary-btn" id="invitePartnerBtn"></button>
-            <button class="secondary-btn hidden" id="leaveRoomBtn"></button>
-          </div>
-          <div class="room-members" id="roomMembers"></div>
-        </div>
+        <div class="section-head compact"><span class="eyebrow" data-i18n="achievements">Достижения</span></div>
+        <div class="achievements-list" id="achievementsList"></div>
       </section>
 
       <section class="screen" id="favoritesScreen">
-        <div class="section-head compact">
-          <span class="eyebrow" id="favoritesEyebrow"></span>
-          <h2 id="favoritesScreenTitle"></h2>
-          <p id="favoritesScreenSubtitle"></p>
-        </div>
-        <div class="list-stack" id="favoritesList"></div>
-      </section>
-
-      <section class="screen" id="achievementsScreen">
-        <div class="section-head compact">
-          <span class="eyebrow" id="achievementsEyebrow"></span>
-          <h2 id="achievementsScreenTitle"></h2>
-          <p id="achievementsScreenSubtitle"></p>
-        </div>
-        <div class="achievement-grid" id="achievementsList"></div>
+        <div class="section-head compact"><span class="eyebrow" data-i18n="favorites">Любимые</span><h2 data-i18n="favoritesTitle">Избранные вопросы</h2></div>
+        <div class="history-list" id="favoritesList"></div>
       </section>
 
       <section class="screen" id="premiumScreen">
-        <div class="panel-card premium-panel">
-          <span class="eyebrow" id="premiumEyebrow"></span>
-          <h2 id="premiumScreenTitle"></h2>
-          <p id="premiumScreenSubtitle"></p>
-          <div class="premium-features" id="premiumFeatures"></div>
-          <div class="hero-actions stacked">
-            <button class="primary-btn" id="activatePremiumBtn"></button>
-            <button class="secondary-btn" id="restorePremiumBtn"></button>
+        <div class="hero-card premium-card">
+          <span class="eyebrow">Premium</span>
+          <h1 data-i18n="premiumTitle">Глубже, честнее, ярче</h1>
+          <p data-i18n="premiumText">Открывайте премиум-категории, расширенный AI-анализ, красивые share-card и облачную историю пары.</p>
+          <div class="premium-list">
+            <div>💎 Hard Talk Pro</div>
+            <div>💎 Интимные deep-вопросы</div>
+            <div>💎 Полная история пары</div>
+            <div>💎 Расширенный разбор результатов</div>
           </div>
+          <div class="hero-actions stacked">
+            <button class="primary-btn" id="unlockPremiumBtn" data-i18n="unlockPremium">Разблокировать демо Premium</button>
+            <button class="secondary-btn" id="premiumBackBtn" data-i18n="back">Назад</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="roomsScreen">
+        <div class="section-head"><span class="eyebrow" data-i18n="rooms">Комнаты</span><h2 data-i18n="roomsTitle">Совместная игра</h2><p data-i18n="roomsText">Создай комнату, скопируй код или ссылку и пригласи партнёра прямо из Mini App.</p></div>
+        <div class="room-card">
+          <div class="hero-actions stacked">
+            <button class="primary-btn" id="createRoomBtn" data-i18n="createRoom">Создать комнату</button>
+            <div class="join-row"><input type="text" id="joinRoomInput" placeholder="ROOM123" /><button class="secondary-btn" id="joinRoomBtn" data-i18n="join">Войти</button></div>
+            <button class="secondary-btn" id="invitePartnerBtn" data-i18n="invitePartner">Пригласить партнёра</button>
+          </div>
+          <div class="room-status" id="roomStatusBox"></div>
         </div>
       </section>
     </main>
   </div>
 
-  <div class="modal hidden" id="adultModal" aria-hidden="true">
-    <div class="modal-card">
-      <span class="eyebrow">18+</span>
-      <h3 id="adultTitle"></h3>
-      <p id="adultText"></p>
-      <div class="hero-actions stacked">
-        <button class="primary-btn" id="adultConfirmBtn"></button>
-        <button class="secondary-btn" id="adultCancelBtn"></button>
-      </div>
-    </div>
-  </div>
+  <div class="modal hidden" id="adultModal"><div class="modal-card"><span class="eyebrow">18+</span><h3 data-i18n="adultTitle">Подтвердите возраст</h3><p data-i18n="adultText">Эта категория содержит откровенные вопросы.</p><div class="hero-actions stacked"><button class="primary-btn" id="adultConfirmBtn" data-i18n="adultConfirm">Мне есть 18</button><button class="secondary-btn" id="adultCancelBtn" data-i18n="back">Назад</button></div></div></div>
 
-  <div class="modal hidden" id="promptModal" aria-hidden="true">
-    <div class="modal-card">
-      <span class="eyebrow" id="promptEyebrow"></span>
-      <h3 id="promptTitle"></h3>
-      <p id="promptText"></p>
-      <input class="text-input" id="promptInput" type="text" maxlength="24" />
-      <div class="hero-actions stacked">
-        <button class="primary-btn" id="promptConfirmBtn"></button>
-        <button class="secondary-btn" id="promptCancelBtn"></button>
-      </div>
-    </div>
-  </div>
+  <div class="modal hidden" id="discussionModal"><div class="modal-card"><span class="eyebrow" data-i18n="discuss">Обсудить</span><h3 id="discussionTitle">Обсудите этот вопрос</h3><p data-i18n="discussionText">Поговорите 2 минуты, а потом продолжайте.</p><div class="timer" id="discussionTimer">02:00</div><div class="hero-actions stacked"><button class="primary-btn" id="closeDiscussionBtn" data-i18n="continue">Продолжить</button></div></div></div>
 
+  <canvas id="shareCanvas" width="1080" height="1350" class="hidden"></canvas>
   <script src="app.js" defer></script>
 </body>
 </html>
