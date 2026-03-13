@@ -33,6 +33,7 @@
             </button>
           </div>
 
+          <form id="homeForm" novalidate>
           <div class="mode-card">
             <label class="switch-row">
               <div>
@@ -54,7 +55,8 @@
             </label>
           </div>
 
-          <button class="primary-btn full" id="continueBtn">Продолжить</button>
+          <button class="primary-btn full" id="continueBtn" type="submit" onclick="window.__continueFromHome && window.__continueFromHome(event)">Продолжить</button>
+        </form>
         </div>
       </section>
 

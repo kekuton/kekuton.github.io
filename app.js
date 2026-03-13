@@ -17,6 +17,7 @@ const ui = {
   namesBlock: $('namesBlock'),
   playerOneInput: $('playerOneInput'),
   playerTwoInput: $('playerTwoInput'),
+  homeForm: $('homeForm'),
   continueBtn: $('continueBtn'),
   dailyBtn: $('dailyBtn'),
   premiumBtn: $('premiumBtn'),
@@ -480,18 +481,23 @@ function onPointerUp(e) {
   ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg)';
 }
 
-function continueFromHome() {
-  state.anonymous = ui.anonymousToggle.checked;
-  state.playerOne = ui.playerOneInput.value.trim();
-  state.playerTwo = ui.playerTwoInput.value.trim();
+function continueFromHome(event) {
+  if (event && typeof event.preventDefault === 'function') event.preventDefault();
+  state.anonymous = !!ui.anonymousToggle.checked;
+  state.playerOne = (ui.playerOneInput.value || '').trim();
+  state.playerTwo = (ui.playerTwoInput.value || '').trim();
+
   if (!state.anonymous && (!state.playerOne || !state.playerTwo)) {
     alert('Заполни оба имени или включи анонимный режим.');
-    return;
+    return false;
   }
+
   ui.playerLabel.textContent = getDisplayNames();
   renderCategories();
   showScreen('categories');
+  return false;
 }
+window.__continueFromHome = continueFromHome;
 
 async function init() {
   initTheme();
@@ -506,7 +512,8 @@ async function init() {
   ui.anonymousToggle.addEventListener('change', () => {
     ui.namesBlock.style.display = ui.anonymousToggle.checked ? 'none' : 'grid';
   });
-  ui.continueBtn.addEventListener('click', continueFromHome);
+  if (ui.homeForm) ui.homeForm.addEventListener('submit', continueFromHome);
+  if (ui.continueBtn) ui.continueBtn.addEventListener('click', continueFromHome);
   ui.dailyBtn.addEventListener('click', () => showScreen('daily'));
   ui.premiumBtn.addEventListener('click', () => showScreen('premium'));
   ui.themeBtn.addEventListener('click', () => applyTheme(document.body.classList.contains('light') ? 'dark' : 'light'));
