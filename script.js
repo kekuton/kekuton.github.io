@@ -139,14 +139,17 @@ function renderCategories() {
     const count = Array.isArray(state.questionsData[cat.id]) ? state.questionsData[cat.id].length : 0;
     const btn = document.createElement('button');
     btn.className = 'category-card';
+    btn.dataset.slug = cat.id.toLowerCase().replace(/[^а-яa-z0-9]+/g, '-');
+    btn.dataset.icon = cat.icon;
     btn.innerHTML = `
       <div class="card-topline">
         <div class="emoji">${cat.icon}</div>
         ${cat.adult ? '<span class="adult-badge">18+</span>' : ''}
       </div>
+      <div class="category-art" aria-hidden="true">${cat.icon}</div>
       <div class="name">${cat.id}</div>
       <div class="desc">${cat.desc}</div>
-      <div class="desc">${count} вопросов</div>
+      <div class="desc count">${count} вопросов</div>
     `;
     btn.addEventListener('click', () => handleCategoryClick(cat));
     el.categoriesGrid.appendChild(btn);
