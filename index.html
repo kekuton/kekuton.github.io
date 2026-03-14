@@ -1,188 +1,145 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#8b5cf6">
-  <title>Вопросы для двоих Premium</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Вопросы для двоих</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app-shell">
-    <header class="topbar">
-      <button class="icon-btn hidden" id="backBtn" aria-label="Назад">←</button>
-      <div class="brand-pill">Вопросы для двоих</div>
-      <button class="icon-btn" id="themeBtn" aria-label="Тема">☼</button>
-    </header>
+    <button id="backBtn" class="icon-btn hidden" type="button" aria-label="Назад">←</button>
+    <button id="themeBtn" class="icon-btn right" type="button" aria-label="Тема">◐</button>
 
-    <main class="screen-wrap">
-      <section class="screen screen-active" id="homeScreen">
-        <div class="panel hero-panel">
-          <span class="eyebrow">Monetized build</span>
-          <h1>Игра для пары с premium доступом</h1>
-          <p class="muted">Бесплатно доступен вопрос дня и базовые категории. Premium открывает архив, AI-анализ, красивые карточки результата и дополнительные паки.</p>
-
-          <div class="mini-grid">
-            <button class="mini-card" id="dailyBtn">
-              <strong>💌 Вопрос дня</strong>
-              <span>Бесплатно каждый день</span>
-            </button>
-            <button class="mini-card" id="premiumBtn">
-              <strong>💎 Premium</strong>
-              <span id="premiumStatusLabel">Не активирован</span>
-            </button>
+    <section id="homeScreen" class="screen screen-active">
+      <div class="hero card">
+        <div class="badge">Mini App</div>
+        <h1>Вопросы для двоих</h1>
+        <p class="sub">Красивое приложение для пары — честно отвечайте, обсуждайте и смотрите совместимость.</p>
+        <form id="homeForm" class="form-stack">
+          <label class="toggle-row">
+            <span>Анонимный режим</span>
+            <input id="anonymousToggle" type="checkbox" />
+          </label>
+          <div id="namesBlock" class="names-grid">
+            <input id="playerOneInput" type="text" placeholder="Имя 1" autocomplete="off" />
+            <input id="playerTwoInput" type="text" placeholder="Имя 2" autocomplete="off" />
           </div>
-
-          <form id="homeForm" novalidate>
-          <div class="mode-card">
-            <label class="switch-row">
-              <div>
-                <strong>Анонимный режим</strong>
-                <small>Можно играть без указания имён.</small>
-              </div>
-              <input type="checkbox" id="anonymousToggle">
-            </label>
-          </div>
-
-          <div class="field-grid" id="namesBlock">
-            <label class="field">
-              <span>Игрок 1</span>
-              <input id="playerOneInput" type="text" placeholder="Например, Саша" maxlength="24">
-            </label>
-            <label class="field">
-              <span>Игрок 2</span>
-              <input id="playerTwoInput" type="text" placeholder="Например, Маша" maxlength="24">
-            </label>
-          </div>
-
-          <button class="primary-btn full" id="continueBtn" type="submit" onclick="window.__continueFromHome && window.__continueFromHome(event)">Продолжить</button>
+          <button id="continueBtn" class="primary-btn" type="submit">Продолжить</button>
         </form>
+        <div class="home-actions">
+          <button id="dailyBtn" class="secondary-btn" type="button">Вопрос дня</button>
+          <button id="premiumBtn" class="secondary-btn" type="button">Premium</button>
         </div>
-      </section>
+        <div class="status-line">Статус Premium: <span id="premiumStatusLabel">Не активирован</span></div>
+      </div>
+    </section>
 
-      <section class="screen" id="categoriesScreen">
-        <div class="section-head">
-          <span class="eyebrow">Категории</span>
-          <h2>Выберите тему</h2>
-          <p class="muted" id="playerLabel"></p>
+    <section id="categoriesScreen" class="screen">
+      <div class="screen-head">
+        <div>
+          <div class="eyebrow" id="playerLabel">Игрок 1 + Игрок 2</div>
+          <h2>Выбери категорию</h2>
         </div>
-        <div class="categories-grid" id="categoriesGrid"></div>
-      </section>
+      </div>
+      <div id="categoriesGrid" class="categories-grid"></div>
+    </section>
 
-      <section class="screen" id="introScreen">
-        <div class="panel intro-panel" id="introCard"></div>
-      </section>
+    <section id="introScreen" class="screen">
+      <div id="introCard" class="card intro-card"></div>
+    </section>
 
-      <section class="screen" id="gameScreen">
-        <div class="game-head">
-          <div>
-            <span class="eyebrow" id="gameCategory"></span>
-            <h2 id="gameTitle">Вопрос</h2>
-          </div>
-          <div class="progress-badge" id="progressLabel">1 / 8</div>
+    <section id="gameScreen" class="screen">
+      <div class="screen-head compact">
+        <div>
+          <div class="eyebrow" id="gameCategory">Категория</div>
+          <h2 id="gameTitle">Ответьте честно</h2>
         </div>
-        <div class="progress-bar"><span id="progressFill"></span></div>
-
-        <article class="question-card" id="questionCard" data-swipe="none">
-          <div class="swipe-badge swipe-yes">MATCH</div>
-          <div class="swipe-badge swipe-no">NOPE</div>
-          <div class="swipe-badge swipe-skip">SKIP</div>
-          <p class="question-text" id="questionText"></p>
-        </article>
-
-        <div class="actions-grid">
-          <button class="answer-btn match" id="matchBtn">Совпало</button>
-          <button class="answer-btn mismatch" id="mismatchBtn">Не совпало</button>
-          <button class="answer-btn skip" id="skipBtn">Пропуск</button>
+        <div class="progress-mini" id="progressLabel">1 / 8</div>
+      </div>
+      <div class="progress-bar"><div id="progressFill"></div></div>
+      <div class="card game-card-stack">
+        <div class="swipe-label left">NOPE</div>
+        <div class="swipe-label right">MATCH</div>
+        <div class="swipe-label up">SKIP</div>
+        <div id="questionCard" class="question-card" data-swipe="none">
+          <div id="questionText" class="question-text">Вопрос</div>
         </div>
-      </section>
+      </div>
+      <div class="actions-row three">
+        <button id="mismatchBtn" class="secondary-btn danger" type="button">Не совпало</button>
+        <button id="skipBtn" class="secondary-btn" type="button">Пропуск</button>
+        <button id="matchBtn" class="primary-btn" type="button">Совпало</button>
+      </div>
+    </section>
 
-      <section class="screen" id="resultsScreen">
-        <div class="panel result-panel">
-          <span class="eyebrow">Результат</span>
-          <h2 id="resultsCategory"></h2>
-          <div class="results-score" id="resultsScore">0%</div>
-          <p class="muted" id="resultsMessage"></p>
-          <div class="stats-grid">
-            <div class="stat-box"><small>Совпало</small><strong id="statMatch">0</strong></div>
-            <div class="stat-box"><small>Не совпало</small><strong id="statMismatch">0</strong></div>
-            <div class="stat-box"><small>Пропуск</small><strong id="statSkip">0</strong></div>
-          </div>
-          <div class="analysis-box" id="analysisBox">
-            <strong>AI-анализ</strong>
-            <p id="analysisText" class="muted">Открой Premium, чтобы получить разбор пары.</p>
-          </div>
-          <div class="stacked-actions">
-            <button class="primary-btn full" id="restartBtn">Пройти ещё раз</button>
-            <button class="secondary-btn full" id="changeCategoryBtn">Другая категория</button>
-            <button class="secondary-btn full" id="shareBtn">Поделиться</button>
-            <button class="secondary-btn full" id="shareCardBtn">Скачать share-card</button>
-          </div>
+    <section id="resultsScreen" class="screen">
+      <div class="card result-card">
+        <div class="eyebrow" id="resultsCategory">Категория</div>
+        <h2 class="score" id="resultsScore">0%</h2>
+        <p id="resultsMessage" class="result-message"></p>
+        <div class="stats-grid">
+          <div class="stat"><span>Совпало</span><strong id="statMatch">0</strong></div>
+          <div class="stat"><span>Не совпало</span><strong id="statMismatch">0</strong></div>
+          <div class="stat"><span>Пропуск</span><strong id="statSkip">0</strong></div>
         </div>
-      </section>
-
-      <section class="screen" id="dailyScreen">
-        <div class="panel intro-panel">
-          <span class="eyebrow">Бесплатно</span>
-          <h2>Вопрос дня</h2>
-          <p class="daily-question" id="dailyQuestionText"></p>
-          <div class="stacked-actions">
-            <button class="primary-btn full" id="dailyPlayBtn">Играть категорию вопроса дня</button>
-            <button class="secondary-btn full" id="dailyArchiveBtn">Открыть Premium архив</button>
-          </div>
+        <div class="analysis-box">
+          <div class="eyebrow">AI-анализ</div>
+          <p id="analysisText">Доступен в Premium.</p>
         </div>
-      </section>
-
-      <section class="screen" id="premiumScreen">
-        <div class="panel premium-panel">
-          <span class="eyebrow">Монетизация</span>
-          <h2>Premium и паки</h2>
-          <p class="muted">Подписка открывает весь архив, AI-анализ и красивые share-card. Паки можно купить отдельно.</p>
-
-          <div class="premium-status" id="premiumStatusBig"></div>
-
-          <div class="feature-list">
-            <div class="feature-item">💎 3 дня trial</div>
-            <div class="feature-item">🧠 Premium AI-анализ</div>
-            <div class="feature-item">🖼 Premium share-card</div>
-            <div class="feature-item">📚 Premium архив вопросов</div>
-            <div class="feature-item">🔥 Hard Talk</div>
-            <div class="feature-item">🔞 18+</div>
-            <div class="feature-item">🧠 Психология+</div>
-          </div>
-
-          <div class="stacked-actions">
-            <button class="primary-btn full" id="startTrialBtn">Попробовать 3 дня бесплатно</button>
-            <button class="primary-btn full" id="buySubscriptionBtn">Активировать Premium</button>
-          </div>
-
-          <div class="pack-grid">
-            <button class="pack-card" data-pack="hard">
-              <strong>Hard Talk</strong>
-              <span>Разовая покупка</span>
-            </button>
-            <button class="pack-card" data-pack="adult">
-              <strong>18+</strong>
-              <span>Разовая покупка</span>
-            </button>
-            <button class="pack-card" data-pack="psyplus">
-              <strong>Психология+</strong>
-              <span>Разовая покупка</span>
-            </button>
-          </div>
+        <div class="actions-row wrap">
+          <button id="restartBtn" class="primary-btn" type="button">Ещё раз</button>
+          <button id="changeCategoryBtn" class="secondary-btn" type="button">К категориям</button>
+          <button id="shareBtn" class="secondary-btn" type="button">Поделиться</button>
+          <button id="shareCardBtn" class="secondary-btn" type="button">PNG card</button>
         </div>
-      </section>
-    </main>
+      </div>
+    </section>
+
+    <section id="dailyScreen" class="screen">
+      <div class="card">
+        <div class="eyebrow">Бесплатно</div>
+        <h2>Вопрос дня</h2>
+        <p id="dailyQuestionText" class="daily-question"></p>
+        <div class="actions-row wrap">
+          <button id="dailyPlayBtn" class="primary-btn" type="button">Играть категорию</button>
+          <button id="dailyArchiveBtn" class="secondary-btn" type="button">Архив</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="premiumScreen" class="screen">
+      <div class="card">
+        <div class="eyebrow">Монетизация</div>
+        <h2>Premium</h2>
+        <p id="premiumStatusBig" class="sub">Не активирован</p>
+        <ul class="feature-list">
+          <li>Premium AI-анализ</li>
+          <li>Красивые share-card</li>
+          <li>Архив вопросов</li>
+          <li>Hard Talk, 18+, Психология+</li>
+        </ul>
+        <div class="actions-row wrap">
+          <button id="startTrialBtn" class="primary-btn" type="button">3 дня бесплатно</button>
+          <button id="buySubscriptionBtn" class="secondary-btn" type="button">Включить Premium</button>
+        </div>
+        <div class="pack-grid">
+          <button class="pack-card" data-pack="hard" type="button">Hard Talk</button>
+          <button class="pack-card" data-pack="adult" type="button">18+</button>
+          <button class="pack-card" data-pack="psyplus" type="button">Психология+</button>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <div class="modal hidden" id="adultModal">
-    <div class="panel modal-panel">
-      <span class="eyebrow">18+</span>
-      <h3>Подтверждение возраста</h3>
-      <p class="muted">Эта категория доступна только после подтверждения возраста.</p>
-      <div class="stacked-actions">
-        <button class="primary-btn full" id="adultConfirmBtn">Мне есть 18</button>
-        <button class="secondary-btn full" id="adultCancelBtn">Назад</button>
+  <div id="adultModal" class="modal hidden">
+    <div class="modal-card card">
+      <div class="eyebrow">18+</div>
+      <h3>Подтверди возраст</h3>
+      <p class="sub">Категория содержит откровенные вопросы.</p>
+      <div class="actions-row wrap">
+        <button id="adultConfirmBtn" class="primary-btn" type="button">Мне есть 18</button>
+        <button id="adultCancelBtn" class="secondary-btn" type="button">Отмена</button>
       </div>
     </div>
   </div>
