@@ -1,144 +1,465 @@
-const $ = (id) => document.getElementById(id);
-
 const screens = {
-  home: $('homeScreen'), categories: $('categoriesScreen'), intro: $('introScreen'), game: $('gameScreen'),
-  results: $('resultsScreen'), daily: $('dailyScreen'), premium: $('premiumScreen')
+  home: document.getElementById('homeScreen'),
+  categories: document.getElementById('categoriesScreen'),
+  intro: document.getElementById('categoryIntroScreen'),
+  game: document.getElementById('gameScreen'),
+  results: document.getElementById('resultsScreen'),
+  history: document.getElementById('historyScreen')
 };
 
 const ui = {
-  backBtn: $('backBtn'), themeBtn: $('themeBtn'), anonymousToggle: $('anonymousToggle'), namesBlock: $('namesBlock'),
-  playerOneInput: $('playerOneInput'), playerTwoInput: $('playerTwoInput'), homeForm: $('homeForm'), continueBtn: $('continueBtn'),
-  dailyBtn: $('dailyBtn'), premiumBtn: $('premiumBtn'), premiumStatusLabel: $('premiumStatusLabel'), playerLabel: $('playerLabel'),
-  categoriesGrid: $('categoriesGrid'), introCard: $('introCard'), gameCategory: $('gameCategory'), gameTitle: $('gameTitle'),
-  progressLabel: $('progressLabel'), progressFill: $('progressFill'), questionCard: $('questionCard'), questionText: $('questionText'),
-  matchBtn: $('matchBtn'), mismatchBtn: $('mismatchBtn'), skipBtn: $('skipBtn'), resultsCategory: $('resultsCategory'),
-  resultsScore: $('resultsScore'), resultsMessage: $('resultsMessage'), analysisText: $('analysisText'), statMatch: $('statMatch'),
-  statMismatch: $('statMismatch'), statSkip: $('statSkip'), restartBtn: $('restartBtn'), changeCategoryBtn: $('changeCategoryBtn'),
-  shareBtn: $('shareBtn'), shareCardBtn: $('shareCardBtn'), dailyQuestionText: $('dailyQuestionText'), dailyPlayBtn: $('dailyPlayBtn'),
-  dailyArchiveBtn: $('dailyArchiveBtn'), premiumStatusBig: $('premiumStatusBig'), startTrialBtn: $('startTrialBtn'),
-  buySubscriptionBtn: $('buySubscriptionBtn'), adultModal: $('adultModal'), adultConfirmBtn: $('adultConfirmBtn'), adultCancelBtn: $('adultCancelBtn')
+  backBtn: document.getElementById('backBtn'),
+  themeBtn: document.getElementById('themeBtn'),
+  startBtn: document.getElementById('startBtn'),
+  historyBtn: document.getElementById('historyBtn'),
+  categoriesGrid: document.getElementById('categoriesGrid'),
+  introCard: document.getElementById('categoryIntroCard'),
+  gameCategory: document.getElementById('gameCategory'),
+  gameTitle: document.getElementById('gameTitle'),
+  progressLabel: document.getElementById('progressLabel'),
+  progressFill: document.getElementById('progressFill'),
+  questionText: document.getElementById('questionText'),
+  questionCard: document.getElementById('questionCard'),
+  matchBtn: document.getElementById('matchBtn'),
+  mismatchBtn: document.getElementById('mismatchBtn'),
+  skipBtn: document.getElementById('skipBtn'),
+  resultsCategory: document.getElementById('resultsCategory'),
+  resultsScore: document.getElementById('resultsScore'),
+  resultsMessage: document.getElementById('resultsMessage'),
+  statMatch: document.getElementById('statMatch'),
+  statMismatch: document.getElementById('statMismatch'),
+  statSkip: document.getElementById('statSkip'),
+  restartBtn: document.getElementById('restartBtn'),
+  changeCategoryBtn: document.getElementById('changeCategoryBtn'),
+  shareBtn: document.getElementById('shareBtn'),
+  historyList: document.getElementById('historyList'),
+  adultModal: document.getElementById('adultModal'),
+  adultConfirmBtn: document.getElementById('adultConfirmBtn'),
+  adultCancelBtn: document.getElementById('adultCancelBtn')
 };
 
-const navStack = ['home'];
-const swipe = { active: false, startX: 0, startY: 0, currentX: 0, currentY: 0, id: null };
-const premiumState = { isPremium: false, trialStartedAt: null, purchasedPacks: [] };
-const state = { anonymous: false, playerOne: '', playerTwo: '' };
-let questionsData = {};
-let currentCategory = null, currentQuestions = [], currentIndex = 0, pendingAdultCategory = null, dailyCategory = null;
-let stats = { match: 0, mismatch: 0, skip: 0 };
-
 const categoryMeta = [
-  { id: 'На расстоянии', icon: '✈️', desc: 'Для пар в разлуке', color: 'linear-gradient(180deg,#38bdf8,#6366f1)', premium: false },
-  { id: 'Будущее', icon: '🔮', desc: 'Планы, мечты и семья', color: 'linear-gradient(180deg,#c084fc,#ec4899)', premium: false },
-  { id: 'Финансы', icon: '💰', desc: 'Деньги, цели и бюджет пары', color: 'linear-gradient(180deg,#f59e0b,#f97316)', premium: false },
-  { id: 'Воспоминания', icon: '📸', desc: 'Лучшие моменты ваших отношений', color: 'linear-gradient(180deg,#60a5fa,#8b5cf6)', premium: false },
-  { id: 'Hard Talk', sourceId: 'Флаги', icon: '🔥', desc: 'Сложные и прямые разговоры', color: 'linear-gradient(180deg,#ef4444,#7c2d12)', premium: true, pack: 'hard' },
-  { id: '18+', sourceId: 'Интимные вопросы', icon: '🔞', desc: 'Откровенные вопросы для близости', color: 'linear-gradient(180deg,#f59e0b,#fb7185)', premium: true, pack: 'adult', ageRestricted: true },
-  { id: 'Психология+', sourceId: 'Психология', icon: '🧠', desc: 'Глубокие темы про эмоции и границы', color: 'linear-gradient(180deg,#22c55e,#14b8a6)', premium: true, pack: 'psyplus' },
+  { id: 'Интимные вопросы', icon: '🔞', desc: 'Откровенные вопросы для близости', color: 'linear-gradient(180deg,#f59e0b,#fb7185)', badge: '18+' },
+  { id: 'На расстоянии', icon: '✈️', desc: 'Для пар в разлуке', color: 'linear-gradient(180deg,#38bdf8,#6366f1)' },
+  { id: 'Будущее', icon: '🔮', desc: 'Планы, мечты и семья', color: 'linear-gradient(180deg,#c084fc,#ec4899)' },
+  { id: 'Финансы', icon: '💰', desc: 'Деньги, цели и бюджет пары', color: 'linear-gradient(180deg,#f59e0b,#f97316)' },
+  { id: 'Психология', icon: '🧠', desc: 'Эмоции, доверие и границы', color: 'linear-gradient(180deg,#22c55e,#14b8a6)' },
+  { id: 'Воспоминания', icon: '📸', desc: 'Лучшие моменты ваших отношений', color: 'linear-gradient(180deg,#60a5fa,#8b5cf6)' }
 ];
 
-function saveJSON(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
-function loadJSON(key, fallback) { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } }
-function loadPremium() { Object.assign(premiumState, loadJSON('premium_state', premiumState)); }
-function savePremium() { saveJSON('premium_state', premiumState); updatePremiumUI(); }
-function startTrial() { if (premiumState.trialStartedAt) return; premiumState.trialStartedAt = Date.now(); premiumState.isPremium = true; savePremium(); alert('Пробный доступ на 3 дня активирован.'); }
-function checkTrial() { if (!premiumState.trialStartedAt) return; const days=(Date.now()-premiumState.trialStartedAt)/86400000; if (days>3) { premiumState.isPremium=false; savePremium(); } }
-function buySubscription() { premiumState.isPremium = true; savePremium(); alert('Premium активирован.'); }
-function buyPack(pack) { if (!premiumState.purchasedPacks.includes(pack)) premiumState.purchasedPacks.push(pack); savePremium(); alert('Пакет открыт.'); }
-function hasPack(pack) { return premiumState.purchasedPacks.includes(pack); }
-function canAccessCategory(cat) { return !cat.premium || premiumState.isPremium || hasPack(cat.pack); }
-function updatePremiumUI() {
-  let status='Не активирован';
-  if (premiumState.isPremium && premiumState.trialStartedAt) { const left=Math.max(0,3-Math.floor((Date.now()-premiumState.trialStartedAt)/86400000)); status=`Trial / Premium · ${left} дн.`; }
-  else if (premiumState.isPremium) status='Premium активен';
-  if (ui.premiumStatusLabel) ui.premiumStatusLabel.textContent=status;
-  if (ui.premiumStatusBig) ui.premiumStatusBig.textContent=`${status}${premiumState.purchasedPacks.length ? ` · Пакеты: ${premiumState.purchasedPacks.join(', ')}` : ''}`;
+let questionsData = {};
+let currentCategory = null;
+let currentQuestions = [];
+let currentIndex = 0;
+let stats = { match: 0, mismatch: 0, skip: 0 };
+let pendingAdultCategory = null;
+let navStack = ['home'];
+
+const swipeState = {
+  active: false,
+  startX: 0,
+  startY: 0,
+  currentX: 0,
+  currentY: 0,
+  dragging: false,
+  pointerId: null
+};
+
+function showScreen(name) {
+  Object.values(screens).forEach(screen => screen.classList.remove('screen-active'));
+  screens[name].classList.add('screen-active');
+  const rootScreens = ['home', 'categories'];
+  ui.backBtn.classList.toggle('hidden', rootScreens.includes(name));
+  if (navStack[navStack.length - 1] !== name) navStack.push(name);
 }
 
-function applyTheme(mode) { document.body.classList.toggle('light', mode==='light'); localStorage.setItem('couples_theme', mode); }
-function initTheme() { applyTheme(localStorage.getItem('couples_theme')==='light' ? 'light' : 'dark'); }
-function getDisplayNames() { return state.anonymous ? 'Анонимный режим' : `${state.playerOne || 'Игрок 1'} + ${state.playerTwo || 'Игрок 2'}`; }
-function vibrate(pattern) { if (navigator.vibrate) navigator.vibrate(pattern); }
-function shuffle(list) { const arr=[...list]; for (let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
-function showScreen(name, resetStack=false) {
-  Object.values(screens).forEach((screen)=>screen.classList.remove('screen-active'));
-  screens[name].classList.add('screen-active');
-  if (resetStack) { navStack.length=0; navStack.push(name); }
-  else if (navStack[navStack.length-1]!==name) navStack.push(name);
-  ui.backBtn.classList.toggle('hidden', ['home','categories'].includes(name));
+function goBack() {
+  if (navStack.length <= 1) return;
+  navStack.pop();
+  const prev = navStack[navStack.length - 1];
+  Object.values(screens).forEach(screen => screen.classList.remove('screen-active'));
+  screens[prev].classList.add('screen-active');
+  ui.backBtn.classList.toggle('hidden', ['home', 'categories'].includes(prev));
 }
-function goBack() { if (navStack.length<=1) return; navStack.pop(); const prev=navStack[navStack.length-1]; Object.values(screens).forEach((screen)=>screen.classList.remove('screen-active')); screens[prev].classList.add('screen-active'); ui.backBtn.classList.toggle('hidden', ['home','categories'].includes(prev)); }
-function getQuestionPool(cat) { const sourceId=cat.sourceId || cat.id; return questionsData[sourceId] || []; }
+
+function applyTheme(next) {
+  document.body.classList.toggle('light', next === 'light');
+  localStorage.setItem('couples_theme', next);
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('couples_theme');
+  applyTheme(saved === 'light' ? 'light' : 'dark');
+}
+
+function loadHistory() {
+  try {
+    return JSON.parse(localStorage.getItem('couples_history') || '[]');
+  } catch {
+    return [];
+  }
+}
+
+function saveHistory(entry) {
+  const history = loadHistory();
+  history.unshift(entry);
+  localStorage.setItem('couples_history', JSON.stringify(history.slice(0, 12)));
+}
+
+function renderHistory() {
+  const history = loadHistory();
+  if (!history.length) {
+    ui.historyList.innerHTML = '<div class="history-empty">Здесь будут появляться результаты после прохождения категорий.</div>';
+    return;
+  }
+  ui.historyList.innerHTML = history.map(item => `
+    <article class="history-item">
+      <strong>${item.category}</strong>
+      <div>${item.score}% совместимости</div>
+      <small>${item.date}</small>
+    </article>
+  `).join('');
+}
+
+function resultMessage(score) {
+  if (score >= 100) return 'Идеальное совпадение. Похоже, на эту тему вы мыслите как одна команда.';
+  if (score >= 85) return 'У вас очень сильное совпадение — похоже, вы отлично чувствуете друг друга.';
+  if (score >= 60) return 'Хороший результат. У вас много общего, но есть темы, которые стоит обсудить глубже.';
+  if (score >= 35) return 'Есть заметные различия. Это хороший повод поговорить откровенно.';
+  return 'У вас разные взгляды на тему категории — начните с честного разговора без давления.';
+}
 
 function renderCategories() {
-  ui.categoriesGrid.innerHTML = categoryMeta.map((cat)=>{
-    const count=getQuestionPool(cat).length; const locked=!canAccessCategory(cat);
-    return `<button class="category-card" data-id="${cat.id}" style="background:${cat.color}"><div class="category-top"><div class="category-icon">${cat.icon}</div>${cat.premium ? '<span class="category-badge">Premium</span>' : ''}</div><div><h3>${cat.id}</h3><p>${cat.desc}</p></div><div class="category-count">${count} вопросов${locked ? ' · 🔒' : ''}</div></button>`;
+  ui.categoriesGrid.innerHTML = categoryMeta.map(cat => {
+    const count = (questionsData[cat.id] || []).length;
+    return `
+      <button class="category-card" data-id="${cat.id}" style="background:${cat.color}">
+        <div class="category-card-top">
+          <div class="category-icon">${cat.icon}</div>
+          ${cat.badge ? `<span class="category-badge">${cat.badge}</span>` : ''}
+        </div>
+        <div>
+          <h3>${cat.id}</h3>
+          <p>${cat.desc}</p>
+        </div>
+        <div class="category-count">${count} вопросов</div>
+      </button>
+    `;
   }).join('');
-  ui.categoriesGrid.querySelectorAll('.category-card').forEach((card)=>card.addEventListener('click', ()=>openCategory(card.dataset.id)));
+
+  ui.categoriesGrid.querySelectorAll('.category-card').forEach(card => {
+    card.addEventListener('click', () => openCategory(card.dataset.id));
+  });
 }
 
 function openCategory(categoryId) {
-  const category = categoryMeta.find((cat)=>cat.id===categoryId);
-  if (!category) return;
-  if (!canAccessCategory(category)) { showScreen('premium'); return; }
-  if (category.ageRestricted && localStorage.getItem('adult_ok') !== 'yes') { pendingAdultCategory = categoryId; ui.adultModal.classList.remove('hidden'); return; }
-  currentCategory = category;
-  const total=getQuestionPool(category).length;
-  ui.introCard.innerHTML = `<div class="intro-illu">${category.icon}</div><span class="eyebrow">${category.premium ? 'Premium' : 'Категория'}</span><h2>${category.id}</h2><p class="muted">${category.desc}</p><p class="muted">${total} вопросов в архиве. В игру пойдут 8 случайных карточек.</p><div class="stacked-actions"><button class="primary-btn full" type="button" id="startCategoryBtn">Начать игру</button>${premiumState.isPremium ? '<button class="secondary-btn full" type="button" id="openArchiveBtn">Открыть архив вопросов</button>' : ''}</div>`;
-  const startBtn = $('startCategoryBtn'); if (startBtn) startBtn.addEventListener('click', startCategoryGame);
-  const archBtn = $('openArchiveBtn'); if (archBtn) archBtn.addEventListener('click', showArchive);
+  if (categoryId === 'Интимные вопросы' && localStorage.getItem('adult_ok') !== 'yes') {
+    pendingAdultCategory = categoryId;
+    ui.adultModal.classList.remove('hidden');
+    return;
+  }
+
+  currentCategory = categoryMeta.find(c => c.id === categoryId);
+  const total = (questionsData[categoryId] || []).length;
+  ui.introCard.innerHTML = `
+    <div class="intro-illu">${currentCategory.icon}</div>
+    <span class="eyebrow">${currentCategory.badge || 'Категория'}</span>
+    <h2>${currentCategory.id}</h2>
+    <p class="intro-subtext">${currentCategory.desc}</p>
+    <p class="intro-subtext">${total} вопросов в колоде. Нажмите ниже, чтобы начать новую игру.</p>
+    <div class="hero-actions stacked">
+      <button class="primary-btn" id="playCategoryBtn">Новая игра</button>
+      <button class="secondary-btn" id="backToCategoriesBtn">Назад</button>
+    </div>
+  `;
   showScreen('intro');
+  document.getElementById('playCategoryBtn').addEventListener('click', startGame);
+  document.getElementById('backToCategoriesBtn').addEventListener('click', goBack);
 }
 
-function showArchive() {
-  if (!premiumState.isPremium) { showScreen('premium'); return; }
-  const list = getQuestionPool(currentCategory).slice(0, 30).map((q)=>`<li>${q}</li>`).join('');
-  ui.introCard.innerHTML = `<span class="eyebrow">Premium архив</span><h2>${currentCategory.id}</h2><div class="card" style="padding:14px;background:rgba(255,255,255,.06)"><ol style="margin:0;padding-left:20px;display:grid;gap:10px">${list}</ol></div><div class="stacked-actions"><button class="primary-btn full" type="button" id="backToIntroBtn">Назад</button></div>`;
-  $('backToIntroBtn').addEventListener('click', ()=>openCategory(currentCategory.id));
+function shuffle(array) {
+  return [...array].sort(() => Math.random() - 0.5);
 }
 
-function startCategoryGame() {
-  if (!currentCategory) return;
-  const pool = getQuestionPool(currentCategory);
-  currentQuestions = shuffle(pool).slice(0, Math.min(8, pool.length));
-  if (!currentQuestions.length) { alert('В этой категории пока нет вопросов.'); return; }
-  currentIndex = 0; stats = { match: 0, mismatch: 0, skip: 0 };
-  ui.gameCategory.textContent = currentCategory.id;
-  ui.gameTitle.textContent = 'Ответьте честно';
+function startGame() {
+  currentQuestions = shuffle(questionsData[currentCategory.id]).slice(0, 8);
+  currentIndex = 0;
+  stats = { match: 0, mismatch: 0, skip: 0 };
+  resetQuestionCard();
   renderQuestion(true);
   showScreen('game');
 }
 
-function renderQuestion(initial=false) {
-  const q=currentQuestions[currentIndex];
-  ui.questionText.textContent=q || 'Нет вопроса';
-  ui.progressLabel.textContent=`${currentIndex+1} / ${currentQuestions.length}`;
-  ui.progressFill.style.width=`${((currentIndex+1)/currentQuestions.length)*100}%`;
-  ui.questionCard.dataset.swipe='none';
-  ui.questionCard.classList.remove('glow-match','glow-mismatch');
-  ui.questionCard.style.transition='none';
-  ui.questionCard.style.transform=initial?'translate3d(0,0,0) rotate(0deg) scale(1)':'translate3d(0,22px,0) rotate(0deg) scale(.98)';
-  ui.questionCard.style.opacity=initial?'1':'0';
-  requestAnimationFrame(()=>{ ui.questionCard.style.transition='transform 260ms cubic-bezier(.2,.9,.2,1), opacity 220ms ease'; ui.questionCard.style.transform='translate3d(0,0,0) rotate(0deg) scale(1)'; ui.questionCard.style.opacity='1'; });
+function renderQuestion(isInitial = false) {
+  const total = currentQuestions.length;
+  const q = currentQuestions[currentIndex];
+  ui.gameCategory.textContent = currentCategory.id;
+  ui.gameTitle.textContent = 'Вопрос';
+  ui.questionText.textContent = q;
+  ui.progressLabel.textContent = `${currentIndex + 1} / ${total}`;
+  ui.progressFill.style.width = `${((currentIndex + 1) / total) * 100}%`;
+
+  ui.questionCard.classList.remove('card-fly-left', 'card-fly-right', 'card-fly-up', 'card-return');
+  if (!isInitial) ui.questionCard.classList.add('card-enter');
+  ui.questionCard.style.transition = 'none';
+  ui.questionCard.style.transform = isInitial ? 'translateY(0) scale(1)' : 'translateY(22px) scale(0.98)';
+  ui.questionCard.style.opacity = isInitial ? '1' : '0';
+  updateSwipeHint(0);
+
+  requestAnimationFrame(() => {
+    ui.questionCard.style.transition = 'transform 320ms cubic-bezier(.2,.9,.2,1), opacity 260ms ease';
+    ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
+    ui.questionCard.style.opacity = '1';
+  });
 }
-function animateOut(type, callback) { const map={ match:'translate3d(420px,-20px,0) rotate(16deg) scale(.96)', mismatch:'translate3d(-420px,-20px,0) rotate(-16deg) scale(.96)', skip:'translate3d(0,-320px,0) rotate(0) scale(.96)' }; ui.questionCard.classList.toggle('glow-match', type==='match'); ui.questionCard.classList.toggle('glow-mismatch', type==='mismatch'); ui.questionCard.style.transition='transform 280ms cubic-bezier(.2,.9,.2,1), opacity 220ms ease'; ui.questionCard.style.opacity='0'; ui.questionCard.style.transform=map[type]; setTimeout(callback, 250); }
-function completeAnswer(type) { stats[type]+=1; currentIndex+=1; if (currentIndex>=currentQuestions.length) finishGame(); else renderQuestion(); }
-function answer(type) { if (!currentQuestions.length) return; vibrate(type==='skip'?[10,30,10]:12); animateOut(type, ()=>completeAnswer(type)); }
-function launchConfetti() { const wrap=document.createElement('div'); wrap.className='confetti-wrap'; document.body.appendChild(wrap); const colors=['#f59e0b','#fb7185','#60a5fa','#22c55e','#fff']; for(let i=0;i<90;i++){ const piece=document.createElement('span'); piece.className='confetti-piece'; piece.style.left=`${Math.random()*100}%`; piece.style.top=`${-10-Math.random()*20}%`; piece.style.background=colors[Math.floor(Math.random()*colors.length)]; piece.style.animationDuration=`${2.2+Math.random()*1.8}s`; piece.style.transform=`rotate(${Math.random()*360}deg)`; wrap.appendChild(piece);} setTimeout(()=>wrap.remove(),4200); }
-function resultMessage(score){ if(score===100) return 'Идеальное совпадение. На эту тему вы реально на одной волне.'; if(score>=80) return 'Сильный результат. Вы очень хорошо чувствуете друг друга.'; if(score>=55) return 'Хорошо, но есть темы, которые можно обсудить глубже.'; if(score>=35) return 'Различия заметны. Это хороший повод для честного разговора.'; return 'Похоже, взгляды отличаются. Попробуйте обсудить ответы спокойно и без давления.'; }
-function generateAIAnalysis(score){ if(!premiumState.isPremium) return 'Premium AI-анализ доступен только по подписке.'; const insights=[]; if(score>=80) insights.push('У вас высокий уровень совпадения по этой теме. Вы обычно быстро понимаете позицию партнёра.'); if(score>=50 && score<80) insights.push('Вы во многом совпадаете, но часть ответов указывает на разные ожидания.'); if(score<50) insights.push('Есть заметные расхождения. Это не плохо, но лучше обсудить причины без давления.'); if(stats.skip>=2) insights.push('Вы часто пропускали вопросы — возможно, внутри темы есть зоны неловкости или сопротивления.'); if(currentCategory?.id==='Финансы') insights.push('Денежные вопросы лучше переводить в конкретные договорённости, а не общие обещания.'); if(currentCategory?.id==='Психология+') insights.push('Здесь важно не только совпадение, но и умение дослушать ответ партнёра до конца.'); if(currentCategory?.id==='Hard Talk') insights.push('Hard Talk лучше проходить короткими блоками, чтобы разговор не превращался в спор.'); return insights.join(' '); }
-function saveHistory(entry){ const history=loadJSON('game_history',[]); history.unshift(entry); saveJSON('game_history',history.slice(0,30)); }
-function finishGame(){ const answered=stats.match+stats.mismatch; const score=answered?Math.round((stats.match/answered)*100):0; ui.resultsCategory.textContent=currentCategory.id; ui.resultsScore.textContent=`${score}%`; ui.resultsMessage.textContent=resultMessage(score); ui.analysisText.textContent=generateAIAnalysis(score); ui.statMatch.textContent=stats.match; ui.statMismatch.textContent=stats.mismatch; ui.statSkip.textContent=stats.skip; saveHistory({ category: currentCategory.id, score, stats, at: Date.now() }); if(score===100 && stats.match>0){ vibrate([30,30,60]); launchConfetti(); } showScreen('results'); }
-async function shareResult(){ const text=`${getDisplayNames()} — ${currentCategory?.id || 'Категория'}: ${ui.resultsScore.textContent} совместимости.`; if (navigator.share) { try { await navigator.share({ title:'Вопросы для двоих', text }); return; } catch {} } try { await navigator.clipboard.writeText(text); alert('Результат скопирован.'); } catch { alert(text); } }
-function wrapText(ctx,text,maxWidth){ const words=String(text).split(' '); const lines=[]; let line=''; words.forEach((word)=>{ const test=line?`${line} ${word}`:word; if(ctx.measureText(test).width>maxWidth){ if(line) lines.push(line); line=word; } else line=test; }); if(line) lines.push(line); return lines; }
-function generateShareCard(){ if(!premiumState.isPremium){ alert('Красивые share-card доступны только в Premium.'); showScreen('premium'); return; } const canvas=document.createElement('canvas'); canvas.width=1200; canvas.height=630; const ctx=canvas.getContext('2d'); const grad=ctx.createLinearGradient(0,0,1200,630); grad.addColorStop(0,'#8b5cf6'); grad.addColorStop(1,'#ec4899'); ctx.fillStyle=grad; ctx.fillRect(0,0,1200,630); ctx.fillStyle='rgba(255,255,255,.12)'; if (ctx.roundRect) { ctx.beginPath(); ctx.roundRect(52,52,1096,526,28); ctx.fill(); } else { ctx.fillRect(52,52,1096,526); }
-ctx.fillStyle='#fff'; ctx.font='700 34px Arial'; ctx.fillText('Вопросы для двоих',92,120); ctx.font='800 94px Arial'; ctx.fillText(ui.resultsScore.textContent,92,270); ctx.font='700 54px Arial'; ctx.fillText(currentCategory?.id || 'Категория',92,360); ctx.font='400 34px Arial'; const lines=wrapText(ctx, generateAIAnalysis(parseInt(ui.resultsScore.textContent,10)),760); lines.slice(0,4).forEach((line,idx)=>ctx.fillText(line,92,430+idx*44)); ctx.font='600 28px Arial'; ctx.fillText(getDisplayNames(),92,555); const link=document.createElement('a'); link.download='share-card.png'; link.href=canvas.toDataURL('image/png'); link.click(); }
-function computeDailyQuestion(){ const freeCategories=categoryMeta.filter((c)=>!c.premium); const day=Math.floor(Date.now()/86400000); dailyCategory=freeCategories[day%freeCategories.length]; const pool=getQuestionPool(dailyCategory); const q=pool.length ? pool[day%pool.length] : 'Сегодня вопрос недоступен'; ui.dailyQuestionText.textContent=q; }
-function onPointerDown(e){ if(!screens.game.classList.contains('screen-active')) return; swipe.active=true; swipe.id=e.pointerId; swipe.startX=e.clientX; swipe.startY=e.clientY; swipe.currentX=e.clientX; swipe.currentY=e.clientY; ui.questionCard.setPointerCapture?.(e.pointerId); }
-function onPointerMove(e){ if(!swipe.active || e.pointerId!==swipe.id) return; swipe.currentX=e.clientX; swipe.currentY=e.clientY; const dx=swipe.currentX-swipe.startX; const dy=swipe.currentY-swipe.startY; ui.questionCard.style.transition='none'; ui.questionCard.style.transform=`translate3d(${dx}px, ${dy}px, 0) rotate(${dx/18}deg)`; if(Math.abs(dx)>Math.abs(dy)) ui.questionCard.dataset.swipe = dx>0?'right':'left'; else if(dy<-20) ui.questionCard.dataset.swipe='up'; else ui.questionCard.dataset.swipe='none'; }
-function onPointerUp(e){ if(!swipe.active || e.pointerId!==swipe.id) return; const dx=swipe.currentX-swipe.startX; const dy=swipe.currentY-swipe.startY; swipe.active=false; if(Math.abs(dx)>110 && Math.abs(dx)>Math.abs(dy)){ answer(dx>0?'match':'mismatch'); return; } if(dy<-110 && Math.abs(dy)>Math.abs(dx)){ answer('skip'); return; } ui.questionCard.dataset.swipe='none'; ui.questionCard.style.transition='transform 180ms ease'; ui.questionCard.style.transform='translate3d(0,0,0) rotate(0deg)'; }
-function continueFromHome(event){ if(event?.preventDefault) event.preventDefault(); state.anonymous=!!ui.anonymousToggle.checked; state.playerOne=(ui.playerOneInput.value||'').trim(); state.playerTwo=(ui.playerTwoInput.value||'').trim(); if(!state.anonymous && (!state.playerOne || !state.playerTwo)){ alert('Заполни оба имени или включи анонимный режим.'); return false; } ui.playerLabel.textContent=getDisplayNames(); renderCategories(); showScreen('categories', true); return false; }
-window.__continueFromHome=continueFromHome;
-async function init(){ initTheme(); loadPremium(); checkTrial(); updatePremiumUI(); const res=await fetch('questions.json'); questionsData=await res.json(); computeDailyQuestion(); ui.anonymousToggle.addEventListener('change', ()=>{ ui.namesBlock.style.display=ui.anonymousToggle.checked?'none':'grid'; }); ui.homeForm.addEventListener('submit', continueFromHome); ui.continueBtn.addEventListener('click', continueFromHome); ui.dailyBtn.addEventListener('click', ()=>showScreen('daily')); ui.premiumBtn.addEventListener('click', ()=>showScreen('premium')); ui.themeBtn.addEventListener('click', ()=>applyTheme(document.body.classList.contains('light')?'dark':'light')); ui.backBtn.addEventListener('click', goBack); ui.matchBtn.addEventListener('click', ()=>answer('match')); ui.mismatchBtn.addEventListener('click', ()=>answer('mismatch')); ui.skipBtn.addEventListener('click', ()=>answer('skip')); ui.restartBtn.addEventListener('click', startCategoryGame); ui.changeCategoryBtn.addEventListener('click', ()=>showScreen('categories', true)); ui.shareBtn.addEventListener('click', shareResult); ui.shareCardBtn.addEventListener('click', generateShareCard); ui.dailyPlayBtn.addEventListener('click', ()=>openCategory(dailyCategory.id)); ui.dailyArchiveBtn.addEventListener('click', ()=>showScreen('premium')); ui.startTrialBtn.addEventListener('click', startTrial); ui.buySubscriptionBtn.addEventListener('click', buySubscription); document.querySelectorAll('.pack-card').forEach((card)=>card.addEventListener('click', ()=>buyPack(card.dataset.pack))); ui.adultConfirmBtn.addEventListener('click', ()=>{ localStorage.setItem('adult_ok','yes'); ui.adultModal.classList.add('hidden'); if(pendingAdultCategory) { const next=pendingAdultCategory; pendingAdultCategory=null; openCategory(next); } }); ui.adultCancelBtn.addEventListener('click', ()=>{ pendingAdultCategory=null; ui.adultModal.classList.add('hidden'); }); ui.questionCard.addEventListener('pointerdown', onPointerDown); ui.questionCard.addEventListener('pointermove', onPointerMove); ui.questionCard.addEventListener('pointerup', onPointerUp); ui.questionCard.addEventListener('pointercancel', onPointerUp); let lastTouchEnd=0; document.addEventListener('touchend',(event)=>{ const now=Date.now(); if(now-lastTouchEnd<=300) event.preventDefault(); lastTouchEnd=now; }, { passive:false }); }
+
+function updateSwipeHint(offsetX) {
+  const intensity = Math.min(Math.abs(offsetX) / 120, 1);
+  const direction = offsetX > 0 ? 'right' : offsetX < 0 ? 'left' : 'none';
+  ui.questionCard.dataset.swipe = direction;
+  ui.questionCard.style.setProperty('--swipe-opacity', intensity.toFixed(2));
+}
+
+function resetQuestionCard() {
+  swipeState.active = false;
+  swipeState.dragging = false;
+  swipeState.pointerId = null;
+  ui.questionCard.dataset.swipe = 'none';
+  ui.questionCard.style.removeProperty('--swipe-opacity');
+  ui.questionCard.style.transition = '';
+  ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
+  ui.questionCard.style.opacity = '1';
+}
+
+function vibrate(pattern = 10) {
+  if (navigator.vibrate) navigator.vibrate(pattern);
+}
+
+function launchConfetti() {
+  const count = 120;
+  const colors = ['#f59e0b', '#f472b6', '#22c55e', '#60a5fa', '#ffffff', '#fde047'];
+  const wrap = document.createElement('div');
+  wrap.className = 'confetti-wrap';
+  document.body.appendChild(wrap);
+
+  for (let i = 0; i < count; i += 1) {
+    const piece = document.createElement('span');
+    piece.className = 'confetti-piece';
+    piece.style.left = `${Math.random() * 100}%`;
+    piece.style.top = `${-10 - Math.random() * 20}%`;
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.transform = `translate3d(0,0,0) rotate(${Math.random() * 360}deg)`;
+    piece.style.animationDuration = `${2.6 + Math.random() * 1.8}s`;
+    piece.style.animationDelay = `${Math.random() * 0.18}s`;
+    piece.style.setProperty('--drift', `${-80 + Math.random() * 160}px`);
+    wrap.appendChild(piece);
+  }
+
+  setTimeout(() => wrap.remove(), 4600);
+}
+
+function animateSwipeOut(type, callback) {
+  const card = ui.questionCard;
+  const map = {
+    match: { className: 'card-fly-right', x: 420, y: -20, rotate: 16 },
+    mismatch: { className: 'card-fly-left', x: -420, y: -20, rotate: -16 },
+    skip: { className: 'card-fly-up', x: 0, y: -360, rotate: 0 }
+  };
+  const cfg = map[type];
+  if (!cfg) return;
+
+  card.style.transition = 'transform 320ms cubic-bezier(.2,.9,.2,1), opacity 260ms ease';
+  card.style.opacity = '0';
+  card.style.transform = `translate3d(${cfg.x}px, ${cfg.y}px, 0) rotate(${cfg.rotate}deg) scale(0.96)`;
+  setTimeout(() => {
+    card.classList.remove('card-fly-right', 'card-fly-left', 'card-fly-up');
+    callback();
+  }, 280);
+}
+
+function completeAnswer(type) {
+  stats[type] += 1;
+  currentIndex += 1;
+  resetQuestionCard();
+  if (currentIndex >= currentQuestions.length) {
+    finishGame();
+  } else {
+    renderQuestion();
+  }
+}
+
+function answer(type) {
+  if (!['match', 'mismatch', 'skip'].includes(type)) return;
+  vibrate(type === 'skip' ? [8, 30, 8] : 12);
+  animateSwipeOut(type, () => completeAnswer(type));
+}
+
+function finishGame() {
+  const answered = stats.match + stats.mismatch;
+  const score = answered ? Math.round((stats.match / answered) * 100) : 0;
+
+  ui.resultsCategory.textContent = currentCategory.id;
+  ui.resultsScore.textContent = `${score}%`;
+  ui.resultsMessage.textContent = resultMessage(score);
+  ui.statMatch.textContent = stats.match;
+  ui.statMismatch.textContent = stats.mismatch;
+  ui.statSkip.textContent = stats.skip;
+
+  if (score === 100 && stats.match > 0) {
+    vibrate([40, 40, 60]);
+    launchConfetti();
+  }
+
+  saveHistory({
+    category: currentCategory.id,
+    score,
+    date: new Date().toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+  });
+  renderHistory();
+  showScreen('results');
+}
+
+async function shareResult() {
+  const text = `${currentCategory.id}: ${ui.resultsScore.textContent} совместимости. Совпало: ${stats.match}, не совпало: ${stats.mismatch}.`;
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: 'Вопросы для двоих', text });
+      return;
+    } catch {}
+  }
+  try {
+    await navigator.clipboard.writeText(text);
+    alert('Результат скопирован.');
+  } catch {
+    alert(text);
+  }
+}
+
+function preventDoubleTapZoom() {
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', e => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) e.preventDefault();
+    lastTouchEnd = now;
+  }, { passive: false });
+}
+
+function onPointerDown(e) {
+  if (!screens.game.classList.contains('screen-active')) return;
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  swipeState.active = true;
+  swipeState.dragging = true;
+  swipeState.pointerId = e.pointerId;
+  swipeState.startX = e.clientX;
+  swipeState.startY = e.clientY;
+  swipeState.currentX = e.clientX;
+  swipeState.currentY = e.clientY;
+  ui.questionCard.setPointerCapture?.(e.pointerId);
+  ui.questionCard.style.transition = 'none';
+}
+
+function onPointerMove(e) {
+  if (!swipeState.active || swipeState.pointerId !== e.pointerId) return;
+  if (e.cancelable) e.preventDefault();
+  swipeState.currentX = e.clientX;
+  swipeState.currentY = e.clientY;
+  const deltaX = swipeState.currentX - swipeState.startX;
+  const deltaY = swipeState.currentY - swipeState.startY;
+
+  if (Math.abs(deltaY) > Math.abs(deltaX) * 1.2 && Math.abs(deltaY) < 50) return;
+
+  const rotate = deltaX / 18;
+  const stretch = 1 - Math.min(Math.abs(deltaX) / 1200, 0.03);
+  ui.questionCard.style.transform = `translate3d(${deltaX}px, ${deltaY * 0.18}px, 0) rotate(${rotate}deg) scale(${stretch})`;
+  updateSwipeHint(deltaX);
+}
+
+function onPointerUp(e) {
+  if (!swipeState.active || swipeState.pointerId !== e.pointerId) return;
+  swipeState.active = false;
+  swipeState.dragging = false;
+
+  const deltaX = swipeState.currentX - swipeState.startX;
+  const deltaY = swipeState.currentY - swipeState.startY;
+  const velocity = Math.abs(deltaX) / Math.max(1, Math.abs(deltaY) + 1);
+  const threshold = window.innerWidth < 480 ? 70 : 90;
+
+  ui.questionCard.releasePointerCapture?.(e.pointerId);
+  swipeState.pointerId = null;
+
+  if (deltaX > threshold || (deltaX > 45 && velocity > 2.4)) {
+    answer('match');
+    return;
+  }
+  if (deltaX < -threshold || (deltaX < -45 && velocity > 2.4)) {
+    answer('mismatch');
+    return;
+  }
+
+  if (deltaY < -110 && Math.abs(deltaX) < 100) {
+    answer('skip');
+    return;
+  }
+
+  ui.questionCard.style.transition = 'transform 220ms cubic-bezier(.2,.9,.2,1)';
+  ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
+  updateSwipeHint(0);
+}
+
+function attachSwipeHandlers() {
+  ui.questionCard.addEventListener('pointerdown', onPointerDown);
+  ui.questionCard.addEventListener('pointermove', onPointerMove);
+  ui.questionCard.addEventListener('pointerup', onPointerUp);
+  ui.questionCard.addEventListener('pointercancel', onPointerUp);
+
+  // Фикс для Telegram WebView: не даём жесту карточки тащить сам Mini App
+  ui.questionCard.addEventListener('touchmove', (e) => {
+    if (e.cancelable) e.preventDefault();
+  }, { passive: false });
+}
+
+async function initTelegram() {
+  if (!(window.Telegram && window.Telegram.WebApp)) return;
+  const tg = window.Telegram.WebApp;
+  tg.ready();
+  tg.expand();
+
+  // Отключаем вертикальные свайпы Telegram, чтобы карточка не тянула весь Mini App
+  if (typeof tg.disableVerticalSwipes === 'function') {
+    try { tg.disableVerticalSwipes(); } catch {}
+  }
+}
+
+async function init() {
+  questionsData = await fetch('questions.json').then(r => r.json());
+  initTheme();
+  renderCategories();
+  renderHistory();
+  preventDoubleTapZoom();
+  initTelegram();
+  attachSwipeHandlers();
+
+  ui.startBtn.addEventListener('click', () => showScreen('categories'));
+  ui.historyBtn.addEventListener('click', () => showScreen('history'));
+  ui.backBtn.addEventListener('click', goBack);
+  ui.themeBtn.addEventListener('click', () => {
+    applyTheme(document.body.classList.contains('light') ? 'dark' : 'light');
+  });
+  ui.matchBtn.addEventListener('click', () => answer('match'));
+  ui.mismatchBtn.addEventListener('click', () => answer('mismatch'));
+  ui.skipBtn.addEventListener('click', () => answer('skip'));
+  ui.restartBtn.addEventListener('click', startGame);
+  ui.changeCategoryBtn.addEventListener('click', () => showScreen('categories'));
+  ui.shareBtn.addEventListener('click', shareResult);
+  ui.adultConfirmBtn.addEventListener('click', () => {
+    localStorage.setItem('adult_ok', 'yes');
+    ui.adultModal.classList.add('hidden');
+    if (pendingAdultCategory) openCategory(pendingAdultCategory);
+  });
+  ui.adultCancelBtn.addEventListener('click', () => {
+    pendingAdultCategory = null;
+    ui.adultModal.classList.add('hidden');
+  });
+}
+
 document.addEventListener('DOMContentLoaded', init);

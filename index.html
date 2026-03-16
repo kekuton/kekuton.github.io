@@ -1,145 +1,141 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#8b5cf6" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Вопросы для двоих</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app-shell">
-    <button id="backBtn" class="icon-btn hidden" type="button" aria-label="Назад">←</button>
-    <button id="themeBtn" class="icon-btn right" type="button" aria-label="Тема">◐</button>
+    <header class="topbar">
+      <button class="icon-btn hidden" id="backBtn" aria-label="Назад">←</button>
+      <div class="brand">
+        <div class="brand-pill">Вопросы для двоих</div>
+      </div>
+      <button class="icon-btn" id="themeBtn" aria-label="Сменить тему">☼</button>
+    </header>
 
-    <section id="homeScreen" class="screen screen-active">
-      <div class="hero card">
-        <div class="badge">Mini App</div>
-        <h1>Вопросы для двоих</h1>
-        <p class="sub">Красивое приложение для пары — честно отвечайте, обсуждайте и смотрите совместимость.</p>
-        <form id="homeForm" class="form-stack">
-          <label class="toggle-row">
-            <span>Анонимный режим</span>
-            <input id="anonymousToggle" type="checkbox" />
-          </label>
-          <div id="namesBlock" class="names-grid">
-            <input id="playerOneInput" type="text" placeholder="Имя 1" autocomplete="off" />
-            <input id="playerTwoInput" type="text" placeholder="Имя 2" autocomplete="off" />
+    <main class="screen-wrap">
+      <section class="screen screen-active" id="homeScreen">
+        <div class="hero-card">
+          <span class="eyebrow">Игра для пары</span>
+          <h1>Поговорим откровенно?</h1>
+          <p>
+            Проходите красивые категории вопросов, отмечайте совпадения и смотрите вашу совместимость.
+          </p>
+          <div class="hero-actions">
+            <button class="primary-btn" id="startBtn">Начать игру</button>
+            <button class="secondary-btn" id="historyBtn">История</button>
           </div>
-          <button id="continueBtn" class="primary-btn" type="submit">Продолжить</button>
-        </form>
-        <div class="home-actions">
-          <button id="dailyBtn" class="secondary-btn" type="button">Вопрос дня</button>
-          <button id="premiumBtn" class="secondary-btn" type="button">Premium</button>
         </div>
-        <div class="status-line">Статус Premium: <span id="premiumStatusLabel">Не активирован</span></div>
-      </div>
-    </section>
 
-    <section id="categoriesScreen" class="screen">
-      <div class="screen-head">
-        <div>
-          <div class="eyebrow" id="playerLabel">Игрок 1 + Игрок 2</div>
-          <h2>Выбери категорию</h2>
+        <div class="feature-row">
+          <article class="feature-chip">
+            <span>💞</span>
+            <div>
+              <strong>Совместимость</strong>
+              <small>Процент по вашим ответам</small>
+            </div>
+          </article>
+          <article class="feature-chip">
+            <span>📱</span>
+            <div>
+              <strong>Telegram-ready</strong>
+              <small>Работает как Mini App</small>
+            </div>
+          </article>
         </div>
-      </div>
-      <div id="categoriesGrid" class="categories-grid"></div>
-    </section>
+      </section>
 
-    <section id="introScreen" class="screen">
-      <div id="introCard" class="card intro-card"></div>
-    </section>
+      <section class="screen" id="categoriesScreen">
+        <div class="section-head">
+          <span class="eyebrow">Выбор категории</span>
+          <h2>Выбери настроение игры</h2>
+          <p>Сначала выберите тему, потом начните новую игру.</p>
+        </div>
+        <div class="categories-grid" id="categoriesGrid"></div>
+      </section>
 
-    <section id="gameScreen" class="screen">
-      <div class="screen-head compact">
-        <div>
-          <div class="eyebrow" id="gameCategory">Категория</div>
-          <h2 id="gameTitle">Ответьте честно</h2>
-        </div>
-        <div class="progress-mini" id="progressLabel">1 / 8</div>
-      </div>
-      <div class="progress-bar"><div id="progressFill"></div></div>
-      <div class="card game-card-stack">
-        <div class="swipe-label left">NOPE</div>
-        <div class="swipe-label right">MATCH</div>
-        <div class="swipe-label up">SKIP</div>
-        <div id="questionCard" class="question-card" data-swipe="none">
-          <div id="questionText" class="question-text">Вопрос</div>
-        </div>
-      </div>
-      <div class="actions-row three">
-        <button id="mismatchBtn" class="secondary-btn danger" type="button">Не совпало</button>
-        <button id="skipBtn" class="secondary-btn" type="button">Пропуск</button>
-        <button id="matchBtn" class="primary-btn" type="button">Совпало</button>
-      </div>
-    </section>
+      <section class="screen" id="categoryIntroScreen">
+        <div class="intro-card" id="categoryIntroCard"></div>
+      </section>
 
-    <section id="resultsScreen" class="screen">
-      <div class="card result-card">
-        <div class="eyebrow" id="resultsCategory">Категория</div>
-        <h2 class="score" id="resultsScore">0%</h2>
-        <p id="resultsMessage" class="result-message"></p>
-        <div class="stats-grid">
-          <div class="stat"><span>Совпало</span><strong id="statMatch">0</strong></div>
-          <div class="stat"><span>Не совпало</span><strong id="statMismatch">0</strong></div>
-          <div class="stat"><span>Пропуск</span><strong id="statSkip">0</strong></div>
+      <section class="screen" id="gameScreen">
+        <div class="game-head">
+          <div>
+            <span class="eyebrow" id="gameCategory">Категория</span>
+            <h2 id="gameTitle">Вопрос</h2>
+          </div>
+          <div class="progress-badge" id="progressLabel">1 / 10</div>
         </div>
-        <div class="analysis-box">
-          <div class="eyebrow">AI-анализ</div>
-          <p id="analysisText">Доступен в Premium.</p>
-        </div>
-        <div class="actions-row wrap">
-          <button id="restartBtn" class="primary-btn" type="button">Ещё раз</button>
-          <button id="changeCategoryBtn" class="secondary-btn" type="button">К категориям</button>
-          <button id="shareBtn" class="secondary-btn" type="button">Поделиться</button>
-          <button id="shareCardBtn" class="secondary-btn" type="button">PNG card</button>
-        </div>
-      </div>
-    </section>
 
-    <section id="dailyScreen" class="screen">
-      <div class="card">
-        <div class="eyebrow">Бесплатно</div>
-        <h2>Вопрос дня</h2>
-        <p id="dailyQuestionText" class="daily-question"></p>
-        <div class="actions-row wrap">
-          <button id="dailyPlayBtn" class="primary-btn" type="button">Играть категорию</button>
-          <button id="dailyArchiveBtn" class="secondary-btn" type="button">Архив</button>
+        <div class="progress-bar">
+          <span id="progressFill"></span>
         </div>
-      </div>
-    </section>
 
-    <section id="premiumScreen" class="screen">
-      <div class="card">
-        <div class="eyebrow">Монетизация</div>
-        <h2>Premium</h2>
-        <p id="premiumStatusBig" class="sub">Не активирован</p>
-        <ul class="feature-list">
-          <li>Premium AI-анализ</li>
-          <li>Красивые share-card</li>
-          <li>Архив вопросов</li>
-          <li>Hard Talk, 18+, Психология+</li>
-        </ul>
-        <div class="actions-row wrap">
-          <button id="startTrialBtn" class="primary-btn" type="button">3 дня бесплатно</button>
-          <button id="buySubscriptionBtn" class="secondary-btn" type="button">Включить Premium</button>
+        <article class="question-card" id="questionCard">
+          <p class="question-text" id="questionText"></p>
+        </article>
+
+        <div class="answer-actions">
+          <button class="answer-btn answer-match" id="matchBtn">Совпало</button>
+          <button class="answer-btn answer-mismatch" id="mismatchBtn">Не совпало</button>
+          <button class="answer-btn answer-skip" id="skipBtn">Пропуск</button>
         </div>
-        <div class="pack-grid">
-          <button class="pack-card" data-pack="hard" type="button">Hard Talk</button>
-          <button class="pack-card" data-pack="adult" type="button">18+</button>
-          <button class="pack-card" data-pack="psyplus" type="button">Психология+</button>
+      </section>
+
+      <section class="screen" id="resultsScreen">
+        <div class="results-card">
+          <span class="eyebrow">Результат</span>
+          <h2 id="resultsCategory">Категория</h2>
+          <div class="results-score" id="resultsScore">0%</div>
+          <p class="results-message" id="resultsMessage"></p>
+
+          <div class="stats-grid">
+            <div class="stat-box">
+              <small>Совпало</small>
+              <strong id="statMatch">0</strong>
+            </div>
+            <div class="stat-box">
+              <small>Не совпало</small>
+              <strong id="statMismatch">0</strong>
+            </div>
+            <div class="stat-box">
+              <small>Пропуск</small>
+              <strong id="statSkip">0</strong>
+            </div>
+          </div>
+
+          <div class="hero-actions stacked">
+            <button class="primary-btn" id="restartBtn">Пройти ещё раз</button>
+            <button class="secondary-btn" id="changeCategoryBtn">Другая категория</button>
+            <button class="secondary-btn" id="shareBtn">Поделиться результатом</button>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <section class="screen" id="historyScreen">
+        <div class="section-head compact">
+          <span class="eyebrow">История</span>
+          <h2>Последние игры</h2>
+        </div>
+        <div class="history-list" id="historyList"></div>
+      </section>
+    </main>
   </div>
 
-  <div id="adultModal" class="modal hidden">
-    <div class="modal-card card">
-      <div class="eyebrow">18+</div>
-      <h3>Подтверди возраст</h3>
-      <p class="sub">Категория содержит откровенные вопросы.</p>
-      <div class="actions-row wrap">
-        <button id="adultConfirmBtn" class="primary-btn" type="button">Мне есть 18</button>
-        <button id="adultCancelBtn" class="secondary-btn" type="button">Отмена</button>
+  <div class="modal hidden" id="adultModal" aria-hidden="true">
+    <div class="modal-card">
+      <span class="eyebrow">18+</span>
+      <h3>Подтверждение возраста</h3>
+      <p>Эта категория содержит откровенные вопросы. Продолжайте только если вам есть 18 лет.</p>
+      <div class="hero-actions stacked">
+        <button class="primary-btn" id="adultConfirmBtn">Мне есть 18</button>
+        <button class="secondary-btn" id="adultCancelBtn">Назад</button>
       </div>
     </div>
   </div>
