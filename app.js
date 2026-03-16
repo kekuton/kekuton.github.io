@@ -4,7 +4,8 @@ const screens = {
   intro: document.getElementById('categoryIntroScreen'),
   game: document.getElementById('gameScreen'),
   results: document.getElementById('resultsScreen'),
-  history: document.getElementById('historyScreen')
+  history: document.getElementById('historyScreen'),
+  customGame: document.getElementById('customGameScreen') // Добавили экран Своей игры
 };
 
 const ui = {
@@ -35,16 +36,25 @@ const ui = {
   historyList: document.getElementById('historyList'),
   adultModal: document.getElementById('adultModal'),
   adultConfirmBtn: document.getElementById('adultConfirmBtn'),
-  adultCancelBtn: document.getElementById('adultCancelBtn')
+  adultCancelBtn: document.getElementById('adultCancelBtn'),
+  // Новые элементы для премиума и своей игры
+  customQuestionsList: document.getElementById('customQuestionsList'),
+  addCustomQuestionBtn: document.getElementById('addCustomQuestionBtn'),
+  saveCustomGameBtn: document.getElementById('saveCustomGameBtn'),
+  premiumModal: document.getElementById('premiumModal'),
+  buyPremiumBtn: document.getElementById('buyPremiumBtn'),
+  closePremiumBtn: document.getElementById('closePremiumBtn')
 };
 
+// Добавили "Своя игра" с флагом isPremium
 const categoryMeta = [
-  { id: 'Интимные вопросы', icon: '🔞', desc: 'Откровенные вопросы для близости', color: 'linear-gradient(180deg,#f59e0b,#fb7185)', badge: '18+' },
+  { id: 'Интимные вопросы', icon: '🔞', desc: 'Откровенные вопросы', color: 'linear-gradient(180deg,#f59e0b,#fb7185)', badge: '18+' },
   { id: 'На расстоянии', icon: '✈️', desc: 'Для пар в разлуке', color: 'linear-gradient(180deg,#38bdf8,#6366f1)' },
   { id: 'Будущее', icon: '🔮', desc: 'Планы, мечты и семья', color: 'linear-gradient(180deg,#c084fc,#ec4899)' },
-  { id: 'Финансы', icon: '💰', desc: 'Деньги, цели и бюджет пары', color: 'linear-gradient(180deg,#f59e0b,#f97316)' },
-  { id: 'Психология', icon: '🧠', desc: 'Эмоции, доверие и границы', color: 'linear-gradient(180deg,#22c55e,#14b8a6)' },
-  { id: 'Воспоминания', icon: '📸', desc: 'Лучшие моменты ваших отношений', color: 'linear-gradient(180deg,#60a5fa,#8b5cf6)' }
+  { id: 'Финансы', icon: '💰', desc: 'Деньги, цели и бюджет', color: 'linear-gradient(180deg,#f59e0b,#f97316)' },
+  { id: 'Психология', icon: '🧠', desc: 'Эмоции и границы', color: 'linear-gradient(180deg,#22c55e,#14b8a6)' },
+  { id: 'Воспоминания', icon: '📸', desc: 'Лучшие моменты вместе', color: 'linear-gradient(180deg,#60a5fa,#8b5cf6)' },
+  { id: 'Своя игра', icon: '✍️', desc: 'Создай свои вопросы', color: 'linear-gradient(180deg,#10b981,#3b82f6)', isPremium: true }
 ];
 
 let questionsData = {};
@@ -57,13 +67,8 @@ let navStack = ['home'];
 
 const swipeState = {
   active: false,
-  startX: 0,
-  startY: 0,
-  currentX: 0,
-  currentY: 0,
-  dragging: false,
-  pointerId: null,
-  isAnimating: false
+  startX: 0, startY: 0, currentX: 0, currentY: 0,
+  dragging: false, pointerId: null, isAnimating: false
 };
 
 const tg = window.Telegram?.WebApp;
@@ -88,9 +93,7 @@ function goBack() {
 function applyTheme(next) {
   document.body.classList.toggle('light', next === 'light');
   localStorage.setItem('couples_theme', next);
-  if (tg) {
-    tg.setHeaderColor(next === 'light' ? '#efe7ff' : '#9f7aea');
-  }
+  if (tg) tg.setHeaderColor(next === 'light' ? '#efe7ff' : '#9f7aea');
 }
 
 function initTheme() {
@@ -129,18 +132,26 @@ function renderHistory() {
 }
 
 function resultMessage(score) {
-  if (score >= 100) return 'Идеальное совпадение. Похоже, на эту тему вы мыслите как одна команда.';
-  if (score >= 85) return 'У вас очень сильное совпадение — похоже, вы отлично чувствуете друг друга.';
-  if (score >= 60) return 'Хороший результат. У вас много общего, но есть темы, которые стоит обсудить глубже.';
-  if (score >= 35) return 'Есть заметные различия. Это хороший повод поговорить откровенно.';
-  return 'У вас разные взгляды на тему категории — начните с честного разговора без давления.';
+  if (score >= 100) return 'Идеальное совпадение! Вы мыслите как одна команда.';
+  if (score >= 85) return 'Очень сильное совпадение — вы отлично чувствуете друг друга.';
+  if (score >= 60) return 'Хороший результат. Есть много общего, но и повод для разговора.';
+  return 'У вас разные взгляды — отличный повод поговорить откровенно и без давления.';
 }
 
+// Рендер категорий с проверкой премиума
 function renderCategories() {
+  const isPremiumUnlocked = localStorage.getItem('premium_unlocked') === 'true';
+
   ui.categoriesGrid.innerHTML = categoryMeta.map(cat => {
-    const count = (questionsData[cat.id] || []).length;
+    let count = (questionsData[cat.id] || []).length;
+    let lockedClass = (cat.isPremium && !isPremiumUnlocked) ? 'premium-locked' : '';
+
+    if (cat.id === 'Своя игра' && isPremiumUnlocked) {
+      count = JSON.parse(localStorage.getItem('custom_questions') || '[]').length;
+    }
+
     return `
-      <button class="category-card" data-id="${cat.id}" style="background:${cat.color}">
+      <button class="category-card ${lockedClass}" data-id="${cat.id}" style="background:${cat.color}">
         <div class="category-card-top">
           <div class="category-icon">${cat.icon}</div>
           ${cat.badge ? `<span class="category-badge">${cat.badge}</span>` : ''}
@@ -149,7 +160,7 @@ function renderCategories() {
           <h3>${cat.id}</h3>
           <p>${cat.desc}</p>
         </div>
-        <div class="category-count">${count} вопросов</div>
+        <div class="category-count">${count > 0 ? count + ' вопросов' : 'Создать'}</div>
       </button>
     `;
   }).join('');
@@ -161,13 +172,30 @@ ui.categoriesGrid.addEventListener('click', (e) => {
 });
 
 function openCategory(categoryId) {
+  const isPremiumUnlocked = localStorage.getItem('premium_unlocked') === 'true';
+  currentCategory = categoryMeta.find(c => c.id === categoryId);
+
+  // Обработка 18+
   if (categoryId === 'Интимные вопросы' && localStorage.getItem('adult_ok') !== 'yes') {
     pendingAdultCategory = categoryId;
     ui.adultModal.classList.remove('hidden');
     return;
   }
 
-  currentCategory = categoryMeta.find(c => c.id === categoryId);
+  // Обработка платной категории
+  if (currentCategory.isPremium && !isPremiumUnlocked) {
+    ui.premiumModal.classList.remove('hidden');
+    return;
+  }
+
+  // Обработка своей игры (если куплена)
+  if (categoryId === 'Своя игра') {
+    renderCustomGameEditor();
+    showScreen('customGame');
+    return;
+  }
+
+  // Стандартная категория
   const total = (questionsData[categoryId] || []).length;
   ui.introCard.innerHTML = `
     <div class="intro-illu">${currentCategory.icon}</div>
@@ -185,12 +213,77 @@ function openCategory(categoryId) {
   document.getElementById('backToCategoriesBtn').addEventListener('click', goBack);
 }
 
+// ----------------------------------------------------
+// ЛОГИКА ТЕСТОВОЙ ОПЛАТЫ И СВОЕЙ ИГРЫ
+// ----------------------------------------------------
+ui.buyPremiumBtn.addEventListener('click', () => {
+  const originalText = ui.buyPremiumBtn.textContent;
+  ui.buyPremiumBtn.textContent = 'Оплата...';
+  ui.buyPremiumBtn.disabled = true;
+
+  // Имитируем задержку оплаты
+  setTimeout(() => {
+    localStorage.setItem('premium_unlocked', 'true');
+    ui.premiumModal.classList.add('hidden');
+    ui.buyPremiumBtn.textContent = originalText;
+    ui.buyPremiumBtn.disabled = false;
+    
+    if (tg) tg.HapticFeedback.notificationOccurred('success');
+    launchConfetti();
+    renderCategories();
+  }, 1200);
+});
+
+ui.closePremiumBtn.addEventListener('click', () => {
+  ui.premiumModal.classList.add('hidden');
+});
+
+function renderCustomGameEditor() {
+  const customQ = JSON.parse(localStorage.getItem('custom_questions') || '["", ""]');
+  ui.customQuestionsList.innerHTML = '';
+  customQ.forEach(q => addCustomQuestionInput(q));
+}
+
+function addCustomQuestionInput(value = '') {
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'custom-question-input';
+  input.placeholder = 'Например: Какой мой любимый цвет?';
+  input.value = value;
+  ui.customQuestionsList.appendChild(input);
+}
+
+ui.addCustomQuestionBtn.addEventListener('click', () => {
+  addCustomQuestionInput();
+  if (tg) tg.HapticFeedback.impactOccurred('light');
+});
+
+ui.saveCustomGameBtn.addEventListener('click', () => {
+  const inputs = Array.from(document.querySelectorAll('.custom-question-input'));
+  const questions = inputs.map(i => i.value.trim()).filter(v => v !== '');
+  
+  if (questions.length < 3) {
+    alert('Напишите хотя бы 3 вопроса, чтобы начать игру!');
+    return;
+  }
+
+  localStorage.setItem('custom_questions', JSON.stringify(questions));
+  questionsData['Своя игра'] = questions; // Подгружаем в текущую память
+  renderCategories();
+  startGame(); 
+});
+// ----------------------------------------------------
+
 function shuffle(array) {
   return [...array].sort(() => Math.random() - 0.5);
 }
 
 function startGame() {
-  currentQuestions = shuffle(questionsData[currentCategory.id]).slice(0, 8);
+  // Если вопросов мало, берем сколько есть, иначе до 8 случайных
+  const maxQ = questionsData[currentCategory.id].length;
+  const limit = maxQ < 8 ? maxQ : 8;
+  
+  currentQuestions = shuffle(questionsData[currentCategory.id]).slice(0, limit);
   currentIndex = 0;
   stats = { match: 0, mismatch: 0, skip: 0 };
   resetQuestionCard();
@@ -457,6 +550,12 @@ async function init() {
   const cachedData = localStorage.getItem('couples_questions');
   if (cachedData) {
     questionsData = JSON.parse(cachedData);
+    
+    // Подгружаем кастомные вопросы, если они есть
+    const savedCustom = localStorage.getItem('custom_questions');
+    if (savedCustom) {
+      questionsData['Своя игра'] = JSON.parse(savedCustom);
+    }
   } else {
     try {
       questionsData = await fetch('questions.json').then(r => r.json());
@@ -486,6 +585,8 @@ async function init() {
   ui.restartBtn.addEventListener('click', startGame);
   ui.changeCategoryBtn.addEventListener('click', () => showScreen('categories'));
   ui.shareBtn.addEventListener('click', shareResult);
+  
+  // 18+ модалка
   ui.adultConfirmBtn.addEventListener('click', () => {
     localStorage.setItem('adult_ok', 'yes');
     ui.adultModal.classList.add('hidden');
