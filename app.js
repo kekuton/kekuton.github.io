@@ -62,8 +62,11 @@ const swipeState = {
   currentX: 0,
   currentY: 0,
   dragging: false,
-  pointerId: null
+  pointerId: null,
+  isAnimating: false
 };
+
+const tg = window.Telegram?.WebApp;
 
 function showScreen(name) {
   Object.values(screens).forEach(screen => screen.classList.remove('screen-active'));
@@ -85,19 +88,23 @@ function goBack() {
 function applyTheme(next) {
   document.body.classList.toggle('light', next === 'light');
   localStorage.setItem('couples_theme', next);
+  if (tg) {
+    tg.setHeaderColor(next === 'light' ? '#efe7ff' : '#9f7aea');
+  }
 }
 
 function initTheme() {
   const saved = localStorage.getItem('couples_theme');
-  applyTheme(saved === 'light' ? 'light' : 'dark');
+  if (tg && tg.colorScheme) {
+    applyTheme(saved || tg.colorScheme);
+  } else {
+    applyTheme(saved === 'light' ? 'light' : 'dark');
+  }
 }
 
 function loadHistory() {
-  try {
-    return JSON.parse(localStorage.getItem('couples_history') || '[]');
-  } catch {
-    return [];
-  }
+  try { return JSON.parse(localStorage.getItem('couples_history') || '[]'); } 
+  catch { return []; }
 }
 
 function saveHistory(entry) {
@@ -146,11 +153,12 @@ function renderCategories() {
       </button>
     `;
   }).join('');
-
-  ui.categoriesGrid.querySelectorAll('.category-card').forEach(card => {
-    card.addEventListener('click', () => openCategory(card.dataset.id));
-  });
 }
+
+ui.categoriesGrid.addEventListener('click', (e) => {
+  const card = e.target.closest('.category-card');
+  if (card) openCategory(card.dataset.id);
+});
 
 function openCategory(categoryId) {
   if (categoryId === 'Интимные вопросы' && localStorage.getItem('adult_ok') !== 'yes') {
@@ -224,6 +232,7 @@ function resetQuestionCard() {
   swipeState.active = false;
   swipeState.dragging = false;
   swipeState.pointerId = null;
+  swipeState.isAnimating = false;
   ui.questionCard.dataset.swipe = 'none';
   ui.questionCard.style.removeProperty('--swipe-opacity');
   ui.questionCard.style.transition = '';
@@ -231,8 +240,16 @@ function resetQuestionCard() {
   ui.questionCard.style.opacity = '1';
 }
 
-function vibrate(pattern = 10) {
-  if (navigator.vibrate) navigator.vibrate(pattern);
+function vibrate(type = 'medium') {
+  if (tg && tg.HapticFeedback) {
+    if (type === 'success' || type === 'warning' || type === 'error') {
+      tg.HapticFeedback.notificationOccurred(type);
+    } else {
+      tg.HapticFeedback.impactOccurred(type);
+    }
+  } else if (navigator.vibrate) {
+    navigator.vibrate(type === 'warning' ? [8, 30, 8] : 12);
+  }
 }
 
 function launchConfetti() {
@@ -254,7 +271,6 @@ function launchConfetti() {
     piece.style.setProperty('--drift', `${-80 + Math.random() * 160}px`);
     wrap.appendChild(piece);
   }
-
   setTimeout(() => wrap.remove(), 4600);
 }
 
@@ -290,7 +306,7 @@ function completeAnswer(type) {
 
 function answer(type) {
   if (!['match', 'mismatch', 'skip'].includes(type)) return;
-  vibrate(type === 'skip' ? [8, 30, 8] : 12);
+  vibrate(type === 'skip' ? 'warning' : 'medium');
   animateSwipeOut(type, () => completeAnswer(type));
 }
 
@@ -306,7 +322,7 @@ function finishGame() {
   ui.statSkip.textContent = stats.skip;
 
   if (score === 100 && stats.match > 0) {
-    vibrate([40, 40, 60]);
+    vibrate('success');
     launchConfetti();
   }
 
@@ -329,6 +345,7 @@ async function shareResult() {
   }
   try {
     await navigator.clipboard.writeText(text);
+    vibrate('success');
     alert('Результат скопирован.');
   } catch {
     alert(text);
@@ -363,15 +380,26 @@ function onPointerMove(e) {
   if (e.cancelable) e.preventDefault();
   swipeState.currentX = e.clientX;
   swipeState.currentY = e.clientY;
-  const deltaX = swipeState.currentX - swipeState.startX;
-  const deltaY = swipeState.currentY - swipeState.startY;
 
-  if (Math.abs(deltaY) > Math.abs(deltaX) * 1.2 && Math.abs(deltaY) < 50) return;
+  if (!swipeState.isAnimating) {
+    requestAnimationFrame(() => {
+      const deltaX = swipeState.currentX - swipeState.startX;
+      const deltaY = swipeState.currentY - swipeState.startY;
 
-  const rotate = deltaX / 18;
-  const stretch = 1 - Math.min(Math.abs(deltaX) / 1200, 0.03);
-  ui.questionCard.style.transform = `translate3d(${deltaX}px, ${deltaY * 0.18}px, 0) rotate(${rotate}deg) scale(${stretch})`;
-  updateSwipeHint(deltaX);
+      if (Math.abs(deltaY) > Math.abs(deltaX) * 1.2 && Math.abs(deltaY) < 50) {
+        swipeState.isAnimating = false;
+        return;
+      }
+
+      const rotate = deltaX / 18;
+      const stretch = 1 - Math.min(Math.abs(deltaX) / 1200, 0.03);
+      ui.questionCard.style.transform = `translate3d(${deltaX}px, ${deltaY * 0.18}px, 0) rotate(${rotate}deg) scale(${stretch})`;
+      updateSwipeHint(deltaX);
+      
+      swipeState.isAnimating = false;
+    });
+    swipeState.isAnimating = true;
+  }
 }
 
 function onPointerUp(e) {
@@ -411,32 +439,38 @@ function attachSwipeHandlers() {
   ui.questionCard.addEventListener('pointermove', onPointerMove);
   ui.questionCard.addEventListener('pointerup', onPointerUp);
   ui.questionCard.addEventListener('pointercancel', onPointerUp);
-
-  // Фикс для Telegram WebView: не даём жесту карточки тащить сам Mini App
   ui.questionCard.addEventListener('touchmove', (e) => {
     if (e.cancelable) e.preventDefault();
   }, { passive: false });
 }
 
-async function initTelegram() {
-  if (!(window.Telegram && window.Telegram.WebApp)) return;
-  const tg = window.Telegram.WebApp;
+async function initTelegramAPI() {
+  if (!tg) return;
   tg.ready();
   tg.expand();
-
-  // Отключаем вертикальные свайпы Telegram, чтобы карточка не тянула весь Mini App
   if (typeof tg.disableVerticalSwipes === 'function') {
     try { tg.disableVerticalSwipes(); } catch {}
   }
 }
 
 async function init() {
-  questionsData = await fetch('questions.json').then(r => r.json());
+  const cachedData = localStorage.getItem('couples_questions');
+  if (cachedData) {
+    questionsData = JSON.parse(cachedData);
+  } else {
+    try {
+      questionsData = await fetch('questions.json').then(r => r.json());
+      localStorage.setItem('couples_questions', JSON.stringify(questionsData));
+    } catch (e) {
+      console.error("Ошибка загрузки вопросов", e);
+    }
+  }
+
   initTheme();
   renderCategories();
   renderHistory();
   preventDoubleTapZoom();
-  initTelegram();
+  initTelegramAPI();
   attachSwipeHandlers();
 
   ui.startBtn.addEventListener('click', () => showScreen('categories'));
@@ -444,6 +478,7 @@ async function init() {
   ui.backBtn.addEventListener('click', goBack);
   ui.themeBtn.addEventListener('click', () => {
     applyTheme(document.body.classList.contains('light') ? 'dark' : 'light');
+    vibrate('light');
   });
   ui.matchBtn.addEventListener('click', () => answer('match'));
   ui.mismatchBtn.addEventListener('click', () => answer('mismatch'));
