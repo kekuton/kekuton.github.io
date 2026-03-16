@@ -25,9 +25,7 @@
         <div class="hero-card">
           <span class="eyebrow">Игра для пары</span>
           <h1>Поговорим откровенно?</h1>
-          <p>
-            Проходите красивые категории вопросов, отмечайте совпадения и смотрите вашу совместимость.
-          </p>
+          <p>Проходите красивые категории вопросов, отмечайте совпадения и смотрите вашу совместимость.</p>
           <div class="hero-actions">
             <button class="primary-btn" id="startBtn">Начать игру</button>
             <button class="secondary-btn" id="historyBtn">История</button>
@@ -63,6 +61,22 @@
 
       <section class="screen" id="categoryIntroScreen">
         <div class="intro-card" id="categoryIntroCard"></div>
+      </section>
+
+      <section class="screen" id="customGameScreen">
+        <div class="section-head compact">
+          <span class="eyebrow">Эксклюзив</span>
+          <h2>Своя игра</h2>
+          <p>Напишите свои личные вопросы для партнера.</p>
+        </div>
+        
+        <div class="custom-questions-list" id="customQuestionsList">
+          </div>
+
+        <div class="hero-actions stacked">
+          <button class="secondary-btn" id="addCustomQuestionBtn" style="width: 100%;">+ Добавить вопрос</button>
+          <button class="primary-btn" id="saveCustomGameBtn" style="width: 100%;">Сохранить и играть</button>
+        </div>
       </section>
 
       <section class="screen" id="gameScreen">
@@ -137,6 +151,19 @@
       <div class="hero-actions stacked">
         <button class="primary-btn" id="adultConfirmBtn">Мне есть 18</button>
         <button class="secondary-btn" id="adultCancelBtn">Назад</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="premiumModal" aria-hidden="true">
+    <div class="modal-card" style="text-align: center;">
+      <div class="intro-illu" style="margin: 0 auto 16px;">⭐️</div>
+      <span class="eyebrow">Премиум</span>
+      <h3 style="margin-top: 8px;">Режим «Своя игра»</h3>
+      <p style="margin-bottom: 24px;">Создайте уникальную колоду со своими личными вопросами. (Тестовый режим оплаты)</p>
+      <div class="hero-actions stacked">
+        <button class="primary-btn" id="buyPremiumBtn">Купить за 50 ⭐️ (Тест)</button>
+        <button class="secondary-btn" id="closePremiumBtn">Позже</button>
       </div>
     </div>
   </div>
