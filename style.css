@@ -600,7 +600,6 @@ button {
   }
 }
 
-
 /* Telegram Mini App swipe fix */
 html, body {
   overscroll-behavior-y: none;
@@ -668,4 +667,25 @@ body.light .custom-question-input {
 
 body.light .custom-question-input::placeholder {
   color: rgba(0,0,0,0.4);
+}
+
+/* --- СТИЛИ ДЛЯ РЕЖИМА БЛИЦ --- */
+.timer-badge {
+  padding: 10px 16px;
+  border-radius: 14px;
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  font-weight: 800;
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+body.light .timer-badge {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
+
+.blitz-card {
+  min-height: 38dvh;
 }
