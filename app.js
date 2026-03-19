@@ -28,6 +28,7 @@ const ui = {
   matchBtn: document.getElementById('matchBtn'),
   mismatchBtn: document.getElementById('mismatchBtn'),
   skipBtn: document.getElementById('skipBtn'),
+  turnBadge: document.getElementById('turnBadge'),
   
   // Blitz UI
   blitzTimerDisplay: document.getElementById('blitzTimerDisplay'),
@@ -60,7 +61,11 @@ const ui = {
   saveCustomGameBtn: document.getElementById('saveCustomGameBtn'),
   premiumModal: document.getElementById('premiumModal'),
   buyPremiumBtn: document.getElementById('buyPremiumBtn'),
-  closePremiumBtn: document.getElementById('closePremiumBtn')
+  closePremiumBtn: document.getElementById('closePremiumBtn'),
+  passModal: document.getElementById('passModal'),
+  passModalTitle: document.getElementById('passModalTitle'),
+  passModalText: document.getElementById('passModalText'),
+  passModalBtn: document.getElementById('passModalBtn')
 };
 
 const categoryMeta = [
@@ -129,6 +134,10 @@ let currentCategory = null;
 let currentQuestions = [];
 let currentIndex = 0;
 let stats = { match: 0, mismatch: 0, skip: 0 };
+let gameMode = 'solo';
+let duoRoundAnswers = [null, null];
+let duoActivePlayer = 0;
+const duoPlayers = ['Игрок 1', 'Игрок 2'];
 let pendingAdultCategory = null;
 let navStack = ['home'];
 
@@ -204,6 +213,7 @@ function saveHistory(entry) {
   localStorage.setItem('couples_history', JSON.stringify(history.slice(0, 12)));
 }
 
+
 function renderHistory() {
   const history = loadHistory();
   if (!history.length) {
@@ -214,6 +224,10 @@ function renderHistory() {
     <article class="history-item">
       <strong>${item.category}</strong>
       <div>${item.score}% ${item.category === 'Блиц' ? 'правильных ответов' : 'совместимости'}</div>
+      <div class="history-meta">
+        <span class="history-pill">${item.mode || 'Обычная игра'}</span>
+        <span class="history-detail">Совпало: ${item.match ?? 0} · Не совпало: ${item.mismatch ?? 0} · Пропуск: ${item.skip ?? 0}</span>
+      </div>
       <small>${item.date}</small>
     </article>
   `).join('');
@@ -308,7 +322,8 @@ function openCategory(categoryId) {
     </div>
   `;
   showScreen('intro');
-  document.getElementById('playCategoryBtn').addEventListener('click', startGame);
+  document.getElementById('playCategoryBtn').addEventListener('click', () => startGame('solo'));
+  document.getElementById('duoCategoryBtn')?.addEventListener('click', () => startGame('duo'));
   document.getElementById('backToCategoriesBtn').addEventListener('click', goBack);
 }
 
@@ -453,7 +468,9 @@ function launchConfetti() {
 // ----------------------------------------------------
 // ЛОГИКА ИГРЫ (ОБЫЧНАЯ)
 // ----------------------------------------------------
-function startGame() {
+
+function startGame(mode = 'solo') {
+  gameMode = mode;
   if (currentCategory.id === 'Блиц') {
       startBlitzGame();
       return;
@@ -467,20 +484,32 @@ function startGame() {
     return;
   }
   const limit = maxQ < 8 ? maxQ : 8;
-  
   currentQuestions = shuffle(sourceQuestions).slice(0, limit);
   currentIndex = 0;
   stats = { match: 0, mismatch: 0, skip: 0 };
+  duoRoundAnswers = [null, null];
+  duoActivePlayer = 0;
   resetQuestionCard();
-  renderQuestion(true);
+  updateModeUI();
   showScreen('game');
+  const renderFirst = () => {
+    duoActivePlayer = 0;
+    updateModeUI();
+    renderQuestion(true);
+  };
+  if (gameMode === 'duo') {
+    showPassModal(0, renderFirst);
+  } else {
+    renderFirst();
+  }
 }
 
 function renderQuestion(isInitial = false) {
   const total = currentQuestions.length;
   const q = currentQuestions[currentIndex];
-  ui.gameCategory.textContent = currentCategory.id;
-  ui.gameTitle.textContent = 'Вопрос';
+  ui.gameCategory.textContent = gameMode === 'duo' ? `${currentCategory.id} · Игра вдвоём` : currentCategory.id;
+  ui.gameTitle.textContent = gameMode === 'duo' ? `Ход: ${duoPlayers[duoActivePlayer]}` : 'Вопрос';
+  updateModeUI();
   ui.questionText.textContent = q;
   ui.progressLabel.textContent = `${currentIndex + 1} / ${total}`;
   ui.progressFill.style.width = `${((currentIndex + 1) / total) * 100}%`;
@@ -550,6 +579,7 @@ function animateSwipeOut(type, callback) {
   }, 280);
 }
 
+
 function answer(type) {
   if (!['match', 'mismatch', 'skip'].includes(type)) return;
   pulseAnswerButton(type);
@@ -561,9 +591,43 @@ function answer(type) {
   } else {
     vibrate('warning');
   }
-  if (type === 'match') {
+  if (type === 'match' && gameMode !== 'duo') {
     setTimeout(() => launchConfetti(), 40);
   }
+
+  if (gameMode === 'duo') {
+    animateSwipeOut(type, () => {
+      duoRoundAnswers[duoActivePlayer] = type;
+      resetQuestionCard();
+      if (duoActivePlayer === 0) {
+        duoActivePlayer = 1;
+        updateModeUI();
+        showPassModal(1, () => renderQuestion(true));
+        return;
+      }
+
+      const [first, second] = duoRoundAnswers;
+      if (first === 'skip' || second === 'skip') {
+        stats.skip += 1;
+      } else if (first === second) {
+        stats.match += 1;
+        setTimeout(() => launchConfetti(), 50);
+      } else {
+        stats.mismatch += 1;
+      }
+      currentIndex += 1;
+      duoRoundAnswers = [null, null];
+      duoActivePlayer = 0;
+      resetQuestionCard();
+      if (currentIndex >= currentQuestions.length) {
+        finishGame();
+      } else {
+        showPassModal(0, () => renderQuestion());
+      }
+    });
+    return;
+  }
+
   animateSwipeOut(type, () => {
     stats[type] += 1;
     currentIndex += 1;
@@ -580,6 +644,8 @@ function answer(type) {
 // ЛОГИКА РЕЖИМА БЛИЦ
 // ----------------------------------------------------
 function startBlitzGame() {
+    gameMode = 'solo';
+    updateModeUI();
     if (blitzTimer) clearInterval(blitzTimer);
     
     // Перемешиваем все вопросы блица
@@ -663,7 +729,9 @@ function finishGame(isBlitz = false) {
 
   ui.resultsCategory.textContent = currentCategory.id;
   ui.resultsScore.textContent = `${score}%`;
+  document.getElementById('resultModeNote')?.remove();
   ui.resultsMessage.textContent = resultMessage(score, isBlitz);
+  ui.resultsMessage.insertAdjacentHTML('afterend', `<div class="result-mini-note" id="resultModeNote">${isBlitz ? 'Режим: Блиц' : (gameMode === 'duo' ? 'Режим: Играть вдвоём' : 'Режим: Обычная игра')}</div>`);
   ui.statMatch.textContent = stats.match;
   ui.statMismatch.textContent = stats.mismatch;
   ui.statSkip.textContent = stats.skip;
@@ -672,6 +740,9 @@ function finishGame(isBlitz = false) {
   if (isBlitz) {
       ui.statLabelMatch.textContent = 'Правильно';
       ui.statLabelMismatch.textContent = 'Ошибка';
+  } else if (gameMode === 'duo') {
+      ui.statLabelMatch.textContent = 'Одинаковые ответы';
+      ui.statLabelMismatch.textContent = 'Разные ответы';
   } else {
       ui.statLabelMatch.textContent = 'Совпало';
       ui.statLabelMismatch.textContent = 'Не совпало';
@@ -685,6 +756,10 @@ function finishGame(isBlitz = false) {
   saveHistory({
     category: currentCategory.id,
     score,
+    match: stats.match,
+    mismatch: stats.mismatch,
+    skip: stats.skip,
+    mode: isBlitz ? 'Блиц' : (gameMode === 'duo' ? 'Игра вдвоём' : 'Обычная игра'),
     date: new Date().toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
   });
   
@@ -692,26 +767,29 @@ function finishGame(isBlitz = false) {
   showScreen('results');
 }
 
-async function shareResult() {
-  const isBlitz = currentCategory.id === 'Блиц';
-  let text = '';
-  
-  if (isBlitz) {
-      text = `Блиц-опрос: ${ui.resultsScore.textContent} правильных ответов! Угадано: ${stats.match}, ошибок: ${stats.mismatch}.`;
-  } else {
-      text = `${currentCategory.id}: ${ui.resultsScore.textContent} совместимости. Совпало: ${stats.match}, не совпало: ${stats.mismatch}.`;
-  }
 
-  if (navigator.share) {
+async function shareResult() {
+  const text = buildShareText();
+  const blob = await createShareCardBlob();
+  const file = blob ? new File([blob], 'result-card.png', { type: 'image/png' }) : null;
+  if (navigator.share && file && navigator.canShare?.({ files: [file] })) {
     try {
-      await navigator.share({ title: 'Вопросы для двоих', text });
+      await navigator.share({ title: 'Вопросы для двоих', text, files: [file] });
       return;
     } catch {}
+  }
+  if (file) {
+    const url = URL.createObjectURL(file);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'result-card.png';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
   }
   try {
     await navigator.clipboard.writeText(text);
     vibrate('success');
-    alert('Результат скопирован.');
+    alert('Картинка сохранена, текст результата скопирован.');
   } catch {
     alert(text);
   }
@@ -868,7 +946,7 @@ async function init() {
   ui.skipBtn.addEventListener('click', () => answer('skip'));
   
   // Результаты
-  ui.restartBtn.addEventListener('click', startGame);
+  ui.restartBtn.addEventListener('click', () => startGame(gameMode));
   ui.changeCategoryBtn.addEventListener('click', () => showScreen('categories'));
   ui.shareBtn.addEventListener('click', shareResult);
   

@@ -91,6 +91,7 @@
             <span class="eyebrow" id="gameCategory">Категория</span>
             <h2 id="gameTitle">Вопрос</h2>
           </div>
+          <div class="turn-badge hidden" id="turnBadge">Игрок 1</div>
           <div class="progress-badge" id="progressLabel">1 / 10</div>
         </div>
 
@@ -212,6 +213,19 @@
     </div>
   </div>
 
-  <script src="app.js" defer></script>
+
+<div class="modal hidden" id="passModal" aria-hidden="true">
+  <div class="modal-card pass-card">
+    <span class="eyebrow">Игра вдвоём</span>
+    <div class="intro-illu" id="passModalIcon">📱</div>
+    <h3 id="passModalTitle">Передайте телефон</h3>
+    <p id="passModalText">Сейчас отвечает Игрок 1</p>
+    <div class="hero-actions stacked">
+      <button class="primary-btn" id="passModalBtn">Готово</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js" defer></script>
 </body>
 </html>
