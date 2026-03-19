@@ -74,51 +74,54 @@ const categoryMeta = [
 ];
 
 
+const QUESTIONS_CACHE_KEY = 'couples_questions_v2';
+
 const categoryBackgrounds = {
   'Будущее': { file: 'images/bg_future.jpg', bodyClass: 'category-future' },
   'На расстоянии': { file: 'images/bg_distance.jpg', bodyClass: 'category-distance' },
   'Финансы': { file: 'images/bg_finance.jpg', bodyClass: 'category-finance' }
 };
 
+const bgLayers = [document.querySelector('.bg-layer-a'), document.querySelector('.bg-layer-b')];
+let activeBgLayerIndex = 0;
+
 function clearCategoryBodyClasses() {
   document.body.classList.remove('has-category-bg', 'category-future', 'category-distance', 'category-finance');
 }
 
+function resetBaseBackground() {
+  clearCategoryBodyClasses();
+  bgLayers.forEach((layer, index) => {
+    if (!layer) return;
+    layer.style.background = 'var(--bg)';
+    layer.style.backgroundImage = '';
+    layer.classList.remove('prep', 'reveal');
+    layer.classList.toggle('active', index === activeBgLayerIndex);
+  });
+}
+
 function applyCategoryBackground(categoryId = '') {
   const config = categoryBackgrounds[categoryId];
-  const nextLayer = bgLayers[(activeBgLayerIndex + 1) % bgLayers.length];
   const currentLayer = bgLayers[activeBgLayerIndex];
-
-  if (!config) {
-    clearCategoryBodyClasses();
-    document.body.style.removeProperty('--category-bg-image');
-    bgLayers.forEach((layer, index) => {
-      if (!layer) return;
-      layer.style.backgroundImage = 'var(--bg)';
-      layer.classList.remove('entering', 'transition-in');
-      layer.classList.toggle('active', index === activeBgLayerIndex);
-    });
-    return;
-  }
-
-  document.body.style.setProperty('--category-bg-image', `url('${config.file}')`);
+  const nextLayer = bgLayers[(activeBgLayerIndex + 1) % bgLayers.length];
+  if (!config) { resetBaseBackground(); return; }
   clearCategoryBodyClasses();
   document.body.classList.add('has-category-bg', config.bodyClass);
-
-  if (!nextLayer || !currentLayer) return;
-  nextLayer.style.backgroundImage = `url('${config.file}')`;
-  nextLayer.classList.remove('active', 'transition-in');
-  nextLayer.classList.add('entering');
-
+  if (!currentLayer || !nextLayer) return;
+  nextLayer.style.background = '';
+  nextLayer.style.backgroundImage = `url("${config.file}")`;
+  nextLayer.style.backgroundSize = 'cover';
+  nextLayer.style.backgroundPosition = 'center center';
+  nextLayer.classList.remove('active', 'reveal');
+  nextLayer.classList.add('prep');
   requestAnimationFrame(() => {
-    nextLayer.classList.add('transition-in');
-    nextLayer.classList.remove('entering');
+    nextLayer.classList.add('reveal');
+    nextLayer.classList.remove('prep');
     currentLayer.classList.remove('active');
     nextLayer.classList.add('active');
     activeBgLayerIndex = (activeBgLayerIndex + 1) % bgLayers.length;
   });
 }
-
 
 let questionsData = {};
 let currentCategory = null;
@@ -137,12 +140,6 @@ const swipeState = {
   startX: 0, startY: 0, currentX: 0, currentY: 0,
   dragging: false, pointerId: null, isAnimating: false
 };
-
-const bgLayers = [
-  document.querySelector('.bg-layer-a'),
-  document.querySelector('.bg-layer-b')
-];
-let activeBgLayerIndex = 0;
 
 const tg = window.Telegram?.WebApp;
 
@@ -238,6 +235,7 @@ function resultMessage(score, isBlitz = false) {
 function renderCategories() {
   const isPremiumUnlocked = localStorage.getItem('premium_unlocked') === 'true';
 
+  if (!ui.categoriesGrid) return;
   ui.categoriesGrid.innerHTML = categoryMeta.map(cat => {
     let count = (questionsData[cat.id] || []).length;
     let lockedClass = (cat.isPremium && !isPremiumUnlocked) ? 'premium-locked' : '';
@@ -273,7 +271,6 @@ ui.categoriesGrid.addEventListener('click', (e) => {
 function openCategory(categoryId) {
   const isPremiumUnlocked = localStorage.getItem('premium_unlocked') === 'true';
   currentCategory = categoryMeta.find(c => c.id === categoryId);
-  applyCategoryBackground(categoryId);
 
   if (categoryId === 'Интимные вопросы' && localStorage.getItem('adult_ok') !== 'yes') {
     pendingAdultCategory = categoryId;
@@ -293,6 +290,7 @@ function openCategory(categoryId) {
   }
 
   const total = (questionsData[categoryId] || []).length;
+  applyCategoryBackground(categoryId);
   const introText = categoryId === 'Блиц' 
         ? `Вам дается ровно 30 секунд. Ответьте правильно на как можно больше вопросов о вашем партнере.`
         : `${total} вопросов в колоде. Нажмите ниже, чтобы начать новую игру.`;
@@ -418,10 +416,16 @@ function startGame() {
       return;
   }
 
-  const maxQ = questionsData[currentCategory.id].length;
+  const sourceQuestions = questionsData[currentCategory.id] || [];
+  const maxQ = sourceQuestions.length;
+  if (!maxQ) {
+    alert('В этой категории пока нет вопросов.');
+    showScreen('categories');
+    return;
+  }
   const limit = maxQ < 8 ? maxQ : 8;
   
-  currentQuestions = shuffle(questionsData[currentCategory.id]).slice(0, limit);
+  currentQuestions = shuffle(sourceQuestions).slice(0, limit);
   currentIndex = 0;
   stats = { match: 0, mismatch: 0, skip: 0 };
   resetQuestionCard();
@@ -754,7 +758,7 @@ async function initTelegramAPI() {
 }
 
 async function init() {
-  const cachedData = localStorage.getItem('couples_questions');
+  const cachedData = localStorage.getItem(QUESTIONS_CACHE_KEY);
   if (cachedData) {
     questionsData = JSON.parse(cachedData);
     
@@ -764,14 +768,18 @@ async function init() {
     }
   } else {
     try {
-      questionsData = await fetch('questions.json').then(r => r.json());
-      localStorage.setItem('couples_questions', JSON.stringify(questionsData));
+      const response = await fetch('questions.json', { cache: 'no-store' });
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      questionsData = await response.json();
+      localStorage.setItem(QUESTIONS_CACHE_KEY, JSON.stringify(questionsData));
     } catch (e) {
-      console.error("Ошибка загрузки вопросов", e);
+      console.error('Ошибка загрузки вопросов', e);
+      questionsData = {};
     }
   }
 
   initTheme();
+  resetBaseBackground();
   renderCategories();
   renderHistory();
   preventDoubleTapZoom();
@@ -808,9 +816,5 @@ async function init() {
     ui.adultModal.classList.add('hidden');
   });
 }
-
-bgLayers.forEach(layer => {
-  if (layer) layer.style.backgroundImage = 'var(--bg)';
-});
 
 document.addEventListener('DOMContentLoaded', init);
