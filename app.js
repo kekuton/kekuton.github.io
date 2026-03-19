@@ -24,6 +24,7 @@ const ui = {
   progressFill: document.getElementById('progressFill'),
   questionText: document.getElementById('questionText'),
   questionCard: document.getElementById('questionCard'),
+  swipeHelp: document.getElementById('swipeHelp'),
   matchBtn: document.getElementById('matchBtn'),
   mismatchBtn: document.getElementById('mismatchBtn'),
   skipBtn: document.getElementById('skipBtn'),
@@ -385,6 +386,48 @@ function vibrate(type = 'medium') {
   }
 }
 
+
+function launchReactionBurst(type, sourceEl = null) {
+  const wrap = document.createElement('div');
+  wrap.className = 'reaction-burst';
+  const palette = {
+    match: ['#34d399', '#86efac', '#dcfce7', '#ffffff'],
+    mismatch: ['#fb7185', '#fda4af', '#ffe4e6', '#ffffff'],
+    skip: ['#fbbf24', '#fde68a', '#fef3c7', '#ffffff']
+  }[type] || ['#ffffff'];
+
+  const rect = sourceEl?.getBoundingClientRect?.() || { left: window.innerWidth / 2, top: window.innerHeight / 2, width: 0, height: 0 };
+  const originX = rect.left + rect.width / 2;
+  const originY = rect.top + rect.height / 2;
+
+  for (let i = 0; i < 18; i += 1) {
+    const p = document.createElement('span');
+    const angle = (Math.PI * 2 * i) / 18;
+    const distance = 30 + Math.random() * 90;
+    p.style.left = `${originX}px`;
+    p.style.top = `${originY}px`;
+    p.style.background = palette[Math.floor(Math.random() * palette.length)];
+    p.style.setProperty('--tx', `${Math.cos(angle) * distance}px`);
+    p.style.setProperty('--ty', `${Math.sin(angle) * distance}px`);
+    p.style.animationDelay = `${Math.random() * 0.05}s`;
+    wrap.appendChild(p);
+  }
+  document.body.appendChild(wrap);
+  setTimeout(() => wrap.remove(), 900);
+}
+
+function pulseAnswerButton(type) {
+  const buttonMap = { match: ui.matchBtn, mismatch: ui.mismatchBtn, skip: ui.skipBtn };
+  const classMap = { match: 'pulse-match', mismatch: 'pulse-mismatch', skip: 'pulse-skip' };
+  const btn = buttonMap[type];
+  const cls = classMap[type];
+  if (!btn || !cls) return;
+  btn.classList.remove(cls);
+  void btn.offsetWidth;
+  btn.classList.add(cls);
+  setTimeout(() => btn.classList.remove(cls), 500);
+}
+
 function launchConfetti() {
   const count = 120;
   const colors = ['#f59e0b', '#f472b6', '#22c55e', '#60a5fa', '#ffffff', '#fde047'];
@@ -447,7 +490,7 @@ function renderQuestion(isInitial = false) {
   ui.questionCard.style.transition = 'none';
   ui.questionCard.style.transform = isInitial ? 'translateY(0) scale(1)' : 'translateY(22px) scale(0.98)';
   ui.questionCard.style.opacity = isInitial ? '1' : '0';
-  updateSwipeHint(0);
+  updateSwipeHint(0, 0);
 
   requestAnimationFrame(() => {
     ui.questionCard.style.transition = 'transform 320ms cubic-bezier(.2,.9,.2,1), opacity 260ms ease';
@@ -456,11 +499,23 @@ function renderQuestion(isInitial = false) {
   });
 }
 
-function updateSwipeHint(offsetX) {
-  const intensity = Math.min(Math.abs(offsetX) / 120, 1);
-  const direction = offsetX > 0 ? 'right' : offsetX < 0 ? 'left' : 'none';
+function updateSwipeHint(offsetX, offsetY = 0) {
+  const intensity = Math.min(Math.max(Math.abs(offsetX), Math.abs(offsetY)) / 120, 1);
+  let direction = 'none';
+  if (offsetY < -70 && Math.abs(offsetX) < 100) direction = 'up';
+  else if (offsetX > 0) direction = 'right';
+  else if (offsetX < 0) direction = 'left';
   ui.questionCard.dataset.swipe = direction;
   ui.questionCard.style.setProperty('--swipe-opacity', intensity.toFixed(2));
+  if (ui.swipeHelp) {
+    const map = {
+      none: 'Свайп: влево — не совпало, вправо — совпало, вверх — пропуск',
+      left: 'Отпускай — отметим «Не совпало»',
+      right: 'Отпускай — отметим «Совпало»',
+      up: 'Отпускай — это «Пропуск»'
+    };
+    ui.swipeHelp.textContent = map[direction];
+  }
 }
 
 function resetQuestionCard() {
@@ -473,6 +528,7 @@ function resetQuestionCard() {
   ui.questionCard.style.transition = '';
   ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
   ui.questionCard.style.opacity = '1';
+  if (ui.swipeHelp) ui.swipeHelp.textContent = 'Свайп: влево — не совпало, вправо — совпало, вверх — пропуск';
 }
 
 function animateSwipeOut(type, callback) {
@@ -496,7 +552,18 @@ function animateSwipeOut(type, callback) {
 
 function answer(type) {
   if (!['match', 'mismatch', 'skip'].includes(type)) return;
-  vibrate(type === 'skip' ? 'warning' : 'medium');
+  pulseAnswerButton(type);
+  launchReactionBurst(type, type === 'match' ? ui.matchBtn : type === 'mismatch' ? ui.mismatchBtn : ui.skipBtn);
+  if (type === 'match') {
+    vibrate('success');
+  } else if (type === 'mismatch') {
+    vibrate('error');
+  } else {
+    vibrate('warning');
+  }
+  if (type === 'match') {
+    setTimeout(() => launchConfetti(), 40);
+  }
   animateSwipeOut(type, () => {
     stats[type] += 1;
     currentIndex += 1;
@@ -695,7 +762,7 @@ function onPointerMove(e) {
       const rotate = deltaX / 18;
       const stretch = 1 - Math.min(Math.abs(deltaX) / 1200, 0.03);
       ui.questionCard.style.transform = `translate3d(${deltaX}px, ${deltaY * 0.18}px, 0) rotate(${rotate}deg) scale(${stretch})`;
-      updateSwipeHint(deltaX);
+      updateSwipeHint(deltaX, deltaY);
       
       swipeState.isAnimating = false;
     });
@@ -732,7 +799,7 @@ function onPointerUp(e) {
 
   ui.questionCard.style.transition = 'transform 220ms cubic-bezier(.2,.9,.2,1)';
   ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
-  updateSwipeHint(0);
+  updateSwipeHint(0, 0);
 }
 
 function attachSwipeHandlers() {
