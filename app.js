@@ -75,21 +75,50 @@ const categoryMeta = [
 
 
 const categoryBackgrounds = {
-  'Будущее': 'images/bg_future.jpg',
-  'На расстоянии': 'images/bg_distance.jpg',
-  'Финансы': 'images/bg_finance.jpg'
+  'Будущее': { file: 'images/bg_future.jpg', bodyClass: 'category-future' },
+  'На расстоянии': { file: 'images/bg_distance.jpg', bodyClass: 'category-distance' },
+  'Финансы': { file: 'images/bg_finance.jpg', bodyClass: 'category-finance' }
 };
 
-function applyCategoryBackground(categoryId = '') {
-  const bg = categoryBackgrounds[categoryId] || '';
-  if (bg) {
-    document.body.style.setProperty('--category-bg-image', `url('${bg}')`);
-    document.body.classList.add('has-category-bg');
-  } else {
-    document.body.style.removeProperty('--category-bg-image');
-    document.body.classList.remove('has-category-bg');
-  }
+function clearCategoryBodyClasses() {
+  document.body.classList.remove('has-category-bg', 'category-future', 'category-distance', 'category-finance');
 }
+
+function applyCategoryBackground(categoryId = '') {
+  const config = categoryBackgrounds[categoryId];
+  const nextLayer = bgLayers[(activeBgLayerIndex + 1) % bgLayers.length];
+  const currentLayer = bgLayers[activeBgLayerIndex];
+
+  if (!config) {
+    clearCategoryBodyClasses();
+    document.body.style.removeProperty('--category-bg-image');
+    bgLayers.forEach((layer, index) => {
+      if (!layer) return;
+      layer.style.backgroundImage = 'var(--bg)';
+      layer.classList.remove('entering', 'transition-in');
+      layer.classList.toggle('active', index === activeBgLayerIndex);
+    });
+    return;
+  }
+
+  document.body.style.setProperty('--category-bg-image', `url('${config.file}')`);
+  clearCategoryBodyClasses();
+  document.body.classList.add('has-category-bg', config.bodyClass);
+
+  if (!nextLayer || !currentLayer) return;
+  nextLayer.style.backgroundImage = `url('${config.file}')`;
+  nextLayer.classList.remove('active', 'transition-in');
+  nextLayer.classList.add('entering');
+
+  requestAnimationFrame(() => {
+    nextLayer.classList.add('transition-in');
+    nextLayer.classList.remove('entering');
+    currentLayer.classList.remove('active');
+    nextLayer.classList.add('active');
+    activeBgLayerIndex = (activeBgLayerIndex + 1) % bgLayers.length;
+  });
+}
+
 
 let questionsData = {};
 let currentCategory = null;
@@ -108,6 +137,12 @@ const swipeState = {
   startX: 0, startY: 0, currentX: 0, currentY: 0,
   dragging: false, pointerId: null, isAnimating: false
 };
+
+const bgLayers = [
+  document.querySelector('.bg-layer-a'),
+  document.querySelector('.bg-layer-b')
+];
+let activeBgLayerIndex = 0;
 
 const tg = window.Telegram?.WebApp;
 
@@ -773,5 +808,9 @@ async function init() {
     ui.adultModal.classList.add('hidden');
   });
 }
+
+bgLayers.forEach(layer => {
+  if (layer) layer.style.backgroundImage = 'var(--bg)';
+});
 
 document.addEventListener('DOMContentLoaded', init);
