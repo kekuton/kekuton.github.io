@@ -328,6 +328,127 @@ function openCategory(categoryId) {
   document.getElementById('backToCategoriesBtn').addEventListener('click', goBack);
 }
 
+
+function updateModeUI() {
+  const duo = gameMode === 'duo';
+  if (ui.turnBadge) {
+    ui.turnBadge.classList.toggle('hidden', !duo);
+    ui.turnBadge.textContent = duo ? duoPlayers[duoActivePlayer] : '';
+  }
+  if (ui.gameCategory && currentCategory) {
+    ui.gameCategory.textContent = duo ? `${currentCategory.id} · Игра вдвоём` : currentCategory.id;
+  }
+}
+
+function showPassModal(playerIndex, onReady) {
+  if (!ui.passModal) {
+    if (typeof onReady === 'function') onReady();
+    return;
+  }
+  const playerName = duoPlayers[playerIndex] || `Игрок ${playerIndex + 1}`;
+  ui.passModalTitle.textContent = 'Передайте телефон';
+  ui.passModalText.textContent = `Сейчас отвечает ${playerName}`;
+  ui.passModalBtn.textContent = 'Готово';
+  ui.passModal.classList.remove('hidden');
+
+  const handleReady = () => {
+    ui.passModal.classList.add('hidden');
+    ui.passModalBtn.removeEventListener('click', handleReady);
+    if (typeof onReady === 'function') onReady();
+  };
+
+  ui.passModalBtn.addEventListener('click', handleReady);
+}
+
+function buildShareText() {
+  const modeText = gameMode === 'duo' ? 'Игра вдвоём' : 'Обычная игра';
+  return `Вопросы для двоих
+Категория: ${currentCategory?.id || '—'}
+Результат: ${ui.resultsScore?.textContent || '0%'}
+Совпало: ${stats.match} · Не совпало: ${stats.mismatch} · Пропуск: ${stats.skip}
+Режим: ${modeText}`;
+}
+
+async function createShareCardBlob() {
+  const width = 1080;
+  const height = 1350;
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+
+  const grad = ctx.createLinearGradient(0, 0, width, height);
+  grad.addColorStop(0, '#7c3aed');
+  grad.addColorStop(1, '#ec4899');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, width, height);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.12)';
+  roundRect(ctx, 70, 120, width - 140, height - 240, 42, true, false);
+
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '700 42px Arial';
+  ctx.fillText('Вопросы для двоих', 110, 200);
+
+  ctx.font = '700 84px Arial';
+  ctx.fillText(ui.resultsScore?.textContent || '0%', 110, 360);
+
+  ctx.font = '600 44px Arial';
+  wrapText(ctx, currentCategory?.id || 'Категория', 110, 450, width - 220, 56);
+
+  ctx.font = '500 34px Arial';
+  wrapText(ctx, resultMessage(parseInt((ui.resultsScore?.textContent || '0').replace('%','')) || 0, currentCategory?.id === 'Блиц'), 110, 560, width - 220, 48);
+
+  ctx.font = '600 32px Arial';
+  ctx.fillText(`Совпало: ${stats.match}`, 110, 760);
+  ctx.fillText(`Не совпало: ${stats.mismatch}`, 110, 820);
+  ctx.fillText(`Пропуск: ${stats.skip}`, 110, 880);
+  ctx.fillText(`Режим: ${gameMode === 'duo' ? 'Игра вдвоём' : 'Обычная игра'}`, 110, 940);
+
+  ctx.font = '500 28px Arial';
+  ctx.fillStyle = 'rgba(255,255,255,0.92)';
+  ctx.fillText('Сделано в Telegram Mini App', 110, 1160);
+
+  return await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+}
+
+function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+  if (typeof radius === 'number') {
+    radius = {tl: radius, tr: radius, br: radius, bl: radius};
+  }
+  ctx.beginPath();
+  ctx.moveTo(x + radius.tl, y);
+  ctx.lineTo(x + width - radius.tr, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+  ctx.lineTo(x + width, y + height - radius.br);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+  ctx.lineTo(x + radius.bl, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+  ctx.lineTo(x, y + radius.tl);
+  ctx.quadraticCurveTo(x, y, x + radius.tl, y);
+  ctx.closePath();
+  if (fill) ctx.fill();
+  if (stroke) ctx.stroke();
+}
+
+function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+  const words = String(text).split(' ');
+  let line = '';
+  for (let n = 0; n < words.length; n += 1) {
+    const testLine = line + words[n] + ' ';
+    const metrics = ctx.measureText(testLine);
+    if (metrics.width > maxWidth && n > 0) {
+      ctx.fillText(line.trim(), x, y);
+      line = words[n] + ' ';
+      y += lineHeight;
+    } else {
+      line = testLine;
+    }
+  }
+  ctx.fillText(line.trim(), x, y);
+}
+
 // ПРЕМИУМ И СВОЯ ИГРА
 ui.buyPremiumBtn.addEventListener('click', () => {
   const originalText = ui.buyPremiumBtn.textContent;
