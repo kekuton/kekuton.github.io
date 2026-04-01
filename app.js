@@ -80,7 +80,7 @@ const categoryMeta = [
 ];
 
 
-const QUESTIONS_CACHE_KEY = 'couples_questions_v2';
+const QUESTIONS_CACHE_KEY = 'couples_questions_v3';
 
 const categoryBackgrounds = {
   'Будущее': { file: 'images/bg_future.jpg', bodyClass: 'category-future' },
@@ -318,6 +318,7 @@ function openCategory(categoryId) {
     <p class="intro-subtext">${introText}</p>
     <div class="hero-actions stacked">
       <button class="primary-btn" id="playCategoryBtn">${categoryId === 'Блиц' ? 'Начать блиц' : 'Новая игра'}</button>
+      ${categoryId !== 'Блиц' ? '<button class="secondary-btn" id="duoCategoryBtn">Играть вдвоём</button>' : ''}
       <button class="secondary-btn" id="backToCategoriesBtn">Назад</button>
     </div>
   `;
@@ -903,30 +904,48 @@ async function initTelegramAPI() {
 }
 
 async function init() {
-  const cachedData = localStorage.getItem(QUESTIONS_CACHE_KEY);
-  if (cachedData) {
-    questionsData = JSON.parse(cachedData);
-    
-    const savedCustom = localStorage.getItem('custom_questions');
-    if (savedCustom) {
-      questionsData['Своя игра'] = JSON.parse(savedCustom);
-    }
-  } else {
-    try {
-      const response = await fetch('questions.json', { cache: 'no-store' });
-      if (!response.ok) throw new Error('HTTP ' + response.status);
-      questionsData = await response.json();
+  let loadedFromNetwork = false;
+  try {
+    const response = await fetch(`questions.json?v=${Date.now()}`, { cache: 'no-store' });
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const freshData = await response.json();
+    if (freshData && typeof freshData === 'object' && Object.keys(freshData).length > 0) {
+      questionsData = freshData;
       localStorage.setItem(QUESTIONS_CACHE_KEY, JSON.stringify(questionsData));
+      loadedFromNetwork = true;
+    }
+  } catch (e) {
+    console.error('Ошибка загрузки вопросов по сети', e);
+  }
+
+  if (!loadedFromNetwork) {
+    try {
+      const cachedData = localStorage.getItem(QUESTIONS_CACHE_KEY);
+      questionsData = cachedData ? JSON.parse(cachedData) : {};
     } catch (e) {
-      console.error('Ошибка загрузки вопросов', e);
+      console.error('Ошибка чтения кэша вопросов', e);
       questionsData = {};
     }
+  }
+
+  if (!questionsData || typeof questionsData !== 'object') {
+    questionsData = {};
+  }
+
+  const savedCustom = localStorage.getItem('custom_questions');
+  if (savedCustom) {
+    try {
+      questionsData['Своя игра'] = JSON.parse(savedCustom);
+    } catch {}
   }
 
   initTheme();
   resetBaseBackground();
   renderCategories();
   renderHistory();
+  if (Object.keys(questionsData).length === 0) {
+    console.warn('Вопросы не загружены');
+  }
   preventDoubleTapZoom();
   initTelegramAPI();
   attachSwipeHandlers();
