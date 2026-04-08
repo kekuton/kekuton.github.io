@@ -37,6 +37,10 @@ function bindEvents() {
     render.favorites();
     router.show('favorites');
   });
+  ui.achievementsBtn?.addEventListener('click', () => {
+    render.achievements();
+    router.show('achievements');
+  });
   ui.startFavoritesBtn?.addEventListener('click', () => {
     if (!state.favorites.length) return;
     state.currentCategory = { id: 'Избранное' };
@@ -165,6 +169,7 @@ async function init() {
   render.categories();
   render.history();
   render.favorites();
+  render.achievements();
   render.homeDashboard();
   render.onboarding();
   swipe.preventDoubleTapZoom();

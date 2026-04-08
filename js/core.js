@@ -23,14 +23,14 @@ const DEFAULT_SETTINGS = {
 };
 
 const CATEGORY_META = [
-  { id: 'Интимные вопросы', icon: '🔞', desc: 'Откровенные вопросы', color: 'linear-gradient(180deg,#f59e0b,#fb7185)', badge: '18+' },
-  { id: 'На расстоянии', icon: '✈️', desc: 'Для пар в разлуке', color: 'linear-gradient(180deg,#38bdf8,#6366f1)' },
-  { id: 'Будущее', icon: '🔮', desc: 'Планы, мечты и семья', color: 'linear-gradient(180deg,#c084fc,#ec4899)' },
-  { id: 'Финансы', icon: '💰', desc: 'Деньги, цели и бюджет', color: 'linear-gradient(180deg,#f59e0b,#f97316)' },
-  { id: 'Психология', icon: '🧠', desc: 'Эмоции и границы', color: 'linear-gradient(180deg,#22c55e,#14b8a6)' },
-  { id: 'Воспоминания', icon: '📸', desc: 'Лучшие моменты вместе', color: 'linear-gradient(180deg,#60a5fa,#8b5cf6)' },
-  { id: 'Блиц', icon: '⚡', desc: 'Проверка знаний (30 сек)', color: 'linear-gradient(180deg,#eab308,#ef4444)' },
-  { id: 'Своя игра', icon: '✍️', desc: 'Создай свои вопросы', color: 'linear-gradient(180deg,#10b981,#3b82f6)', isPremium: true }
+  { id: 'Интимные вопросы', icon: 'spark', desc: 'Откровенные вопросы', color: 'linear-gradient(180deg,#f59e0b,#fb7185)', badge: '18+' },
+  { id: 'На расстоянии', icon: 'distance', desc: 'Для пар в разлуке', color: 'linear-gradient(180deg,#38bdf8,#6366f1)' },
+  { id: 'Будущее', icon: 'future', desc: 'Планы, мечты и семья', color: 'linear-gradient(180deg,#c084fc,#ec4899)' },
+  { id: 'Финансы', icon: 'finance', desc: 'Деньги, цели и бюджет', color: 'linear-gradient(180deg,#f59e0b,#f97316)' },
+  { id: 'Психология', icon: 'mind', desc: 'Эмоции и границы', color: 'linear-gradient(180deg,#22c55e,#14b8a6)' },
+  { id: 'Воспоминания', icon: 'memory', desc: 'Лучшие моменты вместе', color: 'linear-gradient(180deg,#60a5fa,#8b5cf6)' },
+  { id: 'Блиц', icon: 'bolt', desc: 'Проверка знаний (30 сек)', color: 'linear-gradient(180deg,#eab308,#ef4444)' },
+  { id: 'Своя игра', icon: 'edit', desc: 'Создай свои вопросы', color: 'linear-gradient(180deg,#10b981,#3b82f6)', isPremium: true }
 ];
 
 const CATEGORY_BACKGROUNDS = {
@@ -55,7 +55,8 @@ const screens = {
   history: document.getElementById('historyScreen'),
   customGame: document.getElementById('customGameScreen'),
   settings: document.getElementById('settingsScreen'),
-  favorites: document.getElementById('favoritesScreen')
+  favorites: document.getElementById('favoritesScreen'),
+  achievements: document.getElementById('achievementsScreen')
 };
 
 const ui = {
@@ -77,6 +78,11 @@ const ui = {
   challengeHintText: document.getElementById('challengeHintText'),
   achievementCountText: document.getElementById('achievementCountText'),
   achievementHintText: document.getElementById('achievementHintText'),
+  achievementsBtn: document.getElementById('achievementsBtn'),
+  achievementsList: document.getElementById('achievementsList'),
+  achievementLegend: document.getElementById('achievementLegend'),
+  achievementUnlock: document.getElementById('achievementUnlock'),
+  achievementUnlockCard: document.getElementById('achievementUnlockCard'),
   inviteBtn: document.getElementById('inviteBtn'),
   onboardingTitle: document.getElementById('onboardingTitle'),
   onboardingText: document.getElementById('onboardingText'),
@@ -204,6 +210,8 @@ const state = {
   onboardingStep: 0,
   settings: { ...DEFAULT_SETTINGS },
   favorites: storage.get(STORAGE_KEYS.favorites, []),
+  lastRoundAchievements: [],
+  shareAchievement: null,
   questionStreak: 0,
   swipe: {
     active: false,
@@ -274,14 +282,49 @@ const helpers = {
     if (score >= 55) return 'Живой вайб с поводом для разговора';
     return 'Контрастный вайб — обсудить будет интересно';
   },
+  categoryIconSvg(iconId = 'spark') {
+    const icons = {
+      spark: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.3 3.7L17 8l-3.7 1.3L12 13l-1.3-3.7L7 8l3.7-1.3L12 3z"></path><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14z"></path><path d="M5 13l1 2.6L8.5 17 6 18l-1 2.5L4 18l-2.5-1.4L4 15.6 5 13z"></path></svg>`,
+      distance: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20s-4.5-2.9-6-5.3A3.7 3.7 0 0 1 8 10.4a3.7 3.7 0 0 1 6 4.3C12.5 17.1 8 20 8 20z"></path><path d="M16 4v6"></path><path d="M13 7h6"></path><path d="M18.5 20H22"></path><path d="M15.5 17h6"></path></svg>`,
+      future: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.7 5.5 6.1.9-4.4 4.2 1 6-5.4-2.8-5.4 2.8 1-6-4.4-4.2 6.1-.9L12 2z"></path><circle cx="12" cy="12" r="1.5"></circle></svg>`,
+      finance: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="3"></rect><path d="M7 12h10"></path><path d="M9 9.5h6"></path><path d="M9 14.5h4"></path></svg>`,
+      mind: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M8.7 14.6A6.5 6.5 0 1 1 15.3 14.6c-.7.7-1.1 1.5-1.3 2.4h-4c-.2-.9-.6-1.7-1.3-2.4z"></path><path d="M10 9.2c.4-.8 1.2-1.2 2-1.2 1.1 0 2 .8 2 1.9 0 1.4-2 1.8-2 3.1"></path></svg>`,
+      memory: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"></rect><circle cx="9" cy="10" r="2"></circle><path d="M21 16l-5.2-5.2a1.2 1.2 0 0 0-1.7 0L8 17"></path></svg>`,
+      bolt: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"></path></svg>`,
+      edit: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg>`
+    };
+    return icons[iconId] || icons.spark;
+  },
+  achievementRarityMeta(rarity = 'common') {
+    const rarities = {
+      common: { label: 'Обычная', className: 'rarity-common' },
+      rare: { label: 'Редкая', className: 'rarity-rare' },
+      epic: { label: 'Эпическая', className: 'rarity-epic' },
+      legendary: { label: 'Легендарная', className: 'rarity-legendary' }
+    };
+    return rarities[rarity] || rarities.common;
+  },
   achievementCatalog() {
     return [
-      { id: 'first_game', title: 'Первый раунд', check: (stats) => stats.games >= 1 },
-      { id: 'ten_games', title: '10 игр', check: (stats) => stats.games >= 10 },
-      { id: 'hundred_questions', title: '100 вопросов', check: (stats) => stats.questions >= 100 },
-      { id: 'five_day_streak', title: '5 дней подряд', check: (stats) => stats.streak >= 5 },
-      { id: 'romantic_master', title: '80%+ в категории', check: (stats, ctx) => ctx.score >= 80 }
+      { id: 'first_game', title: 'Первый раунд', description: 'Заверши свою первую игру до конца.', rarity: 'common', art: 'spark', check: (stats) => stats.games >= 1 },
+      { id: 'ten_games', title: 'На одной волне', description: 'Сыграй 10 полных раундов.', rarity: 'rare', art: 'rings', check: (stats) => stats.games >= 10 },
+      { id: 'hundred_questions', title: 'Сотня откровений', description: 'Пройди 100 вопросов во всех режимах.', rarity: 'epic', art: 'crown', check: (stats) => stats.questions >= 100 },
+      { id: 'five_day_streak', title: 'Серия 5 дней', description: 'Возвращайся в игру 5 дней подряд.', rarity: 'rare', art: 'flame', check: (stats) => stats.streak >= 5 },
+      { id: 'romantic_master', title: 'Идеальный мэтч', description: 'Набери 80%+ совместимости в категории.', rarity: 'legendary', art: 'gem', check: (stats, ctx) => ctx.score >= 80 }
     ];
+  },
+  achievementArtSvg(art = 'spark') {
+    const icons = {
+      spark: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M32 8l4.2 11.8L48 24l-11.8 4.2L32 40l-4.2-11.8L16 24l11.8-4.2L32 8z"></path><path d="M49 40l2.2 6.1L57 48l-5.8 1.9L49 56l-2.2-6.1L41 48l5.8-1.9L49 40z"></path></svg>`,
+      rings: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="36" r="12"></circle><circle cx="40" cy="36" r="12"></circle><path d="M32 24l4-8"></path><path d="M36 16h8"></path></svg>`,
+      crown: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 46l4-22 16 12 16-12 4 22H12z"></path><path d="M18 46v8h28v-8"></path><circle cx="16" cy="20" r="3"></circle><circle cx="32" cy="12" r="3"></circle><circle cx="48" cy="20" r="3"></circle></svg>`,
+      flame: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M35 10c2 9-8 11-8 20 0 4 2.6 7 5 7 3.6 0 6-2.8 6-6 0-5-4-7-3-13 8 5 12 12 12 20 0 10-6.8 18-15 18S17 48 17 39c0-10 6-16 18-29z"></path></svg>`,
+      gem: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 24l8-10h16l8 10-16 26-16-26z"></path><path d="M24 14l8 10 8-10"></path><path d="M16 24h32"></path></svg>`
+    };
+    return icons[art] || icons.spark;
+  },
+  achievementById(id) {
+    return this.achievementCatalog().find((item) => item.id === id) || null;
   },
   isAdultConfirmed() {
     return storage.getRaw(STORAGE_KEYS.adult) === 'yes';
@@ -646,11 +689,11 @@ const meta = {
     helpers.achievementCatalog().forEach((achievement) => {
       if (!unlocked.has(achievement.id) && achievement.check(data, context)) {
         unlocked.add(achievement.id);
-        newly.push(achievement.title);
+        newly.push(achievement);
       }
     });
     this.saveAchievements(Array.from(unlocked));
-    return { challenge: data, newly };
+    return { challenge: data, newly, unlocked: Array.from(unlocked).map((id) => helpers.achievementById(id)).filter(Boolean) };
   }
 };
 

@@ -46,7 +46,15 @@ export const render = {
     if (ui.challengeHintText) ui.challengeHintText.textContent = challenge.streak ? `Текущая серия: ${challenge.streak} дн.` : 'Каждый день отвечайте хотя бы на один вопрос, чтобы собрать серию.';
     const achievements = meta.loadAchievements();
     if (ui.achievementCountText) ui.achievementCountText.textContent = `${achievements.length} наград`;
-    if (ui.achievementHintText) ui.achievementHintText.textContent = achievements.length ? 'Новые награды появляются после ярких серий и длинных игр.' : 'Начни игру, чтобы открыть первую награду.';
+    if (ui.achievementHintText) {
+      if (achievements.length) {
+        const latest = helpers.achievementById(achievements[achievements.length - 1]);
+        const rarity = latest ? helpers.achievementRarityMeta(latest.rarity).label : 'Награда';
+        ui.achievementHintText.textContent = latest ? `${rarity}: ${latest.title}` : 'Новые награды появляются после ярких серий и длинных игр.';
+      } else {
+        ui.achievementHintText.textContent = 'Начни игру, чтобы открыть первую награду.';
+      }
+    }
   },
   favorites() {
     const favorites = state.favorites || [];
@@ -93,6 +101,57 @@ export const render = {
     });
     ui.historyList.replaceChildren(fragment);
   },
+
+  achievements() {
+    const unlockedIds = new Set(meta.loadAchievements());
+    const list = helpers.achievementCatalog();
+    if (ui.achievementLegend) {
+      ui.achievementLegend.innerHTML = ['common','rare','epic','legendary'].map((key) => {
+        const rarity = helpers.achievementRarityMeta(key);
+        return `<span class="achievement-legend-pill ${rarity.className}">${rarity.label}</span>`;
+      }).join('');
+    }
+    if (!ui.achievementsList) return;
+    const fragment = document.createDocumentFragment();
+    list.forEach((item) => {
+      const rarity = helpers.achievementRarityMeta(item.rarity);
+      const unlocked = unlockedIds.has(item.id);
+      const card = document.createElement('article');
+      card.className = `achievement-card achievement-card-showcase ${rarity.className}${unlocked ? ' is-unlocked' : ' is-locked'}`;
+      card.innerHTML = `
+        <div class="achievement-art" aria-hidden="true">${helpers.achievementArtSvg(item.art)}</div>
+        <div class="achievement-copy">
+          <div class="achievement-topline"><span class="achievement-rarity">${rarity.label}</span><span class="achievement-status">${unlocked ? 'Открыто' : 'Закрыто'}</span></div>
+          <strong>${helpers.escapeHtml(item.title)}</strong>
+          <p>${helpers.escapeHtml(item.description)}</p>
+        </div>
+      `;
+      fragment.appendChild(card);
+    });
+    ui.achievementsList.replaceChildren(fragment);
+  },
+  showAchievementUnlock(achievement) {
+    if (!achievement || !ui.achievementUnlockCard || !ui.achievementUnlock) return;
+    const rarity = helpers.achievementRarityMeta(achievement.rarity);
+    ui.achievementUnlockCard.className = `achievement-unlock-card ${rarity.className}`;
+    ui.achievementUnlockCard.innerHTML = `
+      <div class="achievement-unlock-kicker">Новая награда</div>
+      <div class="achievement-art" aria-hidden="true">${helpers.achievementArtSvg(achievement.art)}</div>
+      <div class="achievement-copy">
+        <div class="achievement-topline"><span class="achievement-rarity">${rarity.label}</span></div>
+        <strong>${helpers.escapeHtml(achievement.title)}</strong>
+        <p>${helpers.escapeHtml(achievement.description)}</p>
+      </div>
+    `;
+    ui.achievementUnlock.classList.remove('hidden');
+    ui.achievementUnlock.classList.remove('is-visible');
+    requestAnimationFrame(() => ui.achievementUnlock.classList.add('is-visible'));
+    clearTimeout(this._achievementUnlockTimer);
+    this._achievementUnlockTimer = setTimeout(() => {
+      ui.achievementUnlock.classList.remove('is-visible');
+      setTimeout(() => ui.achievementUnlock.classList.add('hidden'), 280);
+    }, 2600);
+  },
   categories() {
     const premiumUnlocked = helpers.getPremiumUnlocked();
     const fragment = document.createDocumentFragment();
@@ -106,7 +165,7 @@ export const render = {
       card.dataset.id = category.id;
       card.style.background = category.color;
       card.classList.toggle('premium-locked', isLocked);
-      card.querySelector('[data-role="icon"]').textContent = category.icon;
+      card.querySelector('[data-role="icon"]').innerHTML = helpers.categoryIconSvg(category.icon);
       const badge = card.querySelector('[data-role="badge"]');
       if (category.badge) {
         badge.textContent = category.badge;
@@ -138,7 +197,7 @@ export const render = {
       ? 'Вам дается ровно 30 секунд. Ответьте правильно на как можно больше вопросов о вашем партнере.'
       : `${total} вопросов в колоде. Нажмите ниже, чтобы начать новую игру.`;
     ui.introCard.innerHTML = `
-      <div class="intro-illu">${state.currentCategory.icon}</div>
+      <div class="intro-illu intro-illu-icon">${helpers.categoryIconSvg(state.currentCategory.icon)}</div>
       <span class="eyebrow">${state.currentCategory.badge || 'Категория'}</span>
       <h2>${helpers.escapeHtml(state.currentCategory.id)}</h2>
       <p class="intro-subtext">${helpers.escapeHtml(state.currentCategory.desc)}</p>
@@ -301,6 +360,18 @@ export const results = {
     ctx.fillText(`Не совпало: ${state.stats.mismatch}`, 110, 820);
     ctx.fillText(`Пропуск: ${state.stats.skip}`, 110, 880);
     ctx.fillText(`Режим: ${state.gameMode === 'duo' ? 'Игра вдвоём' : 'Обычная игра'}`, 110, 940);
+    if (state.shareAchievement) {
+      const rarity = helpers.achievementRarityMeta(state.shareAchievement.rarity);
+      ctx.fillStyle = 'rgba(255,255,255,0.14)';
+      this.roundRect(ctx, 110, 1010, 860, 150, 28, true, false);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '700 28px Arial';
+      ctx.fillText('Новая награда', 150, 1060);
+      ctx.font = '700 34px Arial';
+      ctx.fillText(`${rarity.label}: ${state.shareAchievement.title}`, 150, 1110);
+      ctx.font = '500 26px Arial';
+      this.wrapText(ctx, state.shareAchievement.description, 150, 1150, 760, 34);
+    }
     ctx.font = '500 28px Arial';
     ctx.fillStyle = 'rgba(255,255,255,0.92)';
     ctx.fillText('Сделано в Telegram Mini App', 110, 1160);
@@ -373,7 +444,10 @@ export const results = {
       ui.resultsBreakdown.innerHTML = `<div class="result-panel"><strong>Совместимость по категории</strong><p>${state.currentCategory.id}: <b>${score}%</b> · ${helpers.vibeByScore(score)}</p></div><div class="result-panel"><strong>Челлендж 7 дней</strong><p>${progress.challenge.daysCompleted}/7 дней · серия ${progress.challenge.streak} дн.</p></div>`;
     }
     if (ui.resultsAchievements) {
-      ui.resultsAchievements.innerHTML = progress.newly.length ? `<div class="result-panel"><strong>Новые достижения</strong><div class="achievement-row">${progress.newly.map((item) => `<span class="achievement-pill">${item}</span>`).join('')}</div></div>` : '';
+      ui.resultsAchievements.innerHTML = progress.newly.length ? `<div class="result-panel"><strong>Новые достижения</strong><div class="achievement-grid">${progress.newly.map((item) => {
+        const rarity = helpers.achievementRarityMeta(item.rarity);
+        return `<article class="achievement-card ${rarity.className}"><div class="achievement-art" aria-hidden="true">${helpers.achievementArtSvg(item.art)}</div><div class="achievement-copy"><div class="achievement-topline"><span class="achievement-rarity">${rarity.label}</span></div><strong>${helpers.escapeHtml(item.title)}</strong><p>${helpers.escapeHtml(item.description)}</p></div></article>`;
+      }).join('')}</div></div>` : '';
     }
     render.history();
     render.homeDashboard();
