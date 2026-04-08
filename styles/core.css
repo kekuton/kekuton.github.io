@@ -1099,3 +1099,95 @@ body.app-loading { overflow: hidden; }
 @media (max-width: 520px) {
   .settings-card { align-items: flex-start; }
 }
+
+.history-toolbar {
+  margin-bottom: 12px;
+}
+
+.history-search-input {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.14);
+  color: var(--text);
+  padding: 0 16px;
+  outline: none;
+  box-shadow: var(--shadow);
+}
+
+.history-search-input::placeholder {
+  color: var(--muted);
+}
+
+.onboarding-card,
+.error-card {
+  min-height: min(68dvh, 620px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  padding: 28px;
+}
+
+.onboarding-progress {
+  display: flex;
+  gap: 8px;
+}
+
+.onboarding-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.22);
+  transition: transform .2s ease, background .2s ease;
+}
+
+.onboarding-dot.active {
+  width: 28px;
+  background: #fff;
+}
+
+.onboarding-visual,
+.error-visual {
+  width: 84px;
+  height: 84px;
+  border-radius: 24px;
+  display: grid;
+  place-items: center;
+  background: rgba(255,255,255,.14);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
+}
+
+.onboarding-visual {
+  font-size: 36px;
+  font-weight: 800;
+}
+
+.error-visual svg {
+  width: 34px;
+  height: 34px;
+}
+
+.onboarding-points {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.onboarding-point {
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.12);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+body.light .history-search-input,
+body.light .onboarding-point,
+body.light .onboarding-visual,
+body.light .error-visual {
+  border-color: rgba(118,92,200,.12);
+  background: rgba(255,255,255,.8);
+}

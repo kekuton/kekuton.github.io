@@ -61,3 +61,16 @@ body.light .icon-btn-theme {
   background: linear-gradient(135deg, rgba(255,208,102,.72), rgba(255,151,112,.44));
   border-color: rgba(255,170,110,.28);
 }
+
+.icon-svg {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-svg svg {
+  width: 20px;
+  height: 20px;
+}

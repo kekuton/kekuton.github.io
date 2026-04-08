@@ -9,7 +9,8 @@ const STORAGE_KEYS = {
   adult: 'adult_ok',
   customQuestions: 'custom_questions',
   questionsCache: 'couples_questions_v4',
-  settings: 'couples_settings_v1'
+  settings: 'couples_settings_v1',
+  onboardingSeen: 'couples_onboarding_seen_v1'
 };
 
 const DEFAULT_SETTINGS = {
@@ -36,11 +37,13 @@ const CATEGORY_BACKGROUNDS = {
 };
 
 const DUO_PLAYERS = ['Игрок 1', 'Игрок 2'];
-const ROOT_SCREENS = ['home', 'categories'];
+const ROOT_SCREENS = ['home', 'categories', 'onboarding', 'error'];
 const SWIPE_HELP = 'Свайп: влево — не совпало, вправо — совпало, вверх — пропуск';
 
 const screens = {
   home: document.getElementById('homeScreen'),
+  onboarding: document.getElementById('onboardingScreen'),
+  error: document.getElementById('errorScreen'),
   categories: document.getElementById('categoriesScreen'),
   intro: document.getElementById('categoryIntroScreen'),
   game: document.getElementById('gameScreen'),
@@ -56,11 +59,21 @@ const ui = {
   loadingText: document.getElementById('loadingText'),
   backBtn: document.getElementById('backBtn'),
   themeBtn: document.getElementById('themeBtn'),
-  themeBtnIcon: document.querySelector('#themeBtn .icon-btn-glyph'),
+  themeBtnIcon: document.getElementById('themeBtnIcon'),
   settingsBtn: document.getElementById('settingsBtn'),
   startBtn: document.getElementById('startBtn'),
   historyBtn: document.getElementById('historyBtn'),
   openSettingsBtn: document.getElementById('openSettingsBtn'),
+  onboardingTitle: document.getElementById('onboardingTitle'),
+  onboardingText: document.getElementById('onboardingText'),
+  onboardingVisual: document.getElementById('onboardingVisual'),
+  onboardingProgress: document.getElementById('onboardingProgress'),
+  onboardingPoints: document.getElementById('onboardingPoints'),
+  onboardingNextBtn: document.getElementById('onboardingNextBtn'),
+  onboardingSkipBtn: document.getElementById('onboardingSkipBtn'),
+  retryLoadBtn: document.getElementById('retryLoadBtn'),
+  goHomeFromErrorBtn: document.getElementById('goHomeFromErrorBtn'),
+  errorText: document.getElementById('errorText'),
   categoriesGrid: document.getElementById('categoriesGrid'),
   introCard: document.getElementById('categoryIntroCard'),
 
@@ -95,6 +108,10 @@ const ui = {
   changeCategoryBtn: document.getElementById('changeCategoryBtn'),
   shareBtn: document.getElementById('shareBtn'),
   historyList: document.getElementById('historyList'),
+  historySearchInput: document.getElementById('historySearchInput'),
+  categoryCardTemplate: document.getElementById('categoryCardTemplate'),
+  historyItemTemplate: document.getElementById('historyItemTemplate'),
+  emptyStateTemplate: document.getElementById('emptyStateTemplate'),
 
   adultModal: document.getElementById('adultModal'),
   adultConfirmBtn: document.getElementById('adultConfirmBtn'),
@@ -159,6 +176,9 @@ const state = {
   blitzTimeLeft: 30,
   activeBgLayerIndex: 0,
   activeModal: null,
+  loadError: null,
+  historyFilter: '',
+  onboardingStep: 0,
   settings: { ...DEFAULT_SETTINGS },
   swipe: {
     active: false,
@@ -225,6 +245,21 @@ const helpers = {
   }
 };
 
+
+
+const templates = {
+  clone(templateEl) {
+    if (!templateEl?.content?.firstElementChild) return null;
+    return templateEl.content.firstElementChild.cloneNode(true);
+  },
+  empty(message) {
+    const node = this.clone(ui.emptyStateTemplate) || document.createElement('div');
+    node.className = node.className || 'history-empty';
+    const target = node.querySelector('[data-role="message"]') || node;
+    target.textContent = message;
+    return node;
+  }
+};
 const loading = {
   show(text = 'Загрузка...') {
     if (ui.loadingText) ui.loadingText.textContent = text;
@@ -429,6 +464,12 @@ const router = {
 };
 
 const theme = {
+  icon(mode) {
+    if (mode === 'light') {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v2.2"></path><path d="M12 18.8V21"></path><path d="M3 12h2.2"></path><path d="M18.8 12H21"></path><path d="M5.64 5.64l1.55 1.55"></path><path d="M16.81 16.81l1.55 1.55"></path><path d="M5.64 18.36l1.55-1.55"></path><path d="M16.81 7.19l1.55-1.55"></path><circle cx="12" cy="12" r="4"></circle></svg>`;
+    }
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z"></path></svg>`;
+  },
   apply(next) {
     const resolved = next === 'light' ? 'light' : 'dark';
     document.body.classList.toggle('light', resolved === 'light');
@@ -440,7 +481,7 @@ const theme = {
       ui.themeBtn.title = resolved === 'light' ? 'Включить тёмную тему' : 'Включить светлую тему';
       ui.themeBtn.setAttribute('aria-label', ui.themeBtn.title);
     }
-    if (ui.themeBtnIcon) ui.themeBtnIcon.textContent = resolved === 'light' ? '☾' : '☀';
+    if (ui.themeBtnIcon) ui.themeBtnIcon.innerHTML = this.icon(resolved === 'light' ? 'dark' : 'light');
     if (tg?.setHeaderColor) tg.setHeaderColor(resolved === 'light' ? '#efe7ff' : '#9f7aea');
   },
   init() {
@@ -463,6 +504,7 @@ const data = {
   },
   async loadQuestions() {
     let loadedFromNetwork = false;
+    state.loadError = null;
     loading.setText('Загружаем вопросы...');
     try {
       const response = await fetch('questions.json', { cache: 'default' });
@@ -475,6 +517,7 @@ const data = {
       }
     } catch (error) {
       console.error('Ошибка загрузки вопросов по сети', error);
+      state.loadError = 'Не удалось загрузить свежие вопросы из файла questions.json.';
     }
     if (!loadedFromNetwork) {
       try {
@@ -487,6 +530,11 @@ const data = {
     if (!state.questionsData || typeof state.questionsData !== 'object') state.questionsData = {};
     const savedCustom = storage.get(STORAGE_KEYS.customQuestions, null);
     if (Array.isArray(savedCustom) && savedCustom.length) state.questionsData['Своя игра'] = savedCustom;
+    if (Object.keys(state.questionsData).length === 0) {
+      state.loadError = state.loadError || 'Не найден ни свежий файл вопросов, ни кэш на устройстве.';
+      return false;
+    }
+    return true;
   }
 };
 
@@ -532,6 +580,7 @@ Object.assign(app, {
   storage,
   state,
   helpers,
+  templates,
   loading,
   background,
   fx,

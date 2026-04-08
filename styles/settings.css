@@ -102,3 +102,19 @@ body.light .settings-select,
 body.light .settings-action-btn {
   border-color: rgba(118,92,200,.12);
 }
+
+.settings-action-icon,
+.feature-icon {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 22px;
+}
+
+.settings-action-icon svg,
+.feature-icon svg {
+  width: 22px;
+  height: 22px;
+}

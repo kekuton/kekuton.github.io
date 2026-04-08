@@ -1,51 +1,92 @@
 import { app } from './core.js';
 
-const { state, ui, storage, helpers, historyStore, router, fx, CATEGORY_META, STORAGE_KEYS, DUO_PLAYERS, SWIPE_HELP } = app;
+const { state, ui, storage, helpers, historyStore, router, fx, CATEGORY_META, STORAGE_KEYS, DUO_PLAYERS, SWIPE_HELP, templates } = app;
+
+const ONBOARDING_STEPS = [
+  {
+    title: 'Поговорить станет проще',
+    text: 'Выбирайте категорию под настроение и проходите игру в обычном режиме или вдвоём по очереди.',
+    visual: '💞',
+    points: ['Красивые категории', 'Процент совместимости', 'Быстрый старт без регистрации']
+  },
+  {
+    title: 'Свайпы работают как в карточках',
+    text: 'Вправо — совпало, влево — не совпало, вверх — пропуск. Можно отвечать и кнопками снизу.',
+    visual: '↔',
+    points: ['Живые анимации', 'Вибрация при ответе', 'Удобно одной рукой']
+  },
+  {
+    title: 'Настрой под себя',
+    text: 'Открой настройки, чтобы поменять вибрацию, анимации, число вопросов и очистить лишние данные.',
+    visual: '⚙',
+    points: ['История результатов', 'Своя игра и премиум', 'Тёмная и светлая тема']
+  }
+];
+
+function emptyState(message) {
+  return templates.empty(message);
+}
 
 export const render = {
   loadWarning(message) {
     if (!ui.categoriesGrid) return;
-    ui.categoriesGrid.innerHTML = `<div class="history-empty">${helpers.escapeHtml(message)}</div>`;
+    ui.categoriesGrid.replaceChildren(emptyState(message));
+  },
+  errorScreen(message) {
+    if (ui.errorText) ui.errorText.textContent = message;
+    router.show('error', { reset: true });
   },
   history() {
     const history = historyStore.load();
-    if (!history.length) {
-      ui.historyList.innerHTML = '<div class="history-empty">Здесь будут появляться результаты после прохождения категорий.</div>';
+    const query = (state.historyFilter || '').trim().toLowerCase();
+    const filtered = query
+      ? history.filter((item) => `${item.category} ${item.mode || ''}`.toLowerCase().includes(query))
+      : history;
+    if (!filtered.length) {
+      const message = history.length
+        ? 'По этому запросу ничего не найдено.'
+        : 'Здесь будут появляться результаты после прохождения категорий.';
+      ui.historyList.replaceChildren(emptyState(message));
       return;
     }
-    ui.historyList.innerHTML = history.map((item) => `
-      <article class="history-item">
-        <strong>${helpers.escapeHtml(item.category)}</strong>
-        <div>${item.score}% ${item.category === 'Блиц' ? 'правильных ответов' : 'совместимости'}</div>
-        <div class="history-meta">
-          <span class="history-pill">${helpers.escapeHtml(item.mode || 'Обычная игра')}</span>
-          <span class="history-detail">Совпало: ${item.match ?? 0} · Не совпало: ${item.mismatch ?? 0} · Пропуск: ${item.skip ?? 0}</span>
-        </div>
-        <small>${helpers.escapeHtml(item.date || '')}</small>
-      </article>
-    `).join('');
+    const fragment = document.createDocumentFragment();
+    filtered.forEach((item) => {
+      const card = templates.clone(ui.historyItemTemplate);
+      if (!card) return;
+      card.querySelector('[data-role="category"]').textContent = item.category;
+      card.querySelector('[data-role="score"]').textContent = `${item.score}% ${item.category === 'Блиц' ? 'правильных ответов' : 'совместимости'}`;
+      card.querySelector('[data-role="mode"]').textContent = item.mode || 'Обычная игра';
+      card.querySelector('[data-role="details"]').textContent = `Совпало: ${item.match ?? 0} · Не совпало: ${item.mismatch ?? 0} · Пропуск: ${item.skip ?? 0}`;
+      card.querySelector('[data-role="date"]').textContent = item.date || '';
+      fragment.appendChild(card);
+    });
+    ui.historyList.replaceChildren(fragment);
   },
   categories() {
     const premiumUnlocked = helpers.getPremiumUnlocked();
-    ui.categoriesGrid.innerHTML = CATEGORY_META.map((category) => {
+    const fragment = document.createDocumentFragment();
+    CATEGORY_META.forEach((category) => {
       let count = helpers.getCurrentCategoryQuestions(category.id).length;
       const isLocked = category.isPremium && !premiumUnlocked;
       if (category.id === 'Своя игра' && premiumUnlocked) count = storage.get(STORAGE_KEYS.customQuestions, []).length;
       const countLabel = category.id === 'Блиц' ? '30 секунд' : (count > 0 ? `${count} вопросов` : 'Создать');
-      return `
-        <button class="category-card ${isLocked ? 'premium-locked' : ''}" data-id="${helpers.escapeHtml(category.id)}" style="background:${category.color}">
-          <div class="category-card-top">
-            <div class="category-icon">${category.icon}</div>
-            ${category.badge ? `<span class="category-badge">${category.badge}</span>` : ''}
-          </div>
-          <div>
-            <h3>${helpers.escapeHtml(category.id)}</h3>
-            <p>${helpers.escapeHtml(category.desc)}</p>
-          </div>
-          <div class="category-count">${countLabel}</div>
-        </button>
-      `;
-    }).join('');
+      const card = templates.clone(ui.categoryCardTemplate);
+      if (!card) return;
+      card.dataset.id = category.id;
+      card.style.background = category.color;
+      card.classList.toggle('premium-locked', isLocked);
+      card.querySelector('[data-role="icon"]').textContent = category.icon;
+      const badge = card.querySelector('[data-role="badge"]');
+      if (category.badge) {
+        badge.textContent = category.badge;
+        badge.classList.remove('hidden');
+      }
+      card.querySelector('[data-role="title"]').textContent = category.id;
+      card.querySelector('[data-role="desc"]').textContent = category.desc;
+      card.querySelector('[data-role="count"]').textContent = countLabel;
+      fragment.appendChild(card);
+    });
+    ui.categoriesGrid.replaceChildren(fragment);
   },
   customGameEditor() {
     const customQuestions = storage.get(STORAGE_KEYS.customQuestions, ['', '']);
@@ -81,6 +122,15 @@ export const render = {
     document.getElementById('playCategoryBtn')?.addEventListener('click', () => app.game.start('solo'));
     document.getElementById('duoCategoryBtn')?.addEventListener('click', () => app.game.start('duo'));
     document.getElementById('backToCategoriesBtn')?.addEventListener('click', () => router.back());
+  },
+  onboarding() {
+    const step = ONBOARDING_STEPS[state.onboardingStep] || ONBOARDING_STEPS[0];
+    ui.onboardingTitle.textContent = step.title;
+    ui.onboardingText.textContent = step.text;
+    ui.onboardingVisual.textContent = step.visual;
+    ui.onboardingPoints.innerHTML = step.points.map((point) => `<span class="onboarding-point">${helpers.escapeHtml(point)}</span>`).join('');
+    ui.onboardingProgress.innerHTML = ONBOARDING_STEPS.map((_, index) => `<span class="onboarding-dot ${index === state.onboardingStep ? 'active' : ''}"></span>`).join('');
+    ui.onboardingNextBtn.textContent = state.onboardingStep === ONBOARDING_STEPS.length - 1 ? 'Начать' : 'Дальше';
   },
   updateModeUI() {
     const duoMode = state.gameMode === 'duo';
@@ -282,4 +332,4 @@ export const results = {
   }
 };
 
-Object.assign(app, { render, results });
+Object.assign(app, { render, results, ONBOARDING_STEPS });

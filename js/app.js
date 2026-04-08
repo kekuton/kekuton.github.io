@@ -3,7 +3,13 @@ import './ui.js';
 import './game.js';
 import './settings.js';
 
-const { ui, state, router, theme, data, background, render, loading, swipe, initTelegram, modals, premium, settings, game, fx } = app;
+const { ui, state, router, theme, data, background, render, loading, swipe, initTelegram, modals, premium, settings, game, fx, storage, STORAGE_KEYS, ONBOARDING_STEPS } = app;
+
+function finishOnboarding() {
+  storage.setRaw(STORAGE_KEYS.onboardingSeen, 'yes');
+  state.onboardingStep = 0;
+  router.show('home', { reset: true });
+}
 
 function bindEvents() {
   ui.categoriesGrid.addEventListener('click', (event) => {
@@ -18,6 +24,27 @@ function bindEvents() {
   ui.backBtn?.addEventListener('click', () => router.back());
   ui.themeBtn?.addEventListener('click', () => theme.toggle());
 
+  ui.onboardingNextBtn?.addEventListener('click', () => {
+    if (state.onboardingStep >= ONBOARDING_STEPS.length - 1) {
+      finishOnboarding();
+      return;
+    }
+    state.onboardingStep += 1;
+    render.onboarding();
+    fx.vibrate('light');
+  });
+  ui.onboardingSkipBtn?.addEventListener('click', () => finishOnboarding());
+
+  ui.retryLoadBtn?.addEventListener('click', async () => {
+    loading.show('Повторяем загрузку...');
+    const ok = await data.loadQuestions();
+    render.categories();
+    loading.hide();
+    if (ok) router.show('home', { reset: true });
+    else render.errorScreen(state.loadError || 'Не удалось загрузить вопросы.');
+  });
+  ui.goHomeFromErrorBtn?.addEventListener('click', () => router.show('home', { reset: true }));
+
   ui.matchBtn?.addEventListener('click', () => game.answer('match'));
   ui.mismatchBtn?.addEventListener('click', () => game.answer('mismatch'));
   ui.skipBtn?.addEventListener('click', () => game.answer('skip'));
@@ -27,6 +54,11 @@ function bindEvents() {
   ui.restartBtn?.addEventListener('click', () => game.start(state.gameMode));
   ui.changeCategoryBtn?.addEventListener('click', () => router.show('categories'));
   ui.shareBtn?.addEventListener('click', () => app.results.share());
+
+  ui.historySearchInput?.addEventListener('input', (event) => {
+    state.historyFilter = event.target.value || '';
+    render.history();
+  });
 
   ui.addCustomQuestionBtn?.addEventListener('click', () => {
     render.addCustomQuestionInput();
@@ -88,19 +120,25 @@ async function init() {
   theme.init();
   background.reset();
   render.syncSettingsUI();
-  await data.loadQuestions();
+  const questionsLoaded = await data.loadQuestions();
   render.categories();
   render.history();
-  if (Object.keys(state.questionsData).length === 0) {
-    console.warn('Вопросы не загружены');
-    render.loadWarning('Не удалось загрузить вопросы. Проверь подключение и обнови страницу.');
-  }
+  render.onboarding();
   swipe.preventDoubleTapZoom();
   await initTelegram();
   swipe.attachHandlers();
   settings.bind();
   bindEvents();
-  router.show('home', { reset: true });
+
+  if (!questionsLoaded) {
+    render.errorScreen(state.loadError || 'Не удалось загрузить вопросы.');
+    loading.hide();
+    return;
+  }
+
+  const onboardingSeen = storage.getRaw(STORAGE_KEYS.onboardingSeen) === 'yes';
+  if (!onboardingSeen) router.show('onboarding', { reset: true });
+  else router.show('home', { reset: true });
   loading.hide();
 }
 
