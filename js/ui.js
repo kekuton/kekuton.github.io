@@ -1,6 +1,6 @@
 import { app } from './core.js';
 
-const { state, ui, storage, helpers, historyStore, router, fx, CATEGORY_META, STORAGE_KEYS, DUO_PLAYERS, SWIPE_HELP, templates } = app;
+const { state, ui, storage, helpers, historyStore, router, fx, CATEGORY_META, STORAGE_KEYS, DUO_PLAYERS, SWIPE_HELP, templates, meta } = app;
 
 const ONBOARDING_STEPS = [
   {
@@ -35,6 +35,37 @@ export const render = {
   errorScreen(message) {
     if (ui.errorText) ui.errorText.textContent = message;
     router.show('error', { reset: true });
+  },
+  homeDashboard() {
+    const daily = helpers.dailyQuestion();
+    if (ui.dailyQuestionCategory) ui.dailyQuestionCategory.textContent = daily?.category || 'Сегодня';
+    if (ui.dailyQuestionText) ui.dailyQuestionText.textContent = daily?.question || 'Пока нет вопроса дня.';
+    if (ui.favoritesCountText) ui.favoritesCountText.textContent = `${state.favorites.length} любимых вопросов`;
+    const challenge = meta.loadChallenge();
+    if (ui.challengeProgressText) ui.challengeProgressText.textContent = `${challenge.daysCompleted || 0} / 7 дней`;
+    if (ui.challengeHintText) ui.challengeHintText.textContent = challenge.streak ? `Текущая серия: ${challenge.streak} дн.` : 'Каждый день отвечайте хотя бы на один вопрос, чтобы собрать серию.';
+    const achievements = meta.loadAchievements();
+    if (ui.achievementCountText) ui.achievementCountText.textContent = `${achievements.length} наград`;
+    if (ui.achievementHintText) ui.achievementHintText.textContent = achievements.length ? 'Новые награды появляются после ярких серий и длинных игр.' : 'Начни игру, чтобы открыть первую награду.';
+  },
+  favorites() {
+    const favorites = state.favorites || [];
+    if (!favorites.length) {
+      ui.favoritesList?.replaceChildren(emptyState('Пока нет избранных вопросов. Нажми на ★ во время игры, чтобы сохранить карточку.'));
+      ui.startFavoritesBtn?.classList.add('hidden');
+      return;
+    }
+    ui.startFavoritesBtn?.classList.remove('hidden');
+    const fragment = document.createDocumentFragment();
+    favorites.forEach((item) => {
+      const card = templates.clone(ui.favoriteItemTemplate);
+      if (!card) return;
+      card.querySelector('[data-role="category"]').textContent = item.category;
+      card.querySelector('[data-role="question"]').textContent = item.question;
+      card.querySelector('[data-role="date"]').textContent = item.date || '';
+      fragment.appendChild(card);
+    });
+    ui.favoritesList?.replaceChildren(fragment);
   },
   history() {
     const history = historyStore.load();
@@ -149,6 +180,14 @@ export const render = {
     ui.questionText.textContent = question;
     ui.progressLabel.textContent = `${state.currentIndex + 1} / ${total}`;
     ui.progressFill.style.width = `${((state.currentIndex + 1) / total) * 100}%`;
+    if (ui.remainingQuestionsLabel) ui.remainingQuestionsLabel.textContent = `Осталось ${Math.max(total - state.currentIndex - 1, 0)} вопросов`;
+    if (ui.streakLabel) ui.streakLabel.textContent = `Серия: ${state.questionStreak || 0}`;
+    if (ui.favoriteQuestionBtn) {
+      ui.favoriteQuestionBtn.classList.remove('hidden');
+      const active = helpers.isFavorite(question, state.currentCategory?.id);
+      ui.favoriteQuestionBtn.classList.toggle('is-active', active);
+      ui.favoriteQuestionBtn.textContent = active ? '★' : '☆';
+    }
     ui.questionCard.classList.remove('card-fly-left', 'card-fly-right', 'card-fly-up', 'card-return');
     if (!isInitial && state.settings.animations) ui.questionCard.classList.add('card-enter');
     ui.questionCard.style.transition = 'none';
@@ -297,10 +336,11 @@ export const results = {
     const answered = state.stats.match + state.stats.mismatch;
     const score = answered ? Math.round((state.stats.match / answered) * 100) : 0;
     ui.resultsCategory.textContent = state.currentCategory.id;
-    ui.resultsScore.textContent = `${score}%`;
+    ui.resultsScore.textContent = '0%';
     document.getElementById('resultModeNote')?.remove();
     ui.resultsMessage.textContent = helpers.resultMessage(score, isBlitz);
     ui.resultsMessage.insertAdjacentHTML('afterend', `<div class="result-mini-note" id="resultModeNote">${isBlitz ? 'Режим: Блиц' : (state.gameMode === 'duo' ? 'Режим: Играть вдвоём' : 'Режим: Обычная игра')}</div>`);
+    if (ui.resultsVibe) ui.resultsVibe.textContent = `Ваш вайб: ${helpers.vibeByScore(score)}`;
     ui.statMatch.textContent = state.stats.match;
     ui.statMismatch.textContent = state.stats.mismatch;
     ui.statSkip.textContent = state.stats.skip;
@@ -318,16 +358,34 @@ export const results = {
       fx.vibrate('success');
       fx.launchConfetti();
     }
+    const modeText = isBlitz ? 'Блиц' : (state.gameMode === 'duo' ? 'Игра вдвоём' : 'Обычная игра');
     historyStore.save({
       category: state.currentCategory.id,
       score,
       match: state.stats.match,
       mismatch: state.stats.mismatch,
       skip: state.stats.skip,
-      mode: isBlitz ? 'Блиц' : (state.gameMode === 'duo' ? 'Игра вдвоём' : 'Обычная игра'),
+      mode: modeText,
       date: helpers.formatHistoryDate(new Date())
     });
+    const progress = meta.recordRound({ score, totalQuestions: state.currentQuestions.length, category: state.currentCategory.id });
+    if (ui.resultsBreakdown) {
+      ui.resultsBreakdown.innerHTML = `<div class="result-panel"><strong>Совместимость по категории</strong><p>${state.currentCategory.id}: <b>${score}%</b> · ${helpers.vibeByScore(score)}</p></div><div class="result-panel"><strong>Челлендж 7 дней</strong><p>${progress.challenge.daysCompleted}/7 дней · серия ${progress.challenge.streak} дн.</p></div>`;
+    }
+    if (ui.resultsAchievements) {
+      ui.resultsAchievements.innerHTML = progress.newly.length ? `<div class="result-panel"><strong>Новые достижения</strong><div class="achievement-row">${progress.newly.map((item) => `<span class="achievement-pill">${item}</span>`).join('')}</div></div>` : '';
+    }
     render.history();
+    render.homeDashboard();
+    render.favorites();
+    let current = 0;
+    const tick = () => {
+      current += Math.max(1, Math.ceil((score - current) * 0.18));
+      if (current >= score) current = score;
+      ui.resultsScore.textContent = `${current}%`;
+      if (current < score) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
     router.show('results');
   }
 };

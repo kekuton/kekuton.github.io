@@ -3,7 +3,7 @@ import './ui.js';
 import './game.js';
 import './settings.js';
 
-const { ui, state, router, theme, data, background, render, loading, swipe, initTelegram, modals, premium, settings, game, fx, storage, STORAGE_KEYS, ONBOARDING_STEPS } = app;
+const { ui, state, router, theme, data, background, render, loading, swipe, initTelegram, modals, premium, settings, game, fx, storage, STORAGE_KEYS, ONBOARDING_STEPS, helpers, CATEGORY_META, meta } = app;
 
 function finishOnboarding() {
   storage.setRaw(STORAGE_KEYS.onboardingSeen, 'yes');
@@ -23,6 +23,47 @@ function bindEvents() {
   ui.openSettingsBtn?.addEventListener('click', () => settings.open());
   ui.backBtn?.addEventListener('click', () => router.back());
   ui.themeBtn?.addEventListener('click', () => theme.toggle());
+
+  ui.dailyQuestionBtn?.addEventListener('click', () => {
+    const daily = helpers.dailyQuestion();
+    if (!daily) return;
+    state.currentCategory = CATEGORY_META.find((item) => item.id === daily.category) || { id: daily.category };
+    state.currentQuestions = [daily.question];
+    game.resetRound('solo');
+    router.show('game');
+    render.gameQuestion(true);
+  });
+  ui.favoritesBtn?.addEventListener('click', () => {
+    render.favorites();
+    router.show('favorites');
+  });
+  ui.startFavoritesBtn?.addEventListener('click', () => {
+    if (!state.favorites.length) return;
+    state.currentCategory = { id: 'Избранное' };
+    state.currentQuestions = state.favorites.map((item) => item.question).slice(0, Math.max(5, Math.min(12, state.favorites.length)));
+    game.resetRound('solo');
+    router.show('game');
+    render.gameQuestion(true);
+  });
+  ui.favoriteQuestionBtn?.addEventListener('click', () => {
+    const added = meta.toggleFavorite();
+    render.favorites();
+    render.homeDashboard();
+    ui.favoriteQuestionBtn.classList.toggle('is-active', added);
+    ui.favoriteQuestionBtn.textContent = added ? '★' : '☆';
+    fx.vibrate('light');
+  });
+  ui.inviteBtn?.addEventListener('click', async () => {
+    const inviteLink = location.href.split('?')[0];
+    const text = `Погнали играть в «Вопросы для двоих» 💜
+${inviteLink}`;
+    try {
+      await navigator.clipboard.writeText(text);
+      alert('Ссылка-приглашение скопирована.');
+    } catch {
+      alert(text);
+    }
+  });
 
   ui.onboardingNextBtn?.addEventListener('click', () => {
     if (state.onboardingStep >= ONBOARDING_STEPS.length - 1) {
@@ -123,6 +164,8 @@ async function init() {
   const questionsLoaded = await data.loadQuestions();
   render.categories();
   render.history();
+  render.favorites();
+  render.homeDashboard();
   render.onboarding();
   swipe.preventDoubleTapZoom();
   await initTelegram();

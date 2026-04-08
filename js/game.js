@@ -31,6 +31,7 @@ export const game = {
     state.gameMode = mode;
     state.currentIndex = 0;
     state.stats = { match: 0, mismatch: 0, skip: 0 };
+    state.questionStreak = 0;
     state.duoRoundAnswers = [null, null];
     state.duoActivePlayer = 0;
     render.resetQuestionCard();
@@ -61,7 +62,9 @@ export const game = {
   start(mode = 'solo') {
     state.gameMode = mode;
     if (state.currentCategory?.id === 'Блиц') return this.startBlitz();
-    const sourceQuestions = helpers.getCurrentCategoryQuestions(state.currentCategory.id);
+    let sourceQuestions = helpers.getCurrentCategoryQuestions(state.currentCategory.id);
+    if ((!sourceQuestions || !sourceQuestions.length) && state.currentCategory?.id === 'Избранное') sourceQuestions = state.favorites.map((item) => item.question);
+    if ((!sourceQuestions || !sourceQuestions.length) && state.currentQuestions.length) sourceQuestions = state.currentQuestions;
     if (!sourceQuestions.length) {
       alert('В этой категории пока нет вопросов.');
       router.show('categories');
@@ -86,6 +89,7 @@ export const game = {
     state.currentQuestions = helpers.shuffle(helpers.getCurrentCategoryQuestions('Блиц'));
     state.currentIndex = 0;
     state.stats = { match: 0, mismatch: 0, skip: 0 };
+    state.questionStreak = 0;
     state.blitzTimeLeft = 30;
     render.blitzUI();
     render.blitzQuestion();
@@ -119,8 +123,9 @@ export const game = {
         if (first === 'skip' || second === 'skip') state.stats.skip += 1;
         else if (first === second) {
           state.stats.match += 1;
+          state.questionStreak += 1;
           setTimeout(() => fx.launchConfetti(), 50);
-        } else state.stats.mismatch += 1;
+        } else { state.stats.mismatch += 1; state.questionStreak = 0; }
         state.currentIndex += 1;
         state.duoRoundAnswers = [null, null];
         state.duoActivePlayer = 0;
@@ -132,6 +137,8 @@ export const game = {
     }
     swipe.animateOut(type, () => {
       state.stats[type] += 1;
+      if (type === 'match') state.questionStreak += 1;
+      else if (type === 'mismatch') state.questionStreak = 0;
       state.currentIndex += 1;
       render.resetQuestionCard();
       if (state.currentIndex >= state.currentQuestions.length) this.finish();

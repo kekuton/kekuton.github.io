@@ -10,7 +10,10 @@ const STORAGE_KEYS = {
   customQuestions: 'custom_questions',
   questionsCache: 'couples_questions_v4',
   settings: 'couples_settings_v1',
-  onboardingSeen: 'couples_onboarding_seen_v1'
+  onboardingSeen: 'couples_onboarding_seen_v1',
+  favorites: 'couples_favorites_v1',
+  challenge: 'couples_challenge_v1',
+  achievements: 'couples_achievements_v1'
 };
 
 const DEFAULT_SETTINGS = {
@@ -51,7 +54,8 @@ const screens = {
   results: document.getElementById('resultsScreen'),
   history: document.getElementById('historyScreen'),
   customGame: document.getElementById('customGameScreen'),
-  settings: document.getElementById('settingsScreen')
+  settings: document.getElementById('settingsScreen'),
+  favorites: document.getElementById('favoritesScreen')
 };
 
 const ui = {
@@ -64,6 +68,16 @@ const ui = {
   startBtn: document.getElementById('startBtn'),
   historyBtn: document.getElementById('historyBtn'),
   openSettingsBtn: document.getElementById('openSettingsBtn'),
+  dailyQuestionCategory: document.getElementById('dailyQuestionCategory'),
+  dailyQuestionText: document.getElementById('dailyQuestionText'),
+  dailyQuestionBtn: document.getElementById('dailyQuestionBtn'),
+  favoritesBtn: document.getElementById('favoritesBtn'),
+  favoritesCountText: document.getElementById('favoritesCountText'),
+  challengeProgressText: document.getElementById('challengeProgressText'),
+  challengeHintText: document.getElementById('challengeHintText'),
+  achievementCountText: document.getElementById('achievementCountText'),
+  achievementHintText: document.getElementById('achievementHintText'),
+  inviteBtn: document.getElementById('inviteBtn'),
   onboardingTitle: document.getElementById('onboardingTitle'),
   onboardingText: document.getElementById('onboardingText'),
   onboardingVisual: document.getElementById('onboardingVisual'),
@@ -81,6 +95,9 @@ const ui = {
   gameTitle: document.getElementById('gameTitle'),
   progressLabel: document.getElementById('progressLabel'),
   progressFill: document.getElementById('progressFill'),
+  remainingQuestionsLabel: document.getElementById('remainingQuestionsLabel'),
+  streakLabel: document.getElementById('streakLabel'),
+  favoriteQuestionBtn: document.getElementById('favoriteQuestionBtn'),
   questionText: document.getElementById('questionText'),
   questionCard: document.getElementById('questionCard'),
   swipeHelp: document.getElementById('swipeHelp'),
@@ -105,13 +122,19 @@ const ui = {
   statLabelMatch: document.getElementById('statLabelMatch'),
   statLabelMismatch: document.getElementById('statLabelMismatch'),
   restartBtn: document.getElementById('restartBtn'),
+  resultsVibe: document.getElementById('resultsVibe'),
+  resultsBreakdown: document.getElementById('resultsBreakdown'),
+  resultsAchievements: document.getElementById('resultsAchievements'),
   changeCategoryBtn: document.getElementById('changeCategoryBtn'),
   shareBtn: document.getElementById('shareBtn'),
   historyList: document.getElementById('historyList'),
   historySearchInput: document.getElementById('historySearchInput'),
+  favoritesList: document.getElementById('favoritesList'),
+  startFavoritesBtn: document.getElementById('startFavoritesBtn'),
   categoryCardTemplate: document.getElementById('categoryCardTemplate'),
   historyItemTemplate: document.getElementById('historyItemTemplate'),
   emptyStateTemplate: document.getElementById('emptyStateTemplate'),
+  favoriteItemTemplate: document.getElementById('favoriteItemTemplate'),
 
   adultModal: document.getElementById('adultModal'),
   adultConfirmBtn: document.getElementById('adultConfirmBtn'),
@@ -180,6 +203,8 @@ const state = {
   historyFilter: '',
   onboardingStep: 0,
   settings: { ...DEFAULT_SETTINGS },
+  favorites: storage.get(STORAGE_KEYS.favorites, []),
+  questionStreak: 0,
   swipe: {
     active: false,
     startX: 0,
@@ -218,6 +243,45 @@ const helpers = {
   },
   getPremiumUnlocked() {
     return storage.getRaw(STORAGE_KEYS.premium) === 'true';
+  },
+  todayKey() {
+    return new Date().toISOString().slice(0, 10);
+  },
+  allPlayableQuestions() {
+    const items = [];
+    Object.entries(state.questionsData || {}).forEach(([category, questions]) => {
+      if (category === 'Блиц') return;
+      if (category === 'Интимные вопросы' && !helpers.isAdultConfirmed()) return;
+      if (!Array.isArray(questions)) return;
+      questions.forEach((question) => items.push({ category, question }));
+    });
+    return items;
+  },
+  dailyQuestion() {
+    const pool = this.allPlayableQuestions();
+    if (!pool.length) return null;
+    const key = this.todayKey();
+    let hash = 0;
+    for (let i = 0; i < key.length; i += 1) hash = (hash * 31 + key.charCodeAt(i)) % 2147483647;
+    return pool[hash % pool.length];
+  },
+  isFavorite(question, category) {
+    return state.favorites.some((item) => item.question === question && item.category === category);
+  },
+  vibeByScore(score) {
+    if (score >= 90) return 'Космический мэтч';
+    if (score >= 75) return 'Тёплый и очень близкий вайб';
+    if (score >= 55) return 'Живой вайб с поводом для разговора';
+    return 'Контрастный вайб — обсудить будет интересно';
+  },
+  achievementCatalog() {
+    return [
+      { id: 'first_game', title: 'Первый раунд', check: (stats) => stats.games >= 1 },
+      { id: 'ten_games', title: '10 игр', check: (stats) => stats.games >= 10 },
+      { id: 'hundred_questions', title: '100 вопросов', check: (stats) => stats.questions >= 100 },
+      { id: 'five_day_streak', title: '5 дней подряд', check: (stats) => stats.streak >= 5 },
+      { id: 'romantic_master', title: '80%+ в категории', check: (stats, ctx) => ctx.score >= 80 }
+    ];
   },
   isAdultConfirmed() {
     return storage.getRaw(STORAGE_KEYS.adult) === 'yes';
@@ -538,6 +602,58 @@ const data = {
   }
 };
 
+
+const meta = {
+  loadChallenge() {
+    return storage.get(STORAGE_KEYS.challenge, { daysCompleted: 0, streak: 0, lastDate: null, games: 0, questions: 0 });
+  },
+  saveChallenge(data) {
+    storage.set(STORAGE_KEYS.challenge, data);
+  },
+  loadAchievements() {
+    return storage.get(STORAGE_KEYS.achievements, []);
+  },
+  saveAchievements(items) {
+    storage.set(STORAGE_KEYS.achievements, items);
+  },
+  toggleFavorite() {
+    const question = state.currentQuestions[state.currentIndex];
+    const category = state.currentCategory?.id;
+    if (!question || !category) return false;
+    const idx = state.favorites.findIndex((item) => item.question === question && item.category === category);
+    if (idx >= 0) state.favorites.splice(idx, 1);
+    else state.favorites.unshift({ category, question, date: helpers.formatHistoryDate(new Date()) });
+    state.favorites = state.favorites.slice(0, 120);
+    storage.set(STORAGE_KEYS.favorites, state.favorites);
+    return idx < 0;
+  },
+  recordRound(context) {
+    const data = this.loadChallenge();
+    const today = helpers.todayKey();
+    if (data.lastDate !== today) {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yKey = yesterday.toISOString().slice(0, 10);
+      data.streak = data.lastDate === yKey ? (data.streak || 0) + 1 : 1;
+      data.daysCompleted = Math.min(7, (data.daysCompleted || 0) + 1);
+      data.lastDate = today;
+    }
+    data.games = (data.games || 0) + 1;
+    data.questions = (data.questions || 0) + (context.totalQuestions || 0);
+    this.saveChallenge(data);
+    const unlocked = new Set(this.loadAchievements());
+    const newly = [];
+    helpers.achievementCatalog().forEach((achievement) => {
+      if (!unlocked.has(achievement.id) && achievement.check(data, context)) {
+        unlocked.add(achievement.id);
+        newly.push(achievement.title);
+      }
+    });
+    this.saveAchievements(Array.from(unlocked));
+    return { challenge: data, newly };
+  }
+};
+
 const premium = {
   purchase() {
     const originalText = ui.buyPremiumBtn.textContent;
@@ -590,5 +706,6 @@ Object.assign(app, {
   theme,
   data,
   premium,
+  meta,
   initTelegram
 });

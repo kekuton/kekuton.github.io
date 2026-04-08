@@ -81,6 +81,56 @@
             </div>
           </article>
         </div>
+
+        <div class="quick-grid">
+          <article class="quick-card daily-card">
+            <div class="quick-card-top">
+              <span class="quick-badge">Вопрос дня</span>
+              <span class="quick-icon">✦</span>
+            </div>
+            <strong id="dailyQuestionCategory">Сегодня</strong>
+            <p id="dailyQuestionText">Подбираем лучший вопрос на сегодня…</p>
+            <button class="secondary-btn" id="dailyQuestionBtn">Ответить</button>
+          </article>
+
+          <article class="quick-card">
+            <div class="quick-card-top">
+              <span class="quick-badge">Избранное</span>
+              <span class="quick-icon">★</span>
+            </div>
+            <strong id="favoritesCountText">0 любимых вопросов</strong>
+            <p>Сохраняй лучшие карточки и запускай отдельный раунд только по ним.</p>
+            <button class="secondary-btn" id="favoritesBtn">Открыть любимые</button>
+          </article>
+
+          <article class="quick-card">
+            <div class="quick-card-top">
+              <span class="quick-badge">Челлендж</span>
+              <span class="quick-icon">⚑</span>
+            </div>
+            <strong id="challengeProgressText">0 / 7 дней</strong>
+            <p id="challengeHintText">Каждый день отвечайте хотя бы на один вопрос, чтобы собрать серию.</p>
+          </article>
+
+          <article class="quick-card">
+            <div class="quick-card-top">
+              <span class="quick-badge">Достижения</span>
+              <span class="quick-icon">🏆</span>
+            </div>
+            <strong id="achievementCountText">0 наград</strong>
+            <p id="achievementHintText">Открывай награды за игры, вопросы и серии дней.</p>
+          </article>
+
+          <article class="quick-card">
+            <div class="quick-card-top">
+              <span class="quick-badge">Пригласить партнёра</span>
+              <span class="quick-icon">✈</span>
+            </div>
+            <strong>Ссылка-приглашение</strong>
+            <p>Отправь партнёру ссылку на игру или открой через Telegram.</p>
+            <button class="secondary-btn" id="inviteBtn">Скопировать ссылку</button>
+          </article>
+        </div>
       </section>
 
       
@@ -155,10 +205,15 @@
           </div>
           <div class="turn-badge hidden" id="turnBadge">Игрок 1</div>
           <div class="progress-badge" id="progressLabel">1 / 10</div>
+          <button class="icon-btn icon-btn-soft hidden" id="favoriteQuestionBtn" aria-label="Добавить в избранное" title="Добавить в избранное">★</button>
         </div>
 
         <div class="progress-bar">
           <span id="progressFill"></span>
+        </div>
+        <div class="progress-meta-row">
+          <span id="remainingQuestionsLabel">Осталось 0 вопросов</span>
+          <span id="streakLabel">Серия: 0</span>
         </div>
 
         <div class="question-stage">
@@ -216,6 +271,7 @@
           <h2 id="resultsCategory">Категория</h2>
           <div class="results-score" id="resultsScore">0%</div>
           <p class="results-message" id="resultsMessage"></p>
+          <div class="results-vibe" id="resultsVibe">Ваш вайб: —</div>
 
           <div class="stats-grid">
             <div class="stat-box">
@@ -231,6 +287,8 @@
               <strong id="statSkip">0</strong>
             </div>
           </div>
+          <div class="results-breakdown" id="resultsBreakdown"></div>
+          <div class="results-achievements" id="resultsAchievements"></div>
 
           <div class="hero-actions stacked">
             <button class="primary-btn" id="restartBtn">Пройти ещё раз</button>
@@ -307,6 +365,18 @@
         </div>
         <div class="history-list" id="historyList"></div>
       </section>
+
+      <section class="screen" id="favoritesScreen">
+        <div class="section-head compact">
+          <span class="eyebrow">Любимые</span>
+          <h2>Избранные вопросы</h2>
+          <p>Сохраняй лучшие карточки и запускай отдельный раунд только по ним.</p>
+        </div>
+        <div class="history-list" id="favoritesList"></div>
+        <div class="hero-actions stacked">
+          <button class="primary-btn" id="startFavoritesBtn">Играть по любимым</button>
+        </div>
+      </section>
     </main>
   </div>
 
@@ -377,6 +447,17 @@
 
 <template id="emptyStateTemplate">
   <div class="history-empty" data-role="message"></div>
+</template>
+
+<template id="favoriteItemTemplate">
+  <article class="history-item favorite-item">
+    <strong data-role="category"></strong>
+    <div class="favorite-question" data-role="question"></div>
+    <div class="history-meta">
+      <span class="history-pill" data-role="tag">Любимое</span>
+      <span class="history-detail" data-role="date"></span>
+    </div>
+  </article>
 </template>
 
 <script type="module" src="js/app.js"></script>
