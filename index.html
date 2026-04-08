@@ -24,13 +24,23 @@
     <div class="bg-overlay"></div>
     <div class="bg-noise"></div>
   </div>
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loading-card">
+      <div class="loading-spinner"></div>
+      <strong>Вопросы для двоих</strong>
+      <p id="loadingText">Подготавливаем приложение...</p>
+    </div>
+  </div>
   <div class="app-shell">
     <header class="topbar">
       <button class="icon-btn hidden" id="backBtn" aria-label="Назад">←</button>
       <div class="brand">
         <div class="brand-pill">Вопросы для двоих</div>
       </div>
-      <button class="icon-btn" id="themeBtn" aria-label="Сменить тему">☼</button>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="settingsBtn" aria-label="Настройки">⚙</button>
+        <button class="icon-btn" id="themeBtn" aria-label="Сменить тему">☼</button>
+      </div>
     </header>
 
     <main class="screen-wrap">
@@ -42,6 +52,7 @@
           <div class="hero-actions">
             <button class="primary-btn" id="startBtn">Начать игру</button>
             <button class="secondary-btn" id="historyBtn">История</button>
+            <button class="secondary-btn" id="openSettingsBtn">Настройки</button>
           </div>
         </div>
 
@@ -185,6 +196,63 @@
         </div>
       </section>
 
+      <section class="screen" id="settingsScreen">
+        <div class="section-head compact">
+          <span class="eyebrow">Настройки</span>
+          <h2>Подстрой игру под себя</h2>
+          <p>Измени ощущения от игры и быстро очисти лишние данные.</p>
+        </div>
+
+        <div class="settings-list">
+          <article class="settings-card">
+            <div>
+              <strong>Вибрация</strong>
+              <p>Отклик при свайпах и результатах.</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="vibrationToggle" />
+              <span class="switch-slider"></span>
+            </label>
+          </article>
+
+          <article class="settings-card">
+            <div>
+              <strong>Анимации</strong>
+              <p>Конфетти, вылет карточек и анимированные переходы.</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="animationsToggle" />
+              <span class="switch-slider"></span>
+            </label>
+          </article>
+
+          <article class="settings-card settings-card-stack">
+            <div>
+              <strong>Вопросов за раунд</strong>
+              <p>Сколько карточек брать для обычной игры.</p>
+            </div>
+            <select class="settings-select" id="roundSizeSelect">
+              <option value="5">5 вопросов</option>
+              <option value="8">8 вопросов</option>
+              <option value="10">10 вопросов</option>
+              <option value="12">12 вопросов</option>
+            </select>
+          </article>
+
+          <article class="settings-card settings-card-stack">
+            <div>
+              <strong>Данные</strong>
+              <p>Быстрая очистка истории и служебных флагов.</p>
+            </div>
+            <div class="hero-actions stacked">
+              <button class="secondary-btn" id="clearHistoryBtn">Очистить историю</button>
+              <button class="secondary-btn" id="resetCustomBtn">Удалить свои вопросы</button>
+              <button class="secondary-btn" id="resetFlagsBtn">Сбросить 18+ и premium</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
       <section class="screen" id="historyScreen">
         <div class="section-head compact">
           <span class="eyebrow">История</span>
@@ -233,6 +301,10 @@
   </div>
 </div>
 
-<script src="app.js" defer></script>
+<script src="js/core.js" defer></script>
+<script src="js/ui.js" defer></script>
+<script src="js/game.js" defer></script>
+<script src="js/settings.js" defer></script>
+<script src="js/app.js" defer></script>
 </body>
 </html>
