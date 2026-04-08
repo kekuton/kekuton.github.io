@@ -80,12 +80,12 @@ const categoryMeta = [
 ];
 
 
-const QUESTIONS_CACHE_KEY = 'couples_questions_v3';
+const QUESTIONS_CACHE_KEY = 'couples_questions_v4';
 
 const categoryBackgrounds = {
-  'Будущее': { file: 'images/bg_future.jpg', bodyClass: 'category-future' },
-  'На расстоянии': { file: 'images/bg_distance.jpg', bodyClass: 'category-distance' },
-  'Финансы': { file: 'images/bg_finance.jpg', bodyClass: 'category-finance' }
+  'Будущее': { file: 'images/bg_future.webp', bodyClass: 'category-future' },
+  'На расстоянии': { file: 'images/bg_distance.webp', bodyClass: 'category-distance' },
+  'Финансы': { file: 'images/bg_finance.webp', bodyClass: 'category-finance' }
 };
 
 const bgLayers = [document.querySelector('.bg-layer-a'), document.querySelector('.bg-layer-b')];
@@ -153,6 +153,20 @@ const swipeState = {
 
 const tg = window.Telegram?.WebApp;
 
+const storage = {
+  get(key, fallback = null) {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    } catch {
+      return fallback;
+    }
+  },
+  set(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+  }
+};
+
 function showScreen(name) {
   Object.values(screens).forEach(screen => screen.classList.remove('screen-active'));
   screens[name].classList.add('screen-active');
@@ -203,14 +217,13 @@ function initTheme() {
 }
 
 function loadHistory() {
-  try { return JSON.parse(localStorage.getItem('couples_history') || '[]'); } 
-  catch { return []; }
+  return storage.get('couples_history', []);
 }
 
 function saveHistory(entry) {
   const history = loadHistory();
   history.unshift(entry);
-  localStorage.setItem('couples_history', JSON.stringify(history.slice(0, 12)));
+  storage.set('couples_history', history.slice(0, 12));
 }
 
 
@@ -247,6 +260,11 @@ function resultMessage(score, isBlitz = false) {
   }
 }
 
+function renderLoadWarning(message) {
+  if (!ui.categoriesGrid) return;
+  ui.categoriesGrid.innerHTML = `<div class="history-empty">${message}</div>`;
+}
+
 function renderCategories() {
   const isPremiumUnlocked = localStorage.getItem('premium_unlocked') === 'true';
 
@@ -256,7 +274,7 @@ function renderCategories() {
     let lockedClass = (cat.isPremium && !isPremiumUnlocked) ? 'premium-locked' : '';
 
     if (cat.id === 'Своя игра' && isPremiumUnlocked) {
-      count = JSON.parse(localStorage.getItem('custom_questions') || '[]').length;
+      count = storage.get('custom_questions', []).length;
     }
 
     // Для блица в UI пишем время вместо кол-ва вопросов
@@ -472,7 +490,7 @@ ui.closePremiumBtn.addEventListener('click', () => {
 });
 
 function renderCustomGameEditor() {
-  const customQ = JSON.parse(localStorage.getItem('custom_questions') || '["", ""]');
+  const customQ = storage.get('custom_questions', ['', '']);
   ui.customQuestionsList.innerHTML = '';
   customQ.forEach(q => addCustomQuestionInput(q));
 }
@@ -500,7 +518,7 @@ ui.saveCustomGameBtn.addEventListener('click', () => {
     return;
   }
 
-  localStorage.setItem('custom_questions', JSON.stringify(questions));
+  storage.set('custom_questions', questions);
   questionsData['Своя игра'] = questions;
   renderCategories();
   startGame(); 
@@ -508,7 +526,12 @@ ui.saveCustomGameBtn.addEventListener('click', () => {
 
 // УТИЛИТЫ И АНИМАЦИИ
 function shuffle(array) {
-  return [...array].sort(() => Math.random() - 0.5);
+  const result = [...array];
+  for (let i = result.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
 }
 
 function vibrate(type = 'medium') {
@@ -1027,12 +1050,12 @@ async function initTelegramAPI() {
 async function init() {
   let loadedFromNetwork = false;
   try {
-    const response = await fetch(`questions.json?v=${Date.now()}`, { cache: 'no-store' });
+    const response = await fetch('questions.json', { cache: 'default' });
     if (!response.ok) throw new Error('HTTP ' + response.status);
     const freshData = await response.json();
     if (freshData && typeof freshData === 'object' && Object.keys(freshData).length > 0) {
       questionsData = freshData;
-      localStorage.setItem(QUESTIONS_CACHE_KEY, JSON.stringify(questionsData));
+      storage.set(QUESTIONS_CACHE_KEY, questionsData);
       loadedFromNetwork = true;
     }
   } catch (e) {
@@ -1041,8 +1064,7 @@ async function init() {
 
   if (!loadedFromNetwork) {
     try {
-      const cachedData = localStorage.getItem(QUESTIONS_CACHE_KEY);
-      questionsData = cachedData ? JSON.parse(cachedData) : {};
+      questionsData = storage.get(QUESTIONS_CACHE_KEY, {});
     } catch (e) {
       console.error('Ошибка чтения кэша вопросов', e);
       questionsData = {};
@@ -1053,11 +1075,9 @@ async function init() {
     questionsData = {};
   }
 
-  const savedCustom = localStorage.getItem('custom_questions');
-  if (savedCustom) {
-    try {
-      questionsData['Своя игра'] = JSON.parse(savedCustom);
-    } catch {}
+  const savedCustom = storage.get('custom_questions', null);
+  if (Array.isArray(savedCustom) && savedCustom.length) {
+    questionsData['Своя игра'] = savedCustom;
   }
 
   initTheme();
@@ -1066,6 +1086,7 @@ async function init() {
   renderHistory();
   if (Object.keys(questionsData).length === 0) {
     console.warn('Вопросы не загружены');
+    renderLoadWarning('Не удалось загрузить вопросы. Проверь подключение и обнови страницу.');
   }
   preventDoubleTapZoom();
   initTelegramAPI();
