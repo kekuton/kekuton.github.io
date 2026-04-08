@@ -1,3 +1,7 @@
+.hidden { display:none !important; }
+.achievement-unlock { pointer-events:none; }
+.achievement-unlock.is-visible { pointer-events:auto; }
+
 
 :root {
   --overlay-strong: rgba(8, 10, 24, 0.42);
