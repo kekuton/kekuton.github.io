@@ -3,7 +3,7 @@ import './ui.js';
 import './game.js';
 import './settings.js';
 
-const { ui, state, router, theme, data, background, render, loading, swipe, initTelegram, modals, premium, settings, game, fx, storage, STORAGE_KEYS, ONBOARDING_STEPS, helpers, CATEGORY_META, meta } = app;
+const { ui, state, router, theme, data, background, render, loading, swipe, initTelegram, modals, premium, settings, game, fx, storage, STORAGE_KEYS, ONBOARDING_STEPS, helpers, CATEGORY_META, meta, notify } = app;
 
 function finishOnboarding() {
   storage.setRaw(STORAGE_KEYS.onboardingSeen, 'yes');
@@ -63,9 +63,9 @@ function bindEvents() {
 ${inviteLink}`;
     try {
       await navigator.clipboard.writeText(text);
-      alert('Ссылка-приглашение скопирована.');
+      notify.success('Ссылка-приглашение скопирована.');
     } catch {
-      alert(text);
+      notify.info('Не удалось скопировать ссылку. Отправь её вручную.');
     }
   });
 
@@ -115,7 +115,7 @@ ${inviteLink}`;
       .map((input) => input.value.trim())
       .filter(Boolean);
     if (questions.length < 3) {
-      alert('Напишите хотя бы 3 вопроса, чтобы начать игру!');
+      notify.error('Напишите хотя бы 3 вопроса, чтобы начать игру.');
       return;
     }
     app.storage.set(app.STORAGE_KEYS.customQuestions, questions);

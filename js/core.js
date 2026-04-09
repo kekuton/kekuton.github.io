@@ -161,7 +161,8 @@ const ui = {
   roundSizeSelect: document.getElementById('roundSizeSelect'),
   clearHistoryBtn: document.getElementById('clearHistoryBtn'),
   resetCustomBtn: document.getElementById('resetCustomBtn'),
-  resetFlagsBtn: document.getElementById('resetFlagsBtn')
+  resetFlagsBtn: document.getElementById('resetFlagsBtn'),
+  toastStack: document.getElementById('toastStack')
 };
 
 const bgLayers = [document.querySelector('.bg-layer-a'), document.querySelector('.bg-layer-b')];
@@ -367,6 +368,28 @@ const templates = {
     return node;
   }
 };
+const notify = {
+  show(message, type = 'info', timeout = 2400) {
+    const stack = ui.toastStack;
+    if (!stack || !message) return;
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
+    toast.innerHTML = `<span class="toast-dot" aria-hidden="true"></span><div class="toast-copy">${helpers.escapeHtml(message)}</div>`;
+    stack.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('is-visible'));
+    const remove = () => {
+      toast.classList.remove('is-visible');
+      setTimeout(() => toast.remove(), 220);
+    };
+    setTimeout(remove, timeout);
+    toast.addEventListener('click', remove, { once: true });
+  },
+  success(message, timeout) { this.show(message, 'success', timeout); },
+  info(message, timeout) { this.show(message, 'info', timeout); },
+  error(message, timeout) { this.show(message, 'error', timeout); }
+};
+
 const loading = {
   show(text = 'Загрузка...') {
     if (ui.loadingText) ui.loadingText.textContent = text;
@@ -740,6 +763,7 @@ Object.assign(app, {
   state,
   helpers,
   templates,
+  notify,
   loading,
   background,
   fx,

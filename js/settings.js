@@ -1,7 +1,7 @@
 import { app } from './core.js';
 import { render } from './ui.js';
 
-const { ui, state, data, router, storage, historyStore, fx, STORAGE_KEYS } = app;
+const { ui, state, data, router, storage, historyStore, fx, STORAGE_KEYS, notify } = app;
 
 export const settings = {
   open() {
@@ -22,21 +22,21 @@ export const settings = {
       historyStore.clear();
       render.history();
       fx.vibrate('light');
-      alert('История очищена.');
+      notify.success('История очищена.');
     });
     ui.resetCustomBtn?.addEventListener('click', () => {
       storage.remove(STORAGE_KEYS.customQuestions);
       delete state.questionsData['Своя игра'];
       render.categories();
       fx.vibrate('light');
-      alert('Свои вопросы удалены.');
+      notify.success('Свои вопросы удалены.');
     });
     ui.resetFlagsBtn?.addEventListener('click', () => {
       storage.remove(STORAGE_KEYS.adult);
       storage.remove(STORAGE_KEYS.premium);
       render.categories();
       fx.vibrate('light');
-      alert('18+ подтверждение и premium сброшены.');
+      notify.success('18+ и premium сброшены.');
     });
   }
 };

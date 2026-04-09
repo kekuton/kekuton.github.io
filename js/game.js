@@ -66,7 +66,7 @@ export const game = {
     if ((!sourceQuestions || !sourceQuestions.length) && state.currentCategory?.id === 'Избранное') sourceQuestions = state.favorites.map((item) => item.question);
     if ((!sourceQuestions || !sourceQuestions.length) && state.currentQuestions.length) sourceQuestions = state.currentQuestions;
     if (!sourceQuestions.length) {
-      alert('В этой категории пока нет вопросов.');
+      app.notify.info('В этой категории пока нет вопросов.');
       router.show('categories');
       return;
     }

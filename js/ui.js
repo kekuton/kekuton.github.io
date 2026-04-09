@@ -1,6 +1,6 @@
 import { app } from './core.js';
 
-const { state, ui, storage, helpers, historyStore, router, fx, CATEGORY_META, STORAGE_KEYS, DUO_PLAYERS, SWIPE_HELP, templates, meta } = app;
+const { state, ui, storage, helpers, historyStore, router, fx, CATEGORY_META, STORAGE_KEYS, DUO_PLAYERS, SWIPE_HELP, templates, meta, notify } = app;
 
 const ONBOARDING_STEPS = [
   {
@@ -398,9 +398,9 @@ export const results = {
     try {
       await navigator.clipboard.writeText(text);
       fx.vibrate('success');
-      alert('Картинка сохранена, текст результата скопирован.');
+      notify.success('Карточка сохранена, текст результата скопирован.');
     } catch {
-      alert(text);
+      notify.info('Не удалось открыть системный шаринг. Текст результата скопируй вручную.');
     }
   },
   render(isBlitz = false) {
