@@ -4,20 +4,20 @@ const { state, ui, storage, helpers, historyStore, router, fx, CATEGORY_META, ST
 
 const ONBOARDING_STEPS = [
   {
-    title: 'Поговорить станет проще',
-    text: 'Выбирайте категорию под настроение и проходите игру в обычном режиме или вдвоём по очереди.',
+    title: 'Начать разговор станет проще',
+    text: 'Выбирай категорию под настроение и проходи игру в обычном режиме или вдвоём по очереди.',
     visual: '💞',
     points: ['Красивые категории', 'Процент совместимости', 'Быстрый старт без регистрации']
   },
   {
     title: 'Свайпы работают как в карточках',
-    text: 'Вправо — совпало, влево — не совпало, вверх — пропуск. Можно отвечать и кнопками снизу.',
+    text: 'Вправо — совпало, влево — не совпало, вверх — пропуск. Можно отвечать и кнопками внизу.',
     visual: '↔',
     points: ['Живые анимации', 'Вибрация при ответе', 'Удобно одной рукой']
   },
   {
-    title: 'Настрой под себя',
-    text: 'Открой настройки, чтобы поменять вибрацию, анимации, число вопросов и очистить лишние данные.',
+    title: 'Настрой всё под себя',
+    text: 'Открой настройки, чтобы изменить вибрацию, анимации, число вопросов и очистить лишние данные.',
     visual: '⚙',
     points: ['История результатов', 'Своя игра и премиум', 'Тёмная и светлая тема']
   }
@@ -40,12 +40,12 @@ export const render = {
     const daily = helpers.dailyQuestion();
     if (ui.dailyQuestionCategory) ui.dailyQuestionCategory.textContent = daily?.category || 'Сегодня';
     if (ui.dailyQuestionText) ui.dailyQuestionText.textContent = daily?.question || 'Пока нет вопроса дня.';
-    if (ui.favoritesCountText) ui.favoritesCountText.textContent = `${state.favorites.length} любимых вопросов`;
+    if (ui.favoritesCountText) ui.favoritesCountText.textContent = `${state.favorites.length} избранных вопросов`;
     const challenge = meta.loadChallenge();
     if (ui.challengeProgressText) ui.challengeProgressText.textContent = `${challenge.daysCompleted || 0} / 7 дней`;
     if (ui.challengeHintText) ui.challengeHintText.textContent = challenge.streak ? `Текущая серия: ${challenge.streak} дн.` : 'Каждый день отвечайте хотя бы на один вопрос, чтобы собрать серию.';
     const achievements = meta.loadAchievements();
-    if (ui.achievementCountText) ui.achievementCountText.textContent = `${achievements.length} наград`;
+    if (ui.achievementCountText) ui.achievementCountText.textContent = `${achievements.length} достижений`;
     if (ui.achievementHintText) {
       if (achievements.length) {
         const latest = helpers.achievementById(achievements[achievements.length - 1]);
@@ -159,7 +159,7 @@ export const render = {
       let count = helpers.getCurrentCategoryQuestions(category.id).length;
       const isLocked = category.isPremium && !premiumUnlocked;
       if (category.id === 'Своя игра' && premiumUnlocked) count = storage.get(STORAGE_KEYS.customQuestions, []).length;
-      const countLabel = category.id === 'Блиц' ? '30 секунд' : (count > 0 ? `${count} вопросов` : 'Создать');
+      const countLabel = category.id === 'Блиц' ? '30 секунд' : (count > 0 ? `${count} вопросов` : 'Пусто');
       const card = templates.clone(ui.categoryCardTemplate);
       if (!card) return;
       card.dataset.id = category.id;
@@ -195,7 +195,7 @@ export const render = {
     const total = helpers.getCurrentCategoryQuestions(categoryId).length;
     const introText = categoryId === 'Блиц'
       ? 'Вам дается ровно 30 секунд. Ответьте правильно на как можно больше вопросов о вашем партнере.'
-      : `${total} вопросов в колоде. Нажмите ниже, чтобы начать новую игру.`;
+      : `${total} вопросов в колоде. Нажми ниже, чтобы начать новую игру.`;
     ui.introCard.innerHTML = `
       <div class="intro-illu intro-illu-icon">${helpers.categoryIconSvg(state.currentCategory.icon)}</div>
       <span class="eyebrow">${state.currentCategory.badge || 'Категория'}</span>
