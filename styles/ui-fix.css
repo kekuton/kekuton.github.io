@@ -493,3 +493,10 @@ body.light .settings-card {
     height: 56px;
   }
 }
+
+
+@media (max-width: 520px) {
+  .quick-grid {
+    grid-template-columns: 1fr;
+  }
+}
