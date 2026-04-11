@@ -539,3 +539,55 @@ body.light .settings-card {
     line-height: 1.45;
   }
 }
+
+
+/* Mobile fixes: settings/favorites headers and home feature row cleanup */
+#settingsScreen .section-head,
+#favoritesScreen .section-head {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: start;
+  justify-items: start;
+  gap: 10px;
+}
+
+#settingsScreen .section-head h2,
+#settingsScreen .section-head p,
+#favoritesScreen .section-head h2,
+#favoritesScreen .section-head p {
+  max-width: 100%;
+}
+
+#settingsScreen .section-head h2,
+#favoritesScreen .section-head h2 {
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+#settingsScreen .section-head p,
+#favoritesScreen .section-head p {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+#homeScreen .feature-row {
+  display: none !important;
+}
+
+@media (max-width: 520px) {
+  #settingsScreen .section-head,
+  #favoritesScreen .section-head {
+    margin-bottom: 14px;
+  }
+
+  #settingsScreen .section-head h2,
+  #favoritesScreen .section-head h2 {
+    font-size: 24px;
+  }
+
+  #settingsScreen .section-head p,
+  #favoritesScreen .section-head p {
+    font-size: 15px;
+    line-height: 1.45;
+  }
+}
