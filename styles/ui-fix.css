@@ -495,99 +495,58 @@ body.light .settings-card {
 }
 
 
-@media (max-width: 520px) {
-  .quick-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Categories header mobile layout fix */
-#categoriesScreen .section-head {
+/* mobile layout fixes: compact section heads and home feature row */
+.section-head.compact {
   display: grid;
   grid-template-columns: 1fr;
-  align-items: start;
   justify-items: start;
-  gap: 10px;
-}
-
-#categoriesScreen .section-head h2,
-#categoriesScreen .section-head p {
-  max-width: 100%;
-}
-
-#categoriesScreen .section-head h2 {
-  line-height: 1.08;
-  text-wrap: balance;
-}
-
-#categoriesScreen .section-head p {
-  white-space: normal;
-  overflow-wrap: anywhere;
-}
-
-@media (max-width: 520px) {
-  #categoriesScreen .section-head {
-    margin-bottom: 14px;
-  }
-
-  #categoriesScreen .section-head h2 {
-    font-size: 24px;
-  }
-
-  #categoriesScreen .section-head p {
-    font-size: 15px;
-    line-height: 1.45;
-  }
-}
-
-
-/* Mobile fixes: settings/favorites headers and home feature row cleanup */
-#settingsScreen .section-head,
-#favoritesScreen .section-head {
-  display: grid;
-  grid-template-columns: 1fr;
   align-items: start;
-  justify-items: start;
   gap: 10px;
+  padding: 8px 2px 0;
 }
 
-#settingsScreen .section-head h2,
-#settingsScreen .section-head p,
-#favoritesScreen .section-head h2,
-#favoritesScreen .section-head p {
-  max-width: 100%;
+.section-head.compact .eyebrow {
+  margin: 0;
 }
 
-#settingsScreen .section-head h2,
-#favoritesScreen .section-head h2 {
-  line-height: 1.08;
-  text-wrap: balance;
+.section-head.compact h2 {
+  margin: 0;
+  max-width: 12ch;
 }
 
-#settingsScreen .section-head p,
-#favoritesScreen .section-head p {
-  white-space: normal;
-  overflow-wrap: anywhere;
+.section-head.compact p {
+  margin: 0;
+  max-width: 32ch;
 }
 
 #homeScreen .feature-row {
   display: none !important;
 }
 
-@media (max-width: 520px) {
-  #settingsScreen .section-head,
-  #favoritesScreen .section-head {
-    margin-bottom: 14px;
+@media (max-width: 640px) {
+  .section-head,
+  .section-head.compact {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-items: start;
+    align-items: start;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding: 6px 2px 0;
   }
 
-  #settingsScreen .section-head h2,
-  #favoritesScreen .section-head h2 {
-    font-size: 24px;
+  .section-head h2,
+  .section-head.compact h2 {
+    font-size: clamp(24px, 8.5vw, 40px);
+    line-height: 1.04;
+    max-width: 9ch;
+    text-wrap: balance;
   }
 
-  #settingsScreen .section-head p,
-  #favoritesScreen .section-head p {
-    font-size: 15px;
+  .section-head p,
+  .section-head.compact p {
+    max-width: 24ch;
     line-height: 1.45;
+    font-size: 15px;
   }
 }
