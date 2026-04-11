@@ -121,3 +121,38 @@ body.light .icon-btn-theme {
     border-radius: 14px;
   }
 }
+
+
+/* Home cleanup: fewer cards, more actions in topbar */
+.topbar-actions {
+  flex-wrap: nowrap;
+}
+
+@media (max-width: 420px) {
+  .topbar {
+    gap: 8px;
+  }
+
+  .brand-pill {
+    padding: 9px 12px;
+    font-size: 12px;
+    max-width: 132px;
+  }
+
+  .topbar-actions {
+    gap: 4px;
+    padding: 4px;
+  }
+
+  .topbar-actions .icon-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+  }
+
+  .topbar-actions .icon-svg,
+  .topbar-actions .icon-svg svg {
+    width: 17px;
+    height: 17px;
+  }
+}
