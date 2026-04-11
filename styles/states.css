@@ -20,3 +20,71 @@
 .achievement-unlock{pointer-events:none}
 .achievement-unlock-card{box-shadow:0 22px 44px rgba(5,8,20,.34)}
 @media (max-width:600px){.toast-stack{width:min(calc(100vw - 20px),420px)}}
+
+/* Final mobile chip/topbar width fix */
+#backBtn.hidden {
+  display: none !important;
+}
+
+.topbar {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.brand-pill {
+  display: block;
+  width: fit-content;
+  max-width: min(100%, 220px);
+  min-width: 132px;
+  line-height: 1.15;
+  text-align: left;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+.eyebrow {
+  display: inline-flex;
+  width: auto;
+  max-width: 100%;
+  min-width: max-content;
+  white-space: nowrap;
+  text-wrap: nowrap;
+}
+
+@media (max-width: 520px) {
+  .topbar {
+    gap: 8px;
+  }
+
+  .topbar-actions {
+    gap: 4px;
+    padding: 4px;
+  }
+
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+
+  .brand-pill {
+    min-width: 124px;
+    max-width: min(100%, 170px);
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .eyebrow {
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+}
