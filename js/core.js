@@ -40,7 +40,7 @@ const CATEGORY_BACKGROUNDS = {
 };
 
 const DUO_PLAYERS = ['Игрок 1', 'Игрок 2'];
-const ROOT_SCREENS = ['home', 'categories', 'onboarding', 'error'];
+const ROOT_SCREENS = ['home', 'onboarding', 'error'];
 const SWIPE_HELP = 'Свайп: влево — не совпало, вправо — совпало, вверх — пропуск';
 
 const screens = {
