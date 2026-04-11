@@ -500,3 +500,42 @@ body.light .settings-card {
     grid-template-columns: 1fr;
   }
 }
+
+/* Categories header mobile layout fix */
+#categoriesScreen .section-head {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: start;
+  justify-items: start;
+  gap: 10px;
+}
+
+#categoriesScreen .section-head h2,
+#categoriesScreen .section-head p {
+  max-width: 100%;
+}
+
+#categoriesScreen .section-head h2 {
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+#categoriesScreen .section-head p {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 520px) {
+  #categoriesScreen .section-head {
+    margin-bottom: 14px;
+  }
+
+  #categoriesScreen .section-head h2 {
+    font-size: 24px;
+  }
+
+  #categoriesScreen .section-head p {
+    font-size: 15px;
+    line-height: 1.45;
+  }
+}
