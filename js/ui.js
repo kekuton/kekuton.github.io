@@ -159,7 +159,6 @@ export const render = {
       let count = helpers.getCurrentCategoryQuestions(category.id).length;
       const isLocked = category.isPremium && !premiumUnlocked;
       if (category.id === 'Своя игра' && premiumUnlocked) count = storage.get(STORAGE_KEYS.customQuestions, []).length;
-      const countLabel = category.id === 'Блиц' ? '30 секунд' : (count > 0 ? `${count} вопросов` : 'Пусто');
       const card = templates.clone(ui.categoryCardTemplate);
       if (!card) return;
       card.dataset.id = category.id;
@@ -173,7 +172,6 @@ export const render = {
       }
       card.querySelector('[data-role="title"]').textContent = category.id;
       card.querySelector('[data-role="desc"]').textContent = category.desc;
-      card.querySelector('[data-role="count"]').textContent = countLabel;
       fragment.appendChild(card);
     });
     ui.categoriesGrid.replaceChildren(fragment);

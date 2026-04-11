@@ -39,21 +39,6 @@
         <div class="brand-pill">Вопросы для двоих</div>
       </div>
       <div class="topbar-actions" role="group" aria-label="Управление приложением">
-        <button class="icon-btn icon-btn-soft" id="favoritesBtn" aria-label="Открыть избранное" title="Избранное">
-          <span class="icon-btn-glyph icon-svg" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 3.4l2.7 5.46 6.03.88-4.36 4.25 1.03 6.01L12 17.2l-5.4 2.84 1.03-6L3.27 9.74l6.03-.88L12 3.4z"></path>
-            </svg>
-          </span>
-        </button>
-        <button class="icon-btn icon-btn-soft" id="inviteBtn" aria-label="Скопировать ссылку-приглашение" title="Пригласить партнёра">
-          <span class="icon-btn-glyph icon-svg" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 2L11 13"></path>
-              <path d="M22 2l-7 20-4-9-9-4 20-7z"></path>
-            </svg>
-          </span>
-        </button>
         <button class="icon-btn icon-btn-soft" id="settingsBtn" aria-label="Открыть настройки" title="Открыть настройки">
           <span class="icon-btn-glyph icon-svg" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -95,6 +80,57 @@
               <strong>Блиц-режим</strong>
               <small>Проверка знаний на время</small>
             </div>
+          </article>
+        </div>
+
+        <div class="quick-grid">
+          <article class="quick-card daily-card">
+            <div class="quick-card-top">
+              <span class="quick-badge">Вопрос дня</span>
+              <span class="quick-icon quick-icon-svg" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.3 3.7L17 8l-3.7 1.3L12 13l-1.3-3.7L7 8l3.7-1.3L12 3z"></path><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14z"></path><path d="M5 13l1 2.6L8.5 17 6 18l-1 2.5L4 18l-2.5-1.4L4 15.6 5 13z"></path></svg></span>
+            </div>
+            <strong id="dailyQuestionCategory">Сегодня</strong>
+            <p id="dailyQuestionText">Подбираем лучший вопрос на сегодня…</p>
+            <button class="secondary-btn" id="dailyQuestionBtn">Ответить</button>
+          </article>
+
+          <article class="quick-card">
+            <div class="quick-card-top">
+              <span class="quick-badge">Избранное</span>
+              <span class="quick-icon quick-icon-svg" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4l2.7 5.46 6.03.88-4.36 4.25 1.03 6.01L12 17.2l-5.4 2.84 1.03-6L3.27 9.74l6.03-.88L12 3.4z"></path></svg></span>
+            </div>
+            <strong id="favoritesCountText">0 любимых вопросов</strong>
+            <p>Сохраняй лучшие карточки и запускай отдельный раунд только по ним.</p>
+            <button class="secondary-btn" id="favoritesBtn">Открыть избранное</button>
+          </article>
+
+          <article class="quick-card">
+            <div class="quick-card-top">
+              <span class="quick-badge">Челлендж</span>
+              <span class="quick-icon quick-icon-svg" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"></path><path d="M5 5c2.5-2 5.5-2 8 0s5.5 2 8 0v9c-2.5 2-5.5 2-8 0s-5.5-2-8 0"></path></svg></span>
+            </div>
+            <strong id="challengeProgressText">0 / 7 дней</strong>
+            <p id="challengeHintText">Каждый день отвечайте хотя бы на один вопрос, чтобы собрать серию.</p>
+          </article>
+
+          <article class="quick-card">
+            <div class="quick-card-top">
+              <span class="quick-badge">Достижения</span>
+              <span class="quick-icon quick-icon-svg" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v3a5 5 0 0 1-10 0V4z"></path><path d="M5 6H3a3 3 0 0 0 3 3"></path><path d="M19 6h2a3 3 0 0 1-3 3"></path><path d="M12 12v4"></path><path d="M8 20h8"></path></svg></span>
+            </div>
+            <strong id="achievementCountText">0 наград</strong>
+            <p id="achievementHintText">Открывай награды за игры, вопросы и серии дней.</p>
+            <button class="secondary-btn" id="achievementsBtn">Смотреть награды</button>
+          </article>
+
+          <article class="quick-card">
+            <div class="quick-card-top">
+              <span class="quick-badge">Пригласить партнёра</span>
+              <span class="quick-icon quick-icon-svg" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"></path><path d="M22 2l-7 20-4-9-9-4 20-7z"></path></svg></span>
+            </div>
+            <strong>Ссылка-приглашение</strong>
+            <p>Отправь партнёру ссылку на игру или открой через Telegram.</p>
+            <button class="secondary-btn" id="inviteBtn">Скопировать ссылку</button>
           </article>
         </div>
       </section>
@@ -409,7 +445,6 @@
       <h3 data-role="title"></h3>
       <p data-role="desc"></p>
     </div>
-    <div class="category-count" data-role="count"></div>
   </button>
 </template>
 
