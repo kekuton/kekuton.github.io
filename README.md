@@ -1,21 +1,18 @@
-{
-  "name": "Вопросы для двоих",
-  "short_name": "Для двоих",
-  "start_url": "./",
-  "display": "standalone",
-  "background_color": "#111827",
-  "theme_color": "#1f1b4d",
-  "description": "Игра для пары с красивыми категориями вопросов, совместимостью, блиц-режимом и историей результатов.",
-  "icons": [
-    {
-      "src": "./icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "./icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
-}
+# Вопросы для двоих — Mini App
+
+Запуск локально:
+
+```bash
+python -m http.server 8000
+```
+
+Открыть:
+
+```
+http://localhost:8000
+```
+
+Для Telegram Mini App:
+- загрузи папку на хостинг
+- укажи ссылку на `index.html` в BotFather
+- в Telegram WebView вертикальные свайпы отключаются автоматически
