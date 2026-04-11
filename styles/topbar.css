@@ -1,5 +1,29 @@
+/* Topbar layout fixes */
 .topbar {
-  grid-template-columns: 48px 1fr auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#backBtn {
+  flex: 0 0 48px;
+}
+
+.icon-btn.hidden {
+  display: none;
+}
+
+.brand {
+  flex: 1 1 auto;
+  min-width: 0;
+  justify-content: flex-start;
+}
+
+.brand-pill {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .topbar-actions {
@@ -7,6 +31,7 @@
   align-items: center;
   gap: 8px;
   justify-self: end;
+  margin-left: auto;
   padding: 6px;
   border-radius: 22px;
   background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
@@ -73,4 +98,61 @@ body.light .icon-btn-theme {
 .icon-svg svg {
   width: 20px;
   height: 20px;
+}
+
+@media (max-width: 420px) {
+  .topbar {
+    gap: 10px;
+  }
+
+  .brand-pill {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  .topbar-actions {
+    gap: 6px;
+    padding: 5px;
+  }
+
+  .icon-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+  }
+}
+
+
+/* Home cleanup: fewer cards, more actions in topbar */
+.topbar-actions {
+  flex-wrap: nowrap;
+}
+
+@media (max-width: 420px) {
+  .topbar {
+    gap: 8px;
+  }
+
+  .brand-pill {
+    padding: 9px 12px;
+    font-size: 12px;
+    max-width: 132px;
+  }
+
+  .topbar-actions {
+    gap: 4px;
+    padding: 4px;
+  }
+
+  .topbar-actions .icon-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+  }
+
+  .topbar-actions .icon-svg,
+  .topbar-actions .icon-svg svg {
+    width: 17px;
+    height: 17px;
+  }
 }

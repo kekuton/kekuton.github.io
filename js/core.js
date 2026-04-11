@@ -40,7 +40,7 @@ const CATEGORY_BACKGROUNDS = {
 };
 
 const DUO_PLAYERS = ['Игрок 1', 'Игрок 2'];
-const ROOT_SCREENS = ['home', 'onboarding', 'error'];
+const ROOT_SCREENS = ['home', 'categories', 'onboarding', 'error'];
 const SWIPE_HELP = 'Свайп: влево — не совпало, вправо — совпало, вверх — пропуск';
 
 const screens = {
@@ -94,7 +94,6 @@ const ui = {
   retryLoadBtn: document.getElementById('retryLoadBtn'),
   goHomeFromErrorBtn: document.getElementById('goHomeFromErrorBtn'),
   errorText: document.getElementById('errorText'),
-  categoriesHomeBtn: document.getElementById('categoriesHomeBtn'),
   categoriesGrid: document.getElementById('categoriesGrid'),
   introCard: document.getElementById('categoryIntroCard'),
 
