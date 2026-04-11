@@ -94,6 +94,7 @@ const ui = {
   retryLoadBtn: document.getElementById('retryLoadBtn'),
   goHomeFromErrorBtn: document.getElementById('goHomeFromErrorBtn'),
   errorText: document.getElementById('errorText'),
+  categoriesHomeBtn: document.getElementById('categoriesHomeBtn'),
   categoriesGrid: document.getElementById('categoriesGrid'),
   introCard: document.getElementById('categoryIntroCard'),
 

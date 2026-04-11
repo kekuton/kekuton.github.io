@@ -18,6 +18,7 @@ function bindEvents() {
   });
 
   ui.startBtn?.addEventListener('click', () => router.show('categories'));
+  ui.categoriesHomeBtn?.addEventListener('click', () => router.show('home', { reset: true }));
   ui.historyBtn?.addEventListener('click', () => router.show('history'));
   ui.settingsBtn?.addEventListener('click', () => settings.open());
   ui.openSettingsBtn?.addEventListener('click', () => settings.open());
