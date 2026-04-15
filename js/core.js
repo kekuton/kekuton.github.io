@@ -604,6 +604,13 @@ const theme = {
     const resolved = next === 'light' ? 'light' : 'dark';
     document.body.classList.toggle('light', resolved === 'light');
     document.body.dataset.theme = resolved;
+    
+    // Интеграция с темой Telegram
+    if (tg && tg.colorScheme) {
+      document.body.classList.remove('telegram-dark', 'telegram-light');
+      document.body.classList.add(`telegram-${resolved}`);
+    }
+    
     storage.setRaw(STORAGE_KEYS.theme, resolved);
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', resolved === 'light' ? '#efe7ff' : '#8b5cf6');
     if (ui.themeBtn) {
