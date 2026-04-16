@@ -223,8 +223,8 @@ export const swipe = {
   onPointerDown(event) {
     if (!app.screens.game.classList.contains('screen-active')) return;
     if (state.swipe.locked) return;
-    if (!event.isPrimary) return;
-    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    if (typeof event.isPrimary === 'boolean' && !event.isPrimary) return;
+    if (event.pointerType === 'mouse' && typeof event.button === 'number' && event.button !== 0) return;
     state.swipe.active = true;
     state.swipe.dragging = false;
     state.swipe.pointerId = event.pointerId;
