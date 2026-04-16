@@ -161,11 +161,13 @@ export const game = {
 
 export const swipe = {
   updateHint(offsetX, offsetY = 0) {
+    const deadZone = 12;
     const intensity = Math.min(Math.max(Math.abs(offsetX), Math.abs(offsetY)) / 120, 1);
     let direction = 'none';
-    if (offsetY < -70 && Math.abs(offsetX) < 100) direction = 'up';
-    else if (offsetX > 0) direction = 'right';
-    else if (offsetX < 0) direction = 'left';
+    if (Math.abs(offsetX) < deadZone && Math.abs(offsetY) < deadZone) direction = 'none';
+    else if (offsetY < -70 && Math.abs(offsetX) < 100) direction = 'up';
+    else if (offsetX > deadZone) direction = 'right';
+    else if (offsetX < -deadZone) direction = 'left';
     ui.questionCard.dataset.swipe = direction;
     ui.questionCard.style.setProperty('--swipe-opacity', intensity.toFixed(2));
     if (!ui.swipeHelp) return;
@@ -197,16 +199,14 @@ export const swipe = {
     if (!app.screens.game.classList.contains('screen-active')) return;
     if (event.pointerType === 'mouse' && event.button !== 0) return;
     state.swipe.active = true;
-    state.swipe.dragging = true;
+    state.swipe.dragging = false;
     state.swipe.pointerId = event.pointerId;
     state.swipe.startX = event.clientX;
     state.swipe.startY = event.clientY;
     state.swipe.currentX = event.clientX;
     state.swipe.currentY = event.clientY;
-    ui.questionCard.setPointerCapture?.(event.pointerId);
-    ui.questionCard.style.transition = 'none';
+    ui.questionCard.style.opacity = '1';
     ui.questionCard.style.filter = 'none';
-    document.body.classList.add('is-swiping');
   },
   onPointerMove(event) {
     if (!state.swipe.active || state.swipe.pointerId !== event.pointerId) return;
@@ -217,6 +217,18 @@ export const swipe = {
       requestAnimationFrame(() => {
         const deltaX = state.swipe.currentX - state.swipe.startX;
         const deltaY = state.swipe.currentY - state.swipe.startY;
+        const distance = Math.hypot(deltaX, deltaY);
+        if (distance < 10) {
+          this.updateHint(0, 0);
+          state.swipe.isAnimating = false;
+          return;
+        }
+        if (!state.swipe.dragging) {
+          state.swipe.dragging = true;
+          ui.questionCard.setPointerCapture?.(event.pointerId);
+          ui.questionCard.style.transition = 'none';
+          document.body.classList.add('is-swiping');
+        }
         if (Math.abs(deltaY) > Math.abs(deltaX) * 1.2 && Math.abs(deltaY) < 50) {
           state.swipe.isAnimating = false;
           return;
@@ -234,18 +246,29 @@ export const swipe = {
   onPointerUp(event) {
     if (!state.swipe.active || state.swipe.pointerId !== event.pointerId) return;
     state.swipe.active = false;
+    const wasDragging = state.swipe.dragging;
     state.swipe.dragging = false;
     const deltaX = state.swipe.currentX - state.swipe.startX;
     const deltaY = state.swipe.currentY - state.swipe.startY;
     const velocity = Math.abs(deltaX) / Math.max(1, Math.abs(deltaY) + 1);
     const threshold = window.innerWidth < 480 ? 70 : 90;
-    ui.questionCard.releasePointerCapture?.(event.pointerId);
+    if (wasDragging) ui.questionCard.releasePointerCapture?.(event.pointerId);
     state.swipe.pointerId = null;
+    if (!wasDragging || (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10)) {
+      ui.questionCard.style.transition = 'transform 140ms ease, opacity 140ms ease';
+      ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
+      ui.questionCard.style.opacity = '1';
+      ui.questionCard.style.filter = 'none';
+      document.body.classList.remove('is-swiping');
+      this.updateHint(0, 0);
+      return;
+    }
     if (deltaX > threshold || (deltaX > 45 && velocity > 2.4)) return game.answer('match');
     if (deltaX < -threshold || (deltaX < -45 && velocity > 2.4)) return game.answer('mismatch');
     if (deltaY < -110 && Math.abs(deltaX) < 100) return game.answer('skip');
-    ui.questionCard.style.transition = 'transform 180ms cubic-bezier(.2,.9,.2,1)';
+    ui.questionCard.style.transition = 'transform 180ms cubic-bezier(.2,.9,.2,1), opacity 140ms ease';
     ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
+    ui.questionCard.style.opacity = '1';
     ui.questionCard.style.filter = 'none';
     document.body.classList.remove('is-swiping');
     this.updateHint(0, 0);

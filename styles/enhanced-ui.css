@@ -331,38 +331,12 @@ p, span, small, label {
   }
 }
 
-/* Анимация свайпа с инерцией */
-.question-card[data-swipe="left"] {
-  animation: swipeLeft 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-.question-card[data-swipe="right"] {
-  animation: swipeRight 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
+/* Свайп-анимацию запускает JS через inline transform.
+   Не вешаем animation на data-swipe, иначе карточка улетает даже от лёгкого тапа. */
+.question-card[data-swipe="left"],
+.question-card[data-swipe="right"],
 .question-card[data-swipe="up"] {
-  animation: swipeUp 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-@keyframes swipeLeft {
-  to {
-    transform: translateX(-150%) rotate(-25deg) scale(0.9);
-    opacity: 0;
-  }
-}
-
-@keyframes swipeRight {
-  to {
-    transform: translateX(150%) rotate(25deg) scale(0.9);
-    opacity: 0;
-  }
-}
-
-@keyframes swipeUp {
-  to {
-    transform: translateY(-150%) scale(0.9);
-    opacity: 0;
-  }
+  animation: none !important;
 }
 
 /* Анимация появления достижений */
