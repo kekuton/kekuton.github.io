@@ -1,8 +1,8 @@
-import { app } from './core.js';
-import './ui.js';
-import './game.js';
-import './settings.js';
-import './immersive.js';
+import { app } from './core.js?v=20260416b';
+import './ui.js?v=20260416b';
+import './game.js?v=20260416b';
+import './settings.js?v=20260416b';
+import './immersive.js?v=20260416b';
 
 const { ui, state, router, theme, data, background, render, loading, swipe, initTelegram, modals, premium, settings, game, fx, audio, motionFx, storage, STORAGE_KEYS, ONBOARDING_STEPS, helpers, CATEGORY_META, meta, notify } = app;
 

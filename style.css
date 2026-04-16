@@ -1,12 +1,12 @@
-@import url('./styles/core.css');
-@import url('./styles/topbar.css');
-@import url('./styles/settings.css');
-@import url('./styles/typography-fix.css');
+@import url('./styles/core.css?v=20260416b');
+@import url('./styles/topbar.css?v=20260416b');
+@import url('./styles/settings.css?v=20260416b');
+@import url('./styles/typography-fix.css?v=20260416b');
 
-@import url('./styles/ui-fix.css');
+@import url('./styles/ui-fix.css?v=20260416b');
 
-@import url('./styles/components.css');
-@import url('./styles/states.css');
-@import url('./styles/enhanced-ui.css');
+@import url('./styles/components.css?v=20260416b');
+@import url('./styles/states.css?v=20260416b');
+@import url('./styles/enhanced-ui.css?v=20260416b');
 
-@import url('./styles/immersive.css');
+@import url('./styles/immersive.css?v=20260416b');

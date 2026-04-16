@@ -1,4 +1,4 @@
-import { app } from './core.js';
+import { app } from './core.js?v=20260416b';
 import { render, results } from './ui.js';
 
 const { ui, state, helpers, router, modals, premium, fx, CATEGORY_META, SWIPE_HELP, DUO_PLAYERS, background } = app;
@@ -103,6 +103,8 @@ export const game = {
   },
   answer(type) {
     if (!['match', 'mismatch', 'skip'].includes(type)) return;
+    if (state.swipe.locked) return;
+    state.swipe.locked = true;
     fx.pulseAnswerButton(type);
     fx.launchReactionBurst(type, type === 'match' ? ui.matchBtn : type === 'mismatch' ? ui.mismatchBtn : ui.skipBtn);
     if (type === 'match') fx.vibrate('success');
@@ -116,7 +118,10 @@ export const game = {
         if (state.duoActivePlayer === 0) {
           state.duoActivePlayer = 1;
           render.updateModeUI();
-          modalFlows.showPass(1, () => render.gameQuestion(true));
+          modalFlows.showPass(1, () => {
+            render.gameQuestion(true);
+            state.swipe.locked = false;
+          });
           return;
         }
         const [first, second] = state.duoRoundAnswers;
@@ -130,8 +135,15 @@ export const game = {
         state.duoRoundAnswers = [null, null];
         state.duoActivePlayer = 0;
         render.resetQuestionCard();
-        if (state.currentIndex >= state.currentQuestions.length) this.finish();
-        else modalFlows.showPass(0, () => render.gameQuestion());
+        if (state.currentIndex >= state.currentQuestions.length) {
+          state.swipe.locked = false;
+          this.finish();
+        } else {
+          modalFlows.showPass(0, () => {
+            render.gameQuestion();
+            state.swipe.locked = false;
+          });
+        }
       });
       return;
     }
@@ -141,8 +153,13 @@ export const game = {
       else if (type === 'mismatch') state.questionStreak = 0;
       state.currentIndex += 1;
       render.resetQuestionCard();
-      if (state.currentIndex >= state.currentQuestions.length) this.finish();
-      else render.gameQuestion();
+      if (state.currentIndex >= state.currentQuestions.length) {
+        state.swipe.locked = false;
+        this.finish();
+      } else {
+        render.gameQuestion();
+        state.swipe.locked = false;
+      }
     });
   },
   answerBlitz(isCorrect) {
@@ -187,16 +204,26 @@ export const swipe = {
     };
     const config = map[type];
     if (!config) return;
-    if (!state.settings.animations) return callback();
+    if (!state.settings.animations) { callback(); return; }
     document.body.classList.remove('is-swiping');
-    card.style.transition = 'transform 260ms cubic-bezier(.2,.9,.2,1), opacity 220ms ease';
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      card.removeEventListener('transitionend', finish);
+      callback();
+    };
+    card.style.transition = 'transform 220ms cubic-bezier(.2,.9,.2,1), opacity 180ms ease';
     card.style.opacity = '0';
     card.style.filter = 'none';
     card.style.transform = `translate3d(${config.x}px, ${config.y}px, 0) rotate(${config.rotate}deg) scale(${config.scale})`;
-    setTimeout(callback, 240);
+    card.addEventListener('transitionend', finish, { once: true });
+    setTimeout(finish, 260);
   },
   onPointerDown(event) {
     if (!app.screens.game.classList.contains('screen-active')) return;
+    if (state.swipe.locked) return;
+    if (!event.isPrimary) return;
     if (event.pointerType === 'mouse' && event.button !== 0) return;
     state.swipe.active = true;
     state.swipe.dragging = false;
@@ -218,7 +245,7 @@ export const swipe = {
         const deltaX = state.swipe.currentX - state.swipe.startX;
         const deltaY = state.swipe.currentY - state.swipe.startY;
         const distance = Math.hypot(deltaX, deltaY);
-        if (distance < 10) {
+        if (distance < 18) {
           this.updateHint(0, 0);
           state.swipe.isAnimating = false;
           return;
@@ -254,7 +281,7 @@ export const swipe = {
     const threshold = window.innerWidth < 480 ? 70 : 90;
     if (wasDragging) ui.questionCard.releasePointerCapture?.(event.pointerId);
     state.swipe.pointerId = null;
-    if (!wasDragging || (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10)) {
+    if (!wasDragging || (Math.abs(deltaX) < 18 && Math.abs(deltaY) < 18)) {
       ui.questionCard.style.transition = 'transform 140ms ease, opacity 140ms ease';
       ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
       ui.questionCard.style.opacity = '1';
@@ -274,12 +301,28 @@ export const swipe = {
     this.updateHint(0, 0);
   },
   attachHandlers() {
-    ui.questionCard.addEventListener('pointerdown', this.onPointerDown.bind(this));
-    ui.questionCard.addEventListener('pointermove', this.onPointerMove.bind(this));
-    ui.questionCard.addEventListener('pointerup', this.onPointerUp.bind(this));
-    ui.questionCard.addEventListener('pointercancel', this.onPointerUp.bind(this));
+    const onDown = this.onPointerDown.bind(this);
+    const onMove = this.onPointerMove.bind(this);
+    const onUp = this.onPointerUp.bind(this);
+    const onLostCapture = () => {
+      state.swipe.active = false;
+      state.swipe.dragging = false;
+      state.swipe.pointerId = null;
+      state.swipe.isAnimating = false;
+      ui.questionCard.style.transition = 'transform 140ms ease, opacity 140ms ease';
+      ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
+      ui.questionCard.style.opacity = '1';
+      ui.questionCard.style.filter = 'none';
+      document.body.classList.remove('is-swiping');
+      this.updateHint(0, 0);
+    };
+    ui.questionCard.addEventListener('pointerdown', onDown);
+    ui.questionCard.addEventListener('pointermove', onMove);
+    ui.questionCard.addEventListener('pointerup', onUp);
+    ui.questionCard.addEventListener('pointercancel', onUp);
+    ui.questionCard.addEventListener('lostpointercapture', onLostCapture);
     ui.questionCard.addEventListener('touchmove', (event) => {
-      if (event.cancelable) event.preventDefault();
+      if (state.swipe.dragging && event.cancelable) event.preventDefault();
     }, { passive: false });
   },
   preventDoubleTapZoom() {

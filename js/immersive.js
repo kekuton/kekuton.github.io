@@ -1,4 +1,4 @@
-import { app } from './core.js';
+import { app } from './core.js?v=20260416b';
 
 const { ui, state } = app;
 

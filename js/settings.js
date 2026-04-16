@@ -1,4 +1,4 @@
-import { app } from './core.js';
+import { app } from './core.js?v=20260416b';
 import { render } from './ui.js';
 
 const { ui, state, data, router, storage, historyStore, fx, audio, motionFx, STORAGE_KEYS, notify } = app;

@@ -225,7 +225,8 @@ const state = {
     currentY: 0,
     dragging: false,
     pointerId: null,
-    isAnimating: false
+    isAnimating: false,
+    locked: false
   }
 };
 

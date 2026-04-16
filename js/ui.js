@@ -1,4 +1,4 @@
-import { app } from './core.js';
+import { app } from './core.js?v=20260416b';
 
 const { state, ui, storage, helpers, historyStore, router, fx, CATEGORY_META, STORAGE_KEYS, DUO_PLAYERS, SWIPE_HELP, templates, meta, notify } = app;
 
@@ -253,22 +253,18 @@ export const render = {
       ui.favoriteQuestionBtn.textContent = active ? '★' : '☆';
     }
     const entryDirection = state.currentIndex % 2 === 0 ? 1 : -1;
-    ui.questionCard.classList.remove('card-enter', 'card-fly-left', 'card-fly-right', 'card-fly-up', 'card-return');
+    ui.questionCard.classList.remove('card-enter', 'card-fly-left', 'card-fly-right', 'card-fly-up', 'card-return', 'card-enter-soft');
     ui.questionCard.style.filter = 'none';
     ui.questionCard.style.transition = 'none';
-    ui.questionCard.style.transform = isInitial || !state.settings.animations
-      ? 'translate3d(0,0,0) rotate(0deg) scale(1)'
-      : `translate3d(${entryDirection * 10}px, 18px, 0) rotate(${entryDirection * 1.2}deg) scale(0.985)`;
-    ui.questionCard.style.opacity = isInitial || !state.settings.animations ? '1' : '0.01';
+    ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
+    ui.questionCard.style.opacity = '1';
     app.swipe.updateHint(0, 0);
-    requestAnimationFrame(() => {
-      ui.questionCard.style.transition = state.settings.animations
-        ? 'transform 280ms cubic-bezier(.2,.9,.2,1), opacity 220ms ease'
-        : 'none';
-      ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
-      ui.questionCard.style.opacity = '1';
-      ui.questionCard.style.filter = 'none';
-    });
+    if (!isInitial && state.settings.animations) {
+      void ui.questionCard.offsetWidth;
+      ui.questionCard.style.setProperty('--card-enter-x', `${entryDirection * 8}px`);
+      ui.questionCard.classList.add('card-enter-soft');
+      window.setTimeout(() => ui.questionCard.classList.remove('card-enter-soft'), 260);
+    }
     app.audio?.playCardTransition?.(state.currentCategory?.id === 'Блиц' ? 'blitz' : 'question');
   },
   blitzUI() {
@@ -297,8 +293,10 @@ export const render = {
     state.swipe.dragging = false;
     state.swipe.pointerId = null;
     state.swipe.isAnimating = false;
+    state.swipe.locked = false;
     ui.questionCard.dataset.swipe = 'none';
     ui.questionCard.style.removeProperty('--swipe-opacity');
+    ui.questionCard.classList.remove('card-enter-soft');
     ui.questionCard.style.transition = '';
     ui.questionCard.style.filter = 'none';
     ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
