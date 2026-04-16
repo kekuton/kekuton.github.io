@@ -13,17 +13,24 @@ function finishOnboarding() {
 }
 
 function bindEvents() {
+  const onClick = (element, handler) => element?.addEventListener('click', handler);
+  const show = (screen, options) => () => router.show(screen, options);
+  const closeModalAndSync = (modal) => {
+    modals.close(modal);
+    router.syncBackButton(router.current());
+  };
+
   ui.categoriesGrid.addEventListener('click', (event) => {
     const card = event.target.closest('.category-card');
     if (card?.dataset.id) game.openCategory(card.dataset.id);
   });
 
-  ui.startBtn?.addEventListener('click', () => router.show('categories'));
-  ui.historyBtn?.addEventListener('click', () => router.show('history'));
-  ui.settingsBtn?.addEventListener('click', () => settings.open());
-  ui.openSettingsBtn?.addEventListener('click', () => settings.open());
-  ui.backBtn?.addEventListener('click', () => router.back());
-  ui.themeBtn?.addEventListener('click', () => theme.toggle());
+  onClick(ui.startBtn, show('categories'));
+  onClick(ui.historyBtn, show('history'));
+  onClick(ui.settingsBtn, () => settings.open());
+  onClick(ui.openSettingsBtn, () => settings.open());
+  onClick(ui.backBtn, () => router.back());
+  onClick(ui.themeBtn, () => theme.toggle());
 
   ui.dailyQuestionBtn?.addEventListener('click', () => {
     const daily = helpers.dailyQuestion();
@@ -89,17 +96,17 @@ ${inviteLink}`;
     if (ok) router.show('home', { reset: true });
     else render.errorScreen(state.loadError || 'Не удалось загрузить вопросы.');
   });
-  ui.goHomeFromErrorBtn?.addEventListener('click', () => router.show('home', { reset: true }));
+  onClick(ui.goHomeFromErrorBtn, show('home', { reset: true }));
 
-  ui.matchBtn?.addEventListener('click', () => game.answer('match'));
-  ui.mismatchBtn?.addEventListener('click', () => game.answer('mismatch'));
-  ui.skipBtn?.addEventListener('click', () => game.answer('skip'));
-  ui.blitzCorrectBtn?.addEventListener('click', () => game.answerBlitz(true));
-  ui.blitzIncorrectBtn?.addEventListener('click', () => game.answerBlitz(false));
+  onClick(ui.matchBtn, () => game.answer('match'));
+  onClick(ui.mismatchBtn, () => game.answer('mismatch'));
+  onClick(ui.skipBtn, () => game.answer('skip'));
+  onClick(ui.blitzCorrectBtn, () => game.answerBlitz(true));
+  onClick(ui.blitzIncorrectBtn, () => game.answerBlitz(false));
 
-  ui.restartBtn?.addEventListener('click', () => game.start(state.gameMode));
-  ui.changeCategoryBtn?.addEventListener('click', () => router.show('categories'));
-  ui.shareBtn?.addEventListener('click', () => app.results.share());
+  onClick(ui.restartBtn, () => game.start(state.gameMode));
+  onClick(ui.changeCategoryBtn, show('categories'));
+  onClick(ui.shareBtn, () => app.results.share());
 
   ui.historySearchInput?.addEventListener('input', (event) => {
     state.historyFilter = event.target.value || '';
@@ -125,25 +132,20 @@ ${inviteLink}`;
     game.start();
   });
 
-  ui.buyPremiumBtn?.addEventListener('click', () => premium.purchase());
-  ui.closePremiumBtn?.addEventListener('click', () => {
-    modals.close(ui.premiumModal);
-    router.syncBackButton(router.current());
-  });
+  onClick(ui.buyPremiumBtn, () => premium.purchase());
+  onClick(ui.closePremiumBtn, () => closeModalAndSync(ui.premiumModal));
 
-  ui.adultConfirmBtn?.addEventListener('click', () => {
+  onClick(ui.adultConfirmBtn, () => {
     app.storage.setRaw(app.STORAGE_KEYS.adult, 'yes');
-    modals.close(ui.adultModal);
-    router.syncBackButton(router.current());
+    closeModalAndSync(ui.adultModal);
     const pending = state.pendingAdultCategory;
     state.pendingAdultCategory = null;
     if (pending) game.openCategory(pending);
   });
 
-  ui.adultCancelBtn?.addEventListener('click', () => {
+  onClick(ui.adultCancelBtn, () => {
     state.pendingAdultCategory = null;
-    modals.close(ui.adultModal);
-    router.syncBackButton(router.current());
+    closeModalAndSync(ui.adultModal);
   });
 
   document.addEventListener('keydown', (event) => {
@@ -153,8 +155,7 @@ ${inviteLink}`;
   document.querySelectorAll('.modal').forEach((modal) => {
     modal.addEventListener('click', (event) => {
       if (event.target === modal) {
-        modals.close(modal);
-        router.syncBackButton(router.current());
+        closeModalAndSync(modal);
       }
     });
   });

@@ -19,11 +19,23 @@ export const settings = {
     motionFx?.setEnabled?.(state.settings.motionFx);
   },
   bind() {
-    ui.vibrationToggle?.addEventListener('change', () => this.applyFromControls());
-    ui.animationsToggle?.addEventListener('change', () => this.applyFromControls());
-    ui.soundToggle?.addEventListener('change', () => this.applyFromControls());
-    ui.motionToggle?.addEventListener('change', () => this.applyFromControls());
-    ui.roundSizeSelect?.addEventListener('change', () => this.applyFromControls());
+    const settingsControls = [
+      ui.vibrationToggle,
+      ui.animationsToggle,
+      ui.soundToggle,
+      ui.motionToggle,
+      ui.roundSizeSelect
+    ];
+    settingsControls.forEach((control) => {
+      control?.addEventListener('change', () => this.applyFromControls());
+    });
+
+    const afterReset = (message) => {
+      render.categories();
+      fx.vibrate('light');
+      notify.success(message);
+    };
+
     ui.clearHistoryBtn?.addEventListener('click', () => {
       historyStore.clear();
       render.history();
@@ -33,16 +45,12 @@ export const settings = {
     ui.resetCustomBtn?.addEventListener('click', () => {
       storage.remove(STORAGE_KEYS.customQuestions);
       delete state.questionsData['Своя игра'];
-      render.categories();
-      fx.vibrate('light');
-      notify.success('Свои вопросы удалены.');
+      afterReset('Свои вопросы удалены.');
     });
     ui.resetFlagsBtn?.addEventListener('click', () => {
       storage.remove(STORAGE_KEYS.adult);
       storage.remove(STORAGE_KEYS.premium);
-      render.categories();
-      fx.vibrate('light');
-      notify.success('18+ и premium сброшены.');
+      afterReset('18+ и premium сброшены.');
     });
   }
 };
