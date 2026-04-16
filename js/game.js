@@ -2,6 +2,15 @@ import { app } from './core.js?v=20260416b';
 import { render, results } from './ui.js';
 
 const { ui, state, helpers, router, modals, premium, fx, CATEGORY_META, SWIPE_HELP, DUO_PLAYERS, background } = app;
+const SWIPE_THRESHOLD = {
+  tapDistance: 18,
+  horizontalMobile: 70,
+  horizontalDesktop: 90,
+  horizontalFast: 45,
+  horizontalVelocity: 2.4,
+  verticalSkip: 110,
+  verticalHorizontalLimit: 100
+};
 
 const modalFlows = {
   showPass(playerIndex, onReady) {
@@ -278,10 +287,10 @@ export const swipe = {
     const deltaX = state.swipe.currentX - state.swipe.startX;
     const deltaY = state.swipe.currentY - state.swipe.startY;
     const velocity = Math.abs(deltaX) / Math.max(1, Math.abs(deltaY) + 1);
-    const threshold = window.innerWidth < 480 ? 70 : 90;
+    const threshold = window.innerWidth < 480 ? SWIPE_THRESHOLD.horizontalMobile : SWIPE_THRESHOLD.horizontalDesktop;
     if (wasDragging) ui.questionCard.releasePointerCapture?.(event.pointerId);
     state.swipe.pointerId = null;
-    if (!wasDragging || (Math.abs(deltaX) < 18 && Math.abs(deltaY) < 18)) {
+    if (!wasDragging || (Math.abs(deltaX) < SWIPE_THRESHOLD.tapDistance && Math.abs(deltaY) < SWIPE_THRESHOLD.tapDistance)) {
       ui.questionCard.style.transition = 'transform 140ms ease, opacity 140ms ease';
       ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
       ui.questionCard.style.opacity = '1';
@@ -290,9 +299,9 @@ export const swipe = {
       this.updateHint(0, 0);
       return;
     }
-    if (deltaX > threshold || (deltaX > 45 && velocity > 2.4)) return game.answer('match');
-    if (deltaX < -threshold || (deltaX < -45 && velocity > 2.4)) return game.answer('mismatch');
-    if (deltaY < -110 && Math.abs(deltaX) < 100) return game.answer('skip');
+    if (deltaX > threshold || (deltaX > SWIPE_THRESHOLD.horizontalFast && velocity > SWIPE_THRESHOLD.horizontalVelocity)) return game.answer('match');
+    if (deltaX < -threshold || (deltaX < -SWIPE_THRESHOLD.horizontalFast && velocity > SWIPE_THRESHOLD.horizontalVelocity)) return game.answer('mismatch');
+    if (deltaY < -SWIPE_THRESHOLD.verticalSkip && Math.abs(deltaX) < SWIPE_THRESHOLD.verticalHorizontalLimit) return game.answer('skip');
     ui.questionCard.style.transition = 'transform 180ms cubic-bezier(.2,.9,.2,1), opacity 140ms ease';
     ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
     ui.questionCard.style.opacity = '1';
@@ -304,6 +313,17 @@ export const swipe = {
     const onDown = this.onPointerDown.bind(this);
     const onMove = this.onPointerMove.bind(this);
     const onUp = this.onPointerUp.bind(this);
+    const toPseudoPointerEvent = (touch, originalEvent, phase = 'move') => ({
+      pointerId: 'touch',
+      pointerType: 'touch',
+      isPrimary: true,
+      button: 0,
+      clientX: touch?.clientX ?? state.swipe.currentX,
+      clientY: touch?.clientY ?? state.swipe.currentY,
+      cancelable: !!originalEvent?.cancelable,
+      preventDefault: () => originalEvent?.preventDefault?.(),
+      type: `touch${phase}`
+    });
     const onLostCapture = () => {
       state.swipe.active = false;
       state.swipe.dragging = false;
@@ -324,6 +344,28 @@ export const swipe = {
     ui.questionCard.addEventListener('touchmove', (event) => {
       if (state.swipe.dragging && event.cancelable) event.preventDefault();
     }, { passive: false });
+    ui.questionCard.addEventListener('touchstart', (event) => {
+      if (state.swipe.active && state.swipe.pointerId !== 'touch') return;
+      const touch = event.touches?.[0];
+      if (!touch) return;
+      onDown(toPseudoPointerEvent(touch, event, 'start'));
+    }, { passive: true });
+    ui.questionCard.addEventListener('touchmove', (event) => {
+      if (!state.swipe.active || state.swipe.pointerId !== 'touch') return;
+      const touch = event.touches?.[0];
+      if (!touch) return;
+      onMove(toPseudoPointerEvent(touch, event));
+    }, { passive: false });
+    ui.questionCard.addEventListener('touchend', (event) => {
+      if (!state.swipe.active || state.swipe.pointerId !== 'touch') return;
+      const touch = event.changedTouches?.[0] || event.touches?.[0];
+      onUp(toPseudoPointerEvent(touch, event, 'end'));
+    }, { passive: true });
+    ui.questionCard.addEventListener('touchcancel', (event) => {
+      if (!state.swipe.active || state.swipe.pointerId !== 'touch') return;
+      const touch = event.changedTouches?.[0] || event.touches?.[0];
+      onUp(toPseudoPointerEvent(touch, event, 'cancel'));
+    }, { passive: true });
   },
   preventDoubleTapZoom() {
     let lastTouchEnd = 0;
