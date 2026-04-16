@@ -1,0 +1,78 @@
+:root,
+body.light {
+  --bg: #2ADED4 !important;
+}
+
+body {
+  background: #2ADED4 !important;
+}
+
+.bg-layer,
+body.light .bg-layer {
+  background: #2ADED4 !important;
+  background-image: none !important;
+  filter: none !important;
+}
+
+.bg-overlay,
+.bg-noise,
+body.category-future .bg-overlay,
+body.category-distance .bg-overlay,
+body.category-finance .bg-overlay {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255,255,255,.18), transparent 26%),
+    radial-gradient(circle at 82% 16%, rgba(255,255,255,.14), transparent 24%),
+    radial-gradient(circle at 50% 100%, rgba(255,255,255,.10), transparent 34%) !important;
+  opacity: .9;
+}
+
+body::before {
+  background:
+    radial-gradient(circle at 18% 82%, rgba(255,255,255,.12), transparent 26%),
+    radial-gradient(circle at 90% 18%, rgba(255,255,255,.10), transparent 22%) !important;
+}
+
+body::after {
+  background: none !important;
+  opacity: 0 !important;
+}
+
+.category-card,
+body.light .category-card {
+  background: #FFFFF0 !important;
+  border: 1px solid rgba(70, 58, 40, .10) !important;
+  box-shadow: 0 16px 36px rgba(54, 82, 80, .14) !important;
+}
+
+.category-card::after,
+.category-card-cover::before {
+  display: none !important;
+}
+
+.category-card h3,
+.category-card p,
+.category-card .category-count,
+body.light .category-card h3,
+body.light .category-card p,
+body.light .category-card .category-count {
+  color: #3F3A31 !important;
+}
+
+.category-card .category-badge,
+.category-card.premium-locked::after {
+  background: rgba(63, 58, 49, 0.78) !important;
+  color: #FFFDF5 !important;
+}
+
+.category-card .category-icon {
+  background: rgba(63, 58, 49, 0.08) !important;
+  color: #3F3A31 !important;
+  border: 1px solid rgba(63, 58, 49, 0.08) !important;
+}
+
+@media (max-width: 520px) {
+  .category-card {
+    background-size: 78% auto !important;
+    background-position: center 31% !important;
+  }
+}
