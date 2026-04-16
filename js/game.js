@@ -179,18 +179,19 @@ export const swipe = {
   animateOut(type, callback) {
     const card = ui.questionCard;
     const map = {
-      match: { x: 440, y: -42, z: 140, rotate: 14, rotateY: 28, rotateX: -8 },
-      mismatch: { x: -440, y: -24, z: 110, rotate: -14, rotateY: -28, rotateX: -6 },
-      skip: { x: 0, y: -380, z: 170, rotate: 0, rotateY: 0, rotateX: 24 }
+      match: { x: 380, y: -18, rotate: 10, scale: 0.97 },
+      mismatch: { x: -380, y: -18, rotate: -10, scale: 0.97 },
+      skip: { x: 0, y: -300, rotate: 0, scale: 0.96 }
     };
     const config = map[type];
     if (!config) return;
     if (!state.settings.animations) return callback();
-    card.style.transition = 'transform 420ms cubic-bezier(.16,.96,.24,1), opacity 280ms ease, filter 280ms ease';
+    document.body.classList.remove('is-swiping');
+    card.style.transition = 'transform 260ms cubic-bezier(.2,.9,.2,1), opacity 220ms ease';
     card.style.opacity = '0';
-    card.style.filter = 'blur(6px)';
-    card.style.transform = `translate3d(${config.x}px, ${config.y}px, ${config.z}px) rotate(${config.rotate}deg) rotateY(${config.rotateY}deg) rotateX(${config.rotateX}deg) scale(0.92)`;
-    setTimeout(callback, 320);
+    card.style.filter = 'none';
+    card.style.transform = `translate3d(${config.x}px, ${config.y}px, 0) rotate(${config.rotate}deg) scale(${config.scale})`;
+    setTimeout(callback, 240);
   },
   onPointerDown(event) {
     if (!app.screens.game.classList.contains('screen-active')) return;
@@ -204,6 +205,8 @@ export const swipe = {
     state.swipe.currentY = event.clientY;
     ui.questionCard.setPointerCapture?.(event.pointerId);
     ui.questionCard.style.transition = 'none';
+    ui.questionCard.style.filter = 'none';
+    document.body.classList.add('is-swiping');
   },
   onPointerMove(event) {
     if (!state.swipe.active || state.swipe.pointerId !== event.pointerId) return;
@@ -218,9 +221,10 @@ export const swipe = {
           state.swipe.isAnimating = false;
           return;
         }
-        const rotate = deltaX / 18;
-        const stretch = 1 - Math.min(Math.abs(deltaX) / 1200, 0.03);
-        ui.questionCard.style.transform = `translate3d(${deltaX}px, ${deltaY * 0.18}px, 0) rotate(${rotate}deg) scale(${stretch})`;
+        const rotate = deltaX / 24;
+        const stretch = 1 - Math.min(Math.abs(deltaX) / 1600, 0.018);
+        ui.questionCard.style.filter = 'none';
+        ui.questionCard.style.transform = `translate3d(${deltaX}px, ${deltaY * 0.12}px, 0) rotate(${rotate}deg) scale(${stretch})`;
         this.updateHint(deltaX, deltaY);
         state.swipe.isAnimating = false;
       });
@@ -240,8 +244,10 @@ export const swipe = {
     if (deltaX > threshold || (deltaX > 45 && velocity > 2.4)) return game.answer('match');
     if (deltaX < -threshold || (deltaX < -45 && velocity > 2.4)) return game.answer('mismatch');
     if (deltaY < -110 && Math.abs(deltaX) < 100) return game.answer('skip');
-    ui.questionCard.style.transition = 'transform 220ms cubic-bezier(.2,.9,.2,1)';
+    ui.questionCard.style.transition = 'transform 180ms cubic-bezier(.2,.9,.2,1)';
     ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
+    ui.questionCard.style.filter = 'none';
+    document.body.classList.remove('is-swiping');
     this.updateHint(0, 0);
   },
   attachHandlers() {

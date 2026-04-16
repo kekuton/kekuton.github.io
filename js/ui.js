@@ -257,15 +257,15 @@ export const render = {
     ui.questionCard.style.filter = 'none';
     ui.questionCard.style.transition = 'none';
     ui.questionCard.style.transform = isInitial || !state.settings.animations
-      ? 'translate3d(0,0,0) rotate(0deg) rotateX(0deg) rotateY(0deg) scale(1)'
-      : `translate3d(${entryDirection * 18}px, 28px, -140px) rotate(${entryDirection * 2.5}deg) rotateX(${12 + (state.currentIndex % 3) * 2}deg) rotateY(${entryDirection * 18}deg) scale(0.94)`;
-    ui.questionCard.style.opacity = isInitial || !state.settings.animations ? '1' : '0';
+      ? 'translate3d(0,0,0) rotate(0deg) scale(1)'
+      : `translate3d(${entryDirection * 10}px, 18px, 0) rotate(${entryDirection * 1.2}deg) scale(0.985)`;
+    ui.questionCard.style.opacity = isInitial || !state.settings.animations ? '1' : '0.01';
     app.swipe.updateHint(0, 0);
     requestAnimationFrame(() => {
       ui.questionCard.style.transition = state.settings.animations
-        ? 'transform 520ms cubic-bezier(.16,.96,.24,1), opacity 300ms ease, filter 300ms ease'
+        ? 'transform 280ms cubic-bezier(.2,.9,.2,1), opacity 220ms ease'
         : 'none';
-      ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) rotateX(0deg) rotateY(0deg) scale(1)';
+      ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
       ui.questionCard.style.opacity = '1';
       ui.questionCard.style.filter = 'none';
     });
@@ -280,13 +280,13 @@ export const render = {
     if (state.currentIndex >= state.currentQuestions.length) return app.game.finish(true);
     const card = document.querySelector('.blitz-card');
     card.style.transition = 'none';
-    card.style.transform = state.settings.animations ? 'translate3d(0, 18px, -100px) rotateX(10deg) rotateY(12deg) scale(0.96)' : 'scale(1)';
-    card.style.opacity = state.settings.animations ? '0.4' : '1';
-    card.style.filter = state.settings.animations ? 'blur(4px)' : 'none';
+    card.style.transform = state.settings.animations ? 'translate3d(0, 14px, 0) scale(0.985)' : 'scale(1)';
+    card.style.opacity = state.settings.animations ? '0.08' : '1';
+    card.style.filter = 'none';
     ui.blitzQuestionText.textContent = state.currentQuestions[state.currentIndex];
     requestAnimationFrame(() => {
-      card.style.transition = state.settings.animations ? 'transform 220ms cubic-bezier(.16,.96,.24,1), opacity 180ms ease, filter 180ms ease' : 'none';
-      card.style.transform = 'translate3d(0,0,0) rotateX(0deg) rotateY(0deg) scale(1)';
+      card.style.transition = state.settings.animations ? 'transform 180ms cubic-bezier(.2,.9,.2,1), opacity 160ms ease' : 'none';
+      card.style.transform = 'translate3d(0,0,0) scale(1)';
       card.style.opacity = '1';
       card.style.filter = 'none';
     });
@@ -301,7 +301,8 @@ export const render = {
     ui.questionCard.style.removeProperty('--swipe-opacity');
     ui.questionCard.style.transition = '';
     ui.questionCard.style.filter = 'none';
-    ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) rotateX(0deg) rotateY(0deg) scale(1)';
+    ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
+    document.body.classList.remove('is-swiping');
     ui.questionCard.style.opacity = '1';
     if (ui.swipeHelp) ui.swipeHelp.textContent = SWIPE_HELP;
   },

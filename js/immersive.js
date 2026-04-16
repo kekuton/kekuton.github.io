@@ -186,10 +186,13 @@ export const motionFx = {
   lastFrame: 0,
   permissionRequested: false,
   orientationBound: false,
+  lowEnd: false,
+  lastDrawAt: 0,
   init() {
     if (!this.canvas) return;
-    this.ctx = this.canvas.getContext('2d');
+    this.ctx = this.canvas.getContext('2d', { alpha: true, desynchronized: true });
     if (!this.ctx) return;
+    this.lowEnd = this.detectLowEndDevice();
     this.resize();
     this.seedParticles();
     window.addEventListener('resize', () => this.resize());
@@ -205,6 +208,13 @@ export const motionFx = {
     this.setEnabled(state.settings.motionFx !== false);
     this.start();
   },
+  detectLowEndDevice() {
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+    const smallViewport = (window.innerWidth || 0) < 480;
+    const lowCpu = (navigator.hardwareConcurrency || 4) <= 4;
+    const lowMemory = (navigator.deviceMemory || 4) <= 4;
+    return !!(reducedMotion || (smallViewport && (lowCpu || lowMemory)) || (lowCpu && lowMemory));
+  },
   resize() {
     if (!this.canvas) return;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -218,17 +228,20 @@ export const motionFx = {
     if (!this.particles.length) this.seedParticles();
   },
   seedParticles() {
-    const count = Math.max(22, Math.min(40, Math.round((window.innerWidth || 360) / 18)));
+    const baseCount = this.lowEnd ? 10 : 16;
+    const maxCount = this.lowEnd ? 16 : 26;
+    const divisor = this.lowEnd ? 34 : 24;
+    const count = Math.max(baseCount, Math.min(maxCount, Math.round((window.innerWidth || 360) / divisor)));
     this.particles = Array.from({ length: count }, (_, index) => ({
       x: Math.random() * (this.width || window.innerWidth || 360),
       y: Math.random() * (this.height || window.innerHeight || 640),
-      size: 5 + Math.random() * 15,
-      speed: 0.16 + Math.random() * 0.42,
+      size: (this.lowEnd ? 4 : 5) + Math.random() * (this.lowEnd ? 9 : 13),
+      speed: 0.12 + Math.random() * (this.lowEnd ? 0.26 : 0.34),
       drift: (Math.random() - 0.5) * 0.7,
       sway: 0.5 + Math.random() * 1.4,
       phase: Math.random() * Math.PI * 2,
       rot: Math.random() * Math.PI * 2,
-      rotSpeed: (Math.random() - 0.5) * 0.014,
+      rotSpeed: (Math.random() - 0.5) * (this.lowEnd ? 0.008 : 0.012),
       depth: 0.55 + Math.random() * 0.9,
       alpha: 0.12 + Math.random() * 0.22,
       shape: ['petal', 'star', 'diamond', 'orb'][index % 4],
@@ -287,9 +300,9 @@ export const motionFx = {
   },
   drawParticle(particle, time) {
     const ctx = this.ctx;
-    const offsetX = this.tiltX * 14 * particle.depth;
-    const offsetY = this.tiltY * 9 * particle.depth;
-    const x = particle.x + offsetX + Math.sin(time * 0.00075 * particle.sway + particle.phase) * 10 * particle.depth;
+    const offsetX = this.tiltX * (this.lowEnd ? 8 : 12) * particle.depth;
+    const offsetY = this.tiltY * (this.lowEnd ? 5 : 8) * particle.depth;
+    const x = particle.x + offsetX + Math.sin(time * 0.00075 * particle.sway + particle.phase) * (this.lowEnd ? 6 : 9) * particle.depth;
     const y = particle.y + offsetY;
     ctx.save();
     ctx.translate(x, y);
@@ -339,7 +352,13 @@ export const motionFx = {
       this.raf = 0;
       return;
     }
-    const dt = Math.min(32, Math.max(10, timestamp - (this.lastFrame || timestamp)));
+    const minFrameGap = this.lowEnd || state.swipe?.dragging ? 30 : 20;
+    if (timestamp - this.lastDrawAt < minFrameGap) {
+      this.raf = window.requestAnimationFrame((next) => this.frame(next));
+      return;
+    }
+    this.lastDrawAt = timestamp;
+    const dt = Math.min(28, Math.max(10, timestamp - (this.lastFrame || timestamp)));
     this.lastFrame = timestamp;
     this.tiltX = lerp(this.tiltX, this.targetTiltX, 0.06);
     this.tiltY = lerp(this.tiltY, this.targetTiltY, 0.06);

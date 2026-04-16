@@ -281,7 +281,11 @@ body.light {
 
 .question-text {
   font-size: clamp(28px, 5.8vw, 48px);
-  max-width: 14ch;
+  max-width: 18ch;
+  width: 100%;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+  text-wrap: balance;
 }
 
 .results-card {

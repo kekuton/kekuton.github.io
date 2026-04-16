@@ -6,7 +6,7 @@
   height: 100%;
   pointer-events: none;
   z-index: 1;
-  opacity: 0.92;
+  opacity: 0.54;
   mix-blend-mode: screen;
   transition: opacity 220ms ease;
 }
@@ -31,7 +31,9 @@ body.light .motion-canvas {
   transform-style: preserve-3d;
   transform-origin: center center;
   backface-visibility: hidden;
-  will-change: transform, opacity, filter;
+  will-change: transform, opacity;
+  contain: layout paint;
+  isolation: isolate;
 }
 
 .question-card::after,
@@ -42,7 +44,7 @@ body.light .motion-canvas {
   border-radius: inherit;
   pointer-events: none;
   background: linear-gradient(135deg, rgba(255,255,255,.22), rgba(255,255,255,0) 34%, rgba(255,255,255,.1) 62%, rgba(255,255,255,.18));
-  opacity: 0.68;
+  opacity: 0.22;
   transform: translateZ(1px);
 }
 
@@ -59,5 +61,26 @@ body.light .motion-canvas {
   .blitz-card {
     transition: none !important;
     animation: none !important;
+  }
+}
+
+body.is-swiping .question-card::after,
+body.is-swiping .blitz-card::after {
+  opacity: 0.08;
+}
+
+@media (max-width: 640px) {
+  .motion-canvas {
+    opacity: 0.32;
+    mix-blend-mode: normal;
+  }
+
+  .question-stage {
+    perspective: 960px;
+  }
+
+  .question-card::after,
+  .blitz-card::after {
+    display: none;
   }
 }
