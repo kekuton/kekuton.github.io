@@ -19,6 +19,8 @@ const STORAGE_KEYS = {
 const DEFAULT_SETTINGS = {
   vibration: true,
   animations: true,
+  sound: true,
+  motionFx: true,
   roundSize: 8
 };
 
@@ -104,6 +106,7 @@ const ui = {
   favoriteQuestionBtn: document.getElementById('favoriteQuestionBtn'),
   questionText: document.getElementById('questionText'),
   questionCard: document.getElementById('questionCard'),
+  motionCanvas: document.getElementById('motionCanvas'),
   swipeHelp: document.getElementById('swipeHelp'),
   matchBtn: document.getElementById('matchBtn'),
   mismatchBtn: document.getElementById('mismatchBtn'),
@@ -156,6 +159,8 @@ const ui = {
 
   vibrationToggle: document.getElementById('vibrationToggle'),
   animationsToggle: document.getElementById('animationsToggle'),
+  soundToggle: document.getElementById('soundToggle'),
+  motionToggle: document.getElementById('motionToggle'),
   roundSizeSelect: document.getElementById('roundSizeSelect'),
   clearHistoryBtn: document.getElementById('clearHistoryBtn'),
   resetCustomBtn: document.getElementById('resetCustomBtn'),

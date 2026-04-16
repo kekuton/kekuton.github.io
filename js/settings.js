@@ -1,7 +1,7 @@
 import { app } from './core.js';
 import { render } from './ui.js';
 
-const { ui, state, data, router, storage, historyStore, fx, STORAGE_KEYS, notify } = app;
+const { ui, state, data, router, storage, historyStore, fx, audio, motionFx, STORAGE_KEYS, notify } = app;
 
 export const settings = {
   open() {
@@ -11,12 +11,18 @@ export const settings = {
   applyFromControls() {
     state.settings.vibration = !!ui.vibrationToggle?.checked;
     state.settings.animations = !!ui.animationsToggle?.checked;
+    state.settings.sound = !!ui.soundToggle?.checked;
+    state.settings.motionFx = !!ui.motionToggle?.checked;
     state.settings.roundSize = Number(ui.roundSizeSelect?.value || 8);
     data.saveSettings();
+    audio?.setEnabled?.(state.settings.sound);
+    motionFx?.setEnabled?.(state.settings.motionFx);
   },
   bind() {
     ui.vibrationToggle?.addEventListener('change', () => this.applyFromControls());
     ui.animationsToggle?.addEventListener('change', () => this.applyFromControls());
+    ui.soundToggle?.addEventListener('change', () => this.applyFromControls());
+    ui.motionToggle?.addEventListener('change', () => this.applyFromControls());
     ui.roundSizeSelect?.addEventListener('change', () => this.applyFromControls());
     ui.clearHistoryBtn?.addEventListener('click', () => {
       historyStore.clear();

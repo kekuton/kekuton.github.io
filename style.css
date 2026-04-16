@@ -8,3 +8,5 @@
 @import url('./styles/components.css');
 @import url('./styles/states.css');
 @import url('./styles/enhanced-ui.css');
+
+@import url('./styles/immersive.css');

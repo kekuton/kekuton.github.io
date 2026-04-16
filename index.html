@@ -21,6 +21,7 @@
   <div class="bg-stack" aria-hidden="true">
     <div class="bg-layer bg-layer-a active"></div>
     <div class="bg-layer bg-layer-b"></div>
+    <canvas class="motion-canvas" id="motionCanvas" aria-hidden="true"></canvas>
     <div class="bg-overlay"></div>
     <div class="bg-noise"></div>
   </div>
@@ -290,6 +291,28 @@
             </div>
             <label class="switch">
               <input type="checkbox" id="animationsToggle" />
+              <span class="switch-slider"></span>
+            </label>
+          </article>
+
+          <article class="settings-card">
+            <div>
+              <strong>Звук</strong>
+              <p>Лёгкий эмбиент и мягкий звук появления новой карточки.</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="soundToggle" />
+              <span class="switch-slider"></span>
+            </label>
+          </article>
+
+          <article class="settings-card">
+            <div>
+              <strong>Интерактивный фон</strong>
+              <p>Падающие лепестки и звёзды с реакцией на наклон телефона.</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="motionToggle" />
               <span class="switch-slider"></span>
             </label>
           </article>

@@ -2,8 +2,9 @@ import { app } from './core.js';
 import './ui.js';
 import './game.js';
 import './settings.js';
+import './immersive.js';
 
-const { ui, state, router, theme, data, background, render, loading, swipe, initTelegram, modals, premium, settings, game, fx, storage, STORAGE_KEYS, ONBOARDING_STEPS, helpers, CATEGORY_META, meta, notify } = app;
+const { ui, state, router, theme, data, background, render, loading, swipe, initTelegram, modals, premium, settings, game, fx, audio, motionFx, storage, STORAGE_KEYS, ONBOARDING_STEPS, helpers, CATEGORY_META, meta, notify } = app;
 
 function finishOnboarding() {
   storage.setRaw(STORAGE_KEYS.onboardingSeen, 'yes');
@@ -172,6 +173,10 @@ async function init() {
   render.achievements();
   render.homeDashboard();
   render.onboarding();
+  motionFx?.init?.();
+  audio?.init?.();
+  audio?.setEnabled?.(state.settings.sound !== false);
+  motionFx?.setEnabled?.(state.settings.motionFx !== false);
   swipe.preventDoubleTapZoom();
   await initTelegram();
   swipe.attachHandlers();

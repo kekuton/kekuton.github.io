@@ -179,17 +179,18 @@ export const swipe = {
   animateOut(type, callback) {
     const card = ui.questionCard;
     const map = {
-      match: { x: 420, y: -20, rotate: 16 },
-      mismatch: { x: -420, y: -20, rotate: -16 },
-      skip: { x: 0, y: -360, rotate: 0 }
+      match: { x: 440, y: -42, z: 140, rotate: 14, rotateY: 28, rotateX: -8 },
+      mismatch: { x: -440, y: -24, z: 110, rotate: -14, rotateY: -28, rotateX: -6 },
+      skip: { x: 0, y: -380, z: 170, rotate: 0, rotateY: 0, rotateX: 24 }
     };
     const config = map[type];
     if (!config) return;
     if (!state.settings.animations) return callback();
-    card.style.transition = 'transform 320ms cubic-bezier(.2,.9,.2,1), opacity 260ms ease';
+    card.style.transition = 'transform 420ms cubic-bezier(.16,.96,.24,1), opacity 280ms ease, filter 280ms ease';
     card.style.opacity = '0';
-    card.style.transform = `translate3d(${config.x}px, ${config.y}px, 0) rotate(${config.rotate}deg) scale(0.96)`;
-    setTimeout(callback, 280);
+    card.style.filter = 'blur(6px)';
+    card.style.transform = `translate3d(${config.x}px, ${config.y}px, ${config.z}px) rotate(${config.rotate}deg) rotateY(${config.rotateY}deg) rotateX(${config.rotateX}deg) scale(0.92)`;
+    setTimeout(callback, 320);
   },
   onPointerDown(event) {
     if (!app.screens.game.classList.contains('screen-active')) return;

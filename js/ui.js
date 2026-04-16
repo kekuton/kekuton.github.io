@@ -252,19 +252,24 @@ export const render = {
       ui.favoriteQuestionBtn.classList.toggle('is-active', active);
       ui.favoriteQuestionBtn.textContent = active ? '★' : '☆';
     }
-    ui.questionCard.classList.remove('card-fly-left', 'card-fly-right', 'card-fly-up', 'card-return');
-    if (!isInitial && state.settings.animations) ui.questionCard.classList.add('card-enter');
+    const entryDirection = state.currentIndex % 2 === 0 ? 1 : -1;
+    ui.questionCard.classList.remove('card-enter', 'card-fly-left', 'card-fly-right', 'card-fly-up', 'card-return');
+    ui.questionCard.style.filter = 'none';
     ui.questionCard.style.transition = 'none';
-    ui.questionCard.style.transform = isInitial || !state.settings.animations ? 'translateY(0) scale(1)' : 'translateY(22px) scale(0.98)';
+    ui.questionCard.style.transform = isInitial || !state.settings.animations
+      ? 'translate3d(0,0,0) rotate(0deg) rotateX(0deg) rotateY(0deg) scale(1)'
+      : `translate3d(${entryDirection * 18}px, 28px, -140px) rotate(${entryDirection * 2.5}deg) rotateX(${12 + (state.currentIndex % 3) * 2}deg) rotateY(${entryDirection * 18}deg) scale(0.94)`;
     ui.questionCard.style.opacity = isInitial || !state.settings.animations ? '1' : '0';
     app.swipe.updateHint(0, 0);
     requestAnimationFrame(() => {
       ui.questionCard.style.transition = state.settings.animations
-        ? 'transform 320ms cubic-bezier(.2,.9,.2,1), opacity 260ms ease'
+        ? 'transform 520ms cubic-bezier(.16,.96,.24,1), opacity 300ms ease, filter 300ms ease'
         : 'none';
-      ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
+      ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) rotateX(0deg) rotateY(0deg) scale(1)';
       ui.questionCard.style.opacity = '1';
+      ui.questionCard.style.filter = 'none';
     });
+    app.audio?.playCardTransition?.(state.currentCategory?.id === 'Блиц' ? 'blitz' : 'question');
   },
   blitzUI() {
     ui.blitzTimerDisplay.textContent = state.blitzTimeLeft;
@@ -275,14 +280,17 @@ export const render = {
     if (state.currentIndex >= state.currentQuestions.length) return app.game.finish(true);
     const card = document.querySelector('.blitz-card');
     card.style.transition = 'none';
-    card.style.transform = state.settings.animations ? 'scale(0.98)' : 'scale(1)';
-    card.style.opacity = state.settings.animations ? '0.5' : '1';
+    card.style.transform = state.settings.animations ? 'translate3d(0, 18px, -100px) rotateX(10deg) rotateY(12deg) scale(0.96)' : 'scale(1)';
+    card.style.opacity = state.settings.animations ? '0.4' : '1';
+    card.style.filter = state.settings.animations ? 'blur(4px)' : 'none';
     ui.blitzQuestionText.textContent = state.currentQuestions[state.currentIndex];
     requestAnimationFrame(() => {
-      card.style.transition = state.settings.animations ? 'transform 150ms ease, opacity 150ms ease' : 'none';
-      card.style.transform = 'scale(1)';
+      card.style.transition = state.settings.animations ? 'transform 220ms cubic-bezier(.16,.96,.24,1), opacity 180ms ease, filter 180ms ease' : 'none';
+      card.style.transform = 'translate3d(0,0,0) rotateX(0deg) rotateY(0deg) scale(1)';
       card.style.opacity = '1';
+      card.style.filter = 'none';
     });
+    app.audio?.playCardTransition?.('blitz');
   },
   resetQuestionCard() {
     state.swipe.active = false;
@@ -292,13 +300,16 @@ export const render = {
     ui.questionCard.dataset.swipe = 'none';
     ui.questionCard.style.removeProperty('--swipe-opacity');
     ui.questionCard.style.transition = '';
-    ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
+    ui.questionCard.style.filter = 'none';
+    ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) rotateX(0deg) rotateY(0deg) scale(1)';
     ui.questionCard.style.opacity = '1';
     if (ui.swipeHelp) ui.swipeHelp.textContent = SWIPE_HELP;
   },
   syncSettingsUI() {
     if (ui.vibrationToggle) ui.vibrationToggle.checked = !!state.settings.vibration;
     if (ui.animationsToggle) ui.animationsToggle.checked = !!state.settings.animations;
+    if (ui.soundToggle) ui.soundToggle.checked = state.settings.sound !== false;
+    if (ui.motionToggle) ui.motionToggle.checked = state.settings.motionFx !== false;
     if (ui.roundSizeSelect) ui.roundSizeSelect.value = String(state.settings.roundSize || 8);
   }
 };
