@@ -1,0 +1,198 @@
+:root {
+  --pink-pinch: #EF55A5;
+  --pink-pinch-soft: rgba(239, 85, 165, 0.22);
+  --pink-pinch-strong: rgba(239, 85, 165, 0.82);
+  --lime-wedge: #CCD537;
+  --lime-wedge-soft: rgba(204, 213, 55, 0.22);
+  --lime-wedge-strong: rgba(204, 213, 55, 0.84);
+  --plum-ink: #43233d;
+  --olive-ink: #5f6820;
+  --text: #fffdf8;
+  --muted: rgba(255, 253, 248, 0.82);
+  --bg: linear-gradient(145deg, #f7bdd8 0%, #ef55a5 26%, #d76ea7 44%, #ccd537 76%, #e4eb86 100%);
+  --surface: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.10));
+  --surface-strong: linear-gradient(180deg, rgba(255,255,255,0.26), rgba(255,255,255,0.14));
+  --card-bg: linear-gradient(160deg, rgba(239, 85, 165, 0.30) 0%, rgba(255,255,255,0.16) 32%, rgba(204, 213, 55, 0.24) 100%);
+  --card-border: rgba(255,255,255,0.24);
+  --card-shadow: 0 20px 42px rgba(102, 41, 76, 0.22);
+  --card-shadow-soft: 0 12px 28px rgba(102, 41, 76, 0.16);
+  --btn-dark: #5a2346;
+  --btn-dark-2: #768324;
+  --surface-dark: #4f2341;
+  --shadow: 0 22px 48px rgba(98, 43, 78, 0.24);
+  --overlay-strong: rgba(123, 37, 90, 0.22);
+  --overlay-soft: rgba(129, 139, 32, 0.16);
+  --glass-border: rgba(255,255,255,0.24);
+  --glass-highlight: rgba(255,255,255,0.18);
+}
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,0.26), transparent 28%),
+    radial-gradient(circle at 82% 18%, rgba(255,255,255,0.16), transparent 22%),
+    linear-gradient(145deg, #f7bdd8 0%, #ef55a5 28%, #d96bab 49%, #ccd537 78%, #edf39b 100%);
+}
+
+body::before {
+  background:
+    radial-gradient(circle at 12% 16%, rgba(255,255,255,0.24), transparent 18%),
+    radial-gradient(circle at 84% 22%, rgba(255,255,255,0.16), transparent 18%),
+    radial-gradient(circle at 18% 82%, rgba(239, 85, 165, 0.16), transparent 24%),
+    radial-gradient(circle at 86% 78%, rgba(204, 213, 55, 0.18), transparent 26%),
+    linear-gradient(135deg, transparent 0 42%, rgba(255,255,255,0.08) 42% 58%, transparent 58% 100%);
+  opacity: 1;
+}
+
+body::after {
+  background:
+    linear-gradient(25deg, rgba(255,255,255,0.10) 0 14%, transparent 14% 100%),
+    linear-gradient(-20deg, rgba(255,255,255,0.08) 0 12%, transparent 12% 100%),
+    radial-gradient(circle at 52% 44%, rgba(255,255,255,0.10), transparent 36%);
+  opacity: .65;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.bg-overlay {
+  background:
+    linear-gradient(180deg, rgba(118, 40, 88, 0.20) 0%, rgba(239,85,165,0.10) 30%, rgba(204,213,55,0.08) 72%, rgba(95,104,32,0.16) 100%),
+    radial-gradient(circle at 24% 16%, rgba(255,255,255,.16), transparent 24%),
+    radial-gradient(circle at 80% 18%, rgba(255,255,255,.10), transparent 22%),
+    radial-gradient(circle at 50% 120%, rgba(255,255,255,.06), transparent 34%);
+}
+
+.brand-pill,
+.hero-card,
+.intro-card,
+.results-card,
+.modal-card,
+.quick-card,
+.category-card,
+.history-item,
+.history-empty,
+.stat-box,
+.result-panel,
+.achievement-card,
+.settings-card,
+.question-card,
+.feature-chip,
+.icon-btn,
+.timer-badge,
+.progress-badge,
+.turn-badge,
+.secondary-btn,
+.answer-btn,
+.settings-action-btn,
+.history-search-input,
+.custom-question-input,
+.settings-select {
+  background: var(--card-bg);
+  border-color: var(--card-border);
+  box-shadow: var(--card-shadow);
+}
+
+.hero-card,
+.intro-card,
+.results-card,
+.modal-card,
+.question-card,
+.settings-card,
+.result-panel,
+.stat-box,
+.history-item,
+.feature-chip,
+.quick-card,
+.category-card {
+  backdrop-filter: blur(18px) saturate(125%);
+  -webkit-backdrop-filter: blur(18px) saturate(125%);
+}
+
+.brand-pill,
+.eyebrow,
+.category-badge,
+.quick-badge,
+.progress-badge,
+.timer-badge,
+.turn-badge {
+  background: linear-gradient(135deg, rgba(239,85,165,0.54), rgba(204,213,55,0.42));
+  border: 1px solid rgba(255,255,255,0.20);
+  color: #fffdf8;
+}
+
+.category-icon,
+.intro-illu,
+.quick-icon-svg,
+.achievement-art {
+  background: linear-gradient(145deg, rgba(239,85,165,0.42), rgba(204,213,55,0.38));
+  border-color: rgba(255,255,255,0.20);
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #6b2952, #98a62c);
+  color: #fffdf8;
+  box-shadow: 0 18px 34px rgba(100, 40, 77, 0.24), inset 0 1px 0 rgba(255,255,255,0.14);
+}
+
+.secondary-btn,
+.answer-btn,
+.settings-action-btn,
+.icon-btn {
+  background: linear-gradient(135deg, rgba(239,85,165,0.28), rgba(204,213,55,0.22));
+  color: #fffdf8;
+}
+
+.question-card::before,
+.category-card::before,
+.primary-btn::before,
+.secondary-btn::before,
+.answer-btn::before {
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.14) 45%, transparent 100%);
+}
+
+.category-card:nth-child(odd),
+.quick-card:nth-child(odd),
+.feature-chip:nth-child(odd) {
+  background: linear-gradient(160deg, rgba(239,85,165,0.38) 0%, rgba(255,255,255,0.14) 42%, rgba(204,213,55,0.18) 100%);
+}
+
+.category-card:nth-child(even),
+.quick-card:nth-child(even),
+.feature-chip:nth-child(even),
+.stat-box:nth-child(even) {
+  background: linear-gradient(160deg, rgba(204,213,55,0.34) 0%, rgba(255,255,255,0.14) 45%, rgba(239,85,165,0.18) 100%);
+}
+
+.category-card::after {
+  background: linear-gradient(180deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 34%, rgba(86, 36, 67, .10) 100%);
+}
+
+.category-card-cover::before {
+  background: linear-gradient(180deg, rgba(255,255,255,.04) 0%, rgba(255,255,255,0) 26%, rgba(84, 34, 65, .16) 64%, rgba(84, 34, 65, .34) 100%);
+}
+
+body.light {
+  --text: #4d2440;
+  --muted: rgba(77, 36, 64, 0.76);
+  --bg: linear-gradient(145deg, #fff1f7 0%, #ffd2e8 32%, #f2f5c2 100%);
+  --card-bg: linear-gradient(160deg, rgba(255,255,255,0.78) 0%, rgba(255,237,247,0.72) 45%, rgba(242,245,194,0.74) 100%);
+  --card-border: rgba(212, 116, 167, 0.22);
+  --card-shadow: 0 18px 36px rgba(178, 116, 147, 0.14);
+  --card-shadow-soft: 0 10px 24px rgba(178, 116, 147, 0.10);
+  --btn-dark: #c8458f;
+  --btn-dark-2: #adb72b;
+  --surface-dark: #c8458f;
+}
+
+body.light .primary-btn,
+body.light .secondary-btn,
+body.light .answer-btn,
+body.light .settings-action-btn,
+body.light .icon-btn,
+body.light .brand-pill,
+body.light .eyebrow,
+body.light .category-badge,
+body.light .progress-badge,
+body.light .timer-badge,
+body.light .turn-badge {
+  color: #fffdf8;
+}
