@@ -42,8 +42,10 @@ body.category-finance .bg-overlay { background: linear-gradient(180deg, var(--ov
   --shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
   --radius-xl: 32px;
   --radius-lg: 24px;
-  --safe-top: max(20px, env(safe-area-inset-top));
-  --safe-bottom: max(20px, env(safe-area-inset-bottom));
+  --tg-safe-top: 0px;
+  --tg-safe-bottom: 0px;
+  --safe-top: max(var(--tg-safe-top), env(safe-area-inset-top));
+  --safe-bottom: max(var(--tg-safe-bottom), env(safe-area-inset-bottom));
 }
 
 * {

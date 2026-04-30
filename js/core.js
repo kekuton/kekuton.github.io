@@ -544,12 +544,8 @@ const modals = {
 };
 
 const router = {
-  applyScreenState(screenName) {
-    document.body.dataset.screen = screenName || 'home';
-  },
   syncBackButton(screenName) {
-    const minimalGameUI = screenName === 'game' || screenName === 'blitz';
-    const showBack = (!ROOT_SCREENS.includes(screenName) || !!state.activeModal) && !minimalGameUI;
+    const showBack = !ROOT_SCREENS.includes(screenName) || !!state.activeModal;
     ui.backBtn?.classList.toggle('hidden', !showBack);
     if (tg?.BackButton) {
       if (showBack) tg.BackButton.show();
@@ -566,7 +562,6 @@ const router = {
     else if (state.navStack[state.navStack.length - 1] !== name) state.navStack.push(name);
     if (ROOT_SCREENS.includes(name)) background.apply('');
     else if (state.currentCategory) background.apply(state.currentCategory.id);
-    this.applyScreenState(name);
     this.syncBackButton(name);
   },
   current() {
@@ -575,7 +570,6 @@ const router = {
   back() {
     if (state.activeModal) {
       modals.close(state.activeModal);
-      this.applyScreenState(this.current());
       this.syncBackButton(this.current());
       return;
     }
@@ -591,7 +585,6 @@ const router = {
     });
     if (ROOT_SCREENS.includes(prev)) background.apply('');
     else if (state.currentCategory) background.apply(state.currentCategory.id);
-    this.applyScreenState(prev);
     this.syncBackButton(prev);
   }
 };
@@ -616,6 +609,12 @@ const theme = {
     }
     if (ui.themeBtnIcon) ui.themeBtnIcon.innerHTML = this.icon(resolved === 'light' ? 'dark' : 'light');
     if (tg?.setHeaderColor) tg.setHeaderColor(resolved === 'light' ? '#efe7ff' : '#9f7aea');
+    if (tg?.setBackgroundColor) {
+      try { tg.setBackgroundColor(resolved === 'light' ? '#efe7ff' : '#140f1f'); } catch {}
+    }
+    if (tg?.setBottomBarColor) {
+      try { tg.setBottomBarColor(resolved === 'light' ? '#efe7ff' : '#140f1f'); } catch {}
+    }
   },
   init() {
     const saved = storage.getRaw(STORAGE_KEYS.theme);
@@ -740,13 +739,52 @@ const premium = {
   }
 };
 
+function applyTelegramViewport() {
+  if (!tg) return;
+  const root = document.documentElement;
+  const contentInset = tg.contentSafeAreaInset || tg.safeAreaInset || {};
+  const top = Number.isFinite(contentInset.top) ? contentInset.top : 0;
+  const bottom = Number.isFinite(contentInset.bottom) ? contentInset.bottom : 0;
+  root.style.setProperty('--tg-safe-top', `${top}px`);
+  root.style.setProperty('--tg-safe-bottom', `${bottom}px`);
+}
+
+function requestTelegramFullscreen() {
+  if (!tg) return;
+  try {
+    if (typeof tg.requestFullscreen === 'function' && !tg.isFullscreen) {
+      tg.requestFullscreen();
+    }
+  } catch {}
+  try {
+    if (typeof tg.expand === 'function') tg.expand();
+  } catch {}
+}
+
 async function initTelegram() {
   if (!tg) return;
   tg.ready();
-  tg.expand();
+  applyTelegramViewport();
+  requestTelegramFullscreen();
   if (typeof tg.disableVerticalSwipes === 'function') {
     try { tg.disableVerticalSwipes(); } catch {}
   }
+  if (typeof tg.onEvent === 'function') {
+    try {
+      tg.onEvent('contentSafeAreaChanged', applyTelegramViewport);
+      tg.onEvent('safeAreaChanged', applyTelegramViewport);
+      tg.onEvent('viewportChanged', applyTelegramViewport);
+    } catch {}
+  }
+  const fullscreenKick = () => {
+    requestTelegramFullscreen();
+    document.removeEventListener('touchstart', fullscreenKick, true);
+    document.removeEventListener('pointerdown', fullscreenKick, true);
+    document.removeEventListener('click', fullscreenKick, true);
+  };
+  document.addEventListener('touchstart', fullscreenKick, true);
+  document.addEventListener('pointerdown', fullscreenKick, true);
+  document.addEventListener('click', fullscreenKick, true);
   if (tg.BackButton) tg.BackButton.onClick(() => router.back());
 }
 
@@ -777,5 +815,7 @@ Object.assign(app, {
   data,
   premium,
   meta,
-  initTelegram
+  initTelegram,
+  requestTelegramFullscreen,
+  applyTelegramViewport
 });
