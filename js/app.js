@@ -33,10 +33,12 @@ function bindEvents() {
     router.show('game');
     render.gameQuestion(true);
   });
-  ui.favoritesBtn?.addEventListener('click', () => {
+  const openFavorites = () => {
     render.favorites();
     router.show('favorites');
-  });
+  };
+  ui.favoritesBtn?.addEventListener('click', openFavorites);
+  ui.openFavoritesBtn?.addEventListener('click', openFavorites);
   ui.achievementsBtn?.addEventListener('click', () => {
     render.achievements();
     router.show('achievements');

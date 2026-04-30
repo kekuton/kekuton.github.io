@@ -69,6 +69,7 @@ const ui = {
   dailyQuestionText: document.getElementById('dailyQuestionText'),
   dailyQuestionBtn: document.getElementById('dailyQuestionBtn'),
   favoritesBtn: document.getElementById('favoritesBtn'),
+  openFavoritesBtn: document.getElementById('openFavoritesBtn'),
   favoritesCountText: document.getElementById('favoritesCountText'),
   challengeProgressText: document.getElementById('challengeProgressText'),
   challengeHintText: document.getElementById('challengeHintText'),

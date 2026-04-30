@@ -1,0 +1,318 @@
+:root{
+  --surface-clean: rgba(255,255,255,.88);
+  --surface-clean-dark: rgba(15,23,42,.78);
+  --line-soft: rgba(255,255,255,.14);
+  --line-dark: rgba(15,23,42,.08);
+  --shadow-clean: 0 20px 48px rgba(7, 10, 24, .18);
+}
+
+body{
+  color:#f8fafc;
+}
+body.light{ color:#0f172a; }
+
+.app-shell{
+  max-width: 920px;
+}
+
+.topbar{
+  margin-bottom: 14px;
+}
+
+.brand-pill,
+.hero-card,
+.intro-card,
+.results-card,
+.modal-card,
+.question-card,
+.category-card,
+.feature-chip,
+.settings-card,
+.history-item,
+.history-empty,
+.stat-box,
+.quick-card,
+.progress-badge,
+.timer-badge,
+.turn-badge,
+.icon-btn,
+.secondary-btn,
+.custom-question-input,
+.history-search-input,
+.settings-select{
+  background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.09));
+  border: 1px solid rgba(255,255,255,.14);
+  box-shadow: var(--shadow-clean);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+}
+body.light .brand-pill,
+body.light .hero-card,
+body.light .intro-card,
+body.light .results-card,
+body.light .modal-card,
+body.light .question-card,
+body.light .category-card,
+body.light .feature-chip,
+body.light .settings-card,
+body.light .history-item,
+body.light .history-empty,
+body.light .stat-box,
+body.light .quick-card,
+body.light .progress-badge,
+body.light .timer-badge,
+body.light .turn-badge,
+body.light .icon-btn,
+body.light .secondary-btn,
+body.light .custom-question-input,
+body.light .history-search-input,
+body.light .settings-select{
+  background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(248,250,252,.80));
+  border-color: rgba(15,23,42,.08);
+}
+
+.hero-card,
+.results-card,
+.intro-card,
+.modal-card{
+  min-height: unset;
+  padding: 24px;
+}
+.hero-card h1{
+  max-width: 11ch;
+  font-size: clamp(34px, 7vw, 58px);
+}
+.hero-card p,
+.section-head p,
+.results-message,
+.quick-card p,
+.history-detail,
+.settings-card p,
+.intro-subtext{
+  color: rgba(255,255,255,.78);
+}
+body.light .hero-card p,
+body.light .section-head p,
+body.light .results-message,
+body.light .quick-card p,
+body.light .history-detail,
+body.light .settings-card p,
+body.light .intro-subtext{
+  color: #475569;
+}
+
+.feature-row,
+.quick-grid,
+.categories-grid,
+.settings-list,
+.history-list,
+.achievement-screen-grid{
+  gap: 14px;
+}
+.quick-grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 14px;
+}
+.quick-card{
+  padding: 18px;
+  border-radius: 24px;
+  min-height: 200px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.quick-card strong{
+  display:block;
+  font-size: 18px;
+  line-height: 1.18;
+  margin-bottom: 8px;
+}
+.quick-card p{
+  margin: 0;
+}
+.quick-card-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+}
+.quick-badge{
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  opacity: .85;
+}
+.quick-icon-svg{
+  width: 44px;
+  height: 44px;
+  display:grid;
+  place-items:center;
+  border-radius: 14px;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.14);
+}
+body.light .quick-icon-svg{
+  background: rgba(99,102,241,.08);
+  border-color: rgba(99,102,241,.12);
+}
+.daily-card{
+  background: linear-gradient(180deg, rgba(168,85,247,.28), rgba(236,72,153,.16));
+}
+body.light .daily-card{
+  background: linear-gradient(180deg, rgba(168,85,247,.14), rgba(236,72,153,.08));
+}
+
+.categories-grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items:stretch;
+}
+.category-card{
+  min-height: 208px;
+  padding: 18px;
+  border-radius: 26px;
+  text-align:left;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.category-card h3{
+  margin: 0;
+  font-size: clamp(22px, 4.2vw, 30px);
+}
+.category-copy p{
+  margin: 8px 0 0;
+  color: rgba(255,255,255,.78);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+body.light .category-copy p{ color:#475569; }
+.category-poster{
+  object-fit: cover;
+}
+
+.game-head{
+  align-items:center;
+  margin-bottom: 12px;
+}
+.progress-meta-row{
+  display:flex;
+  justify-content:space-between;
+  gap: 12px;
+  font-size: 13px;
+  margin: -8px 2px 14px;
+  color: rgba(255,255,255,.78);
+}
+body.light .progress-meta-row{ color:#475569; }
+.question-stage{
+  position: relative;
+  margin-top: 8px;
+  padding-bottom: 10px;
+}
+.stack-card{
+  min-height: min(52dvh, 520px);
+}
+.question-card,
+.blitz-card{
+  min-height: min(52dvh, 520px);
+  padding: 24px;
+  border-radius: 30px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.question-text{
+  width: 100%;
+  margin: 0;
+  font-size: clamp(28px, 5.8vw, 46px);
+  line-height: 1.14;
+  letter-spacing: -.03em;
+  overflow-wrap:anywhere;
+}
+.swipe-help{
+  margin-top: 12px;
+  text-align:center;
+  color: rgba(255,255,255,.72);
+}
+body.light .swipe-help{ color:#64748b; }
+
+.settings-card,
+.history-item,
+.stat-box,
+.result-panel{
+  border-radius: 22px;
+}
+.settings-card{
+  padding: 18px;
+}
+.settings-card strong,
+.stat-box strong{
+  display:block;
+}
+.results-breakdown,
+.results-achievements{
+  display:grid;
+  gap: 12px;
+}
+.result-panel{
+  padding: 16px 18px;
+  background: rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.12);
+}
+body.light .result-panel{
+  background: rgba(255,255,255,.76);
+  border-color: rgba(15,23,42,.06);
+}
+.achievement-card{
+  padding: 14px;
+  border-radius: 24px;
+}
+
+.screen{
+  filter:none !important;
+}
+.question-card::before,
+.question-card::after{
+  display:none !important;
+}
+.question-card.card-enter{
+  animation: cardInFixed .26s ease both;
+}
+@keyframes cardInFixed{
+  from{ opacity:0; transform: translateY(10px) scale(.985); }
+  to{ opacity:1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 720px){
+  .topbar-actions{
+    gap: 6px;
+    padding: 4px;
+  }
+  .topbar-actions .icon-btn{
+    width: 40px;
+    height: 40px;
+    border-radius: 13px;
+  }
+  .hero-card,
+  .results-card,
+  .intro-card,
+  .modal-card{
+    padding: 20px;
+  }
+  .quick-grid,
+  .categories-grid{
+    grid-template-columns: 1fr;
+  }
+  .question-card,
+  .blitz-card,
+  .stack-card{
+    min-height: min(48dvh, 460px);
+  }
+  .question-text{
+    font-size: clamp(24px, 7vw, 36px);
+  }
+}
