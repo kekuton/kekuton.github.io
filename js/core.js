@@ -544,8 +544,12 @@ const modals = {
 };
 
 const router = {
+  applyScreenState(screenName) {
+    document.body.dataset.screen = screenName || 'home';
+  },
   syncBackButton(screenName) {
-    const showBack = !ROOT_SCREENS.includes(screenName) || !!state.activeModal;
+    const minimalGameUI = screenName === 'game' || screenName === 'blitz';
+    const showBack = (!ROOT_SCREENS.includes(screenName) || !!state.activeModal) && !minimalGameUI;
     ui.backBtn?.classList.toggle('hidden', !showBack);
     if (tg?.BackButton) {
       if (showBack) tg.BackButton.show();
@@ -562,6 +566,7 @@ const router = {
     else if (state.navStack[state.navStack.length - 1] !== name) state.navStack.push(name);
     if (ROOT_SCREENS.includes(name)) background.apply('');
     else if (state.currentCategory) background.apply(state.currentCategory.id);
+    this.applyScreenState(name);
     this.syncBackButton(name);
   },
   current() {
@@ -570,6 +575,7 @@ const router = {
   back() {
     if (state.activeModal) {
       modals.close(state.activeModal);
+      this.applyScreenState(this.current());
       this.syncBackButton(this.current());
       return;
     }
@@ -585,6 +591,7 @@ const router = {
     });
     if (ROOT_SCREENS.includes(prev)) background.apply('');
     else if (state.currentCategory) background.apply(state.currentCategory.id);
+    this.applyScreenState(prev);
     this.syncBackButton(prev);
   }
 };

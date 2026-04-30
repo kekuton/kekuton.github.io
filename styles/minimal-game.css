@@ -1,0 +1,65 @@
+
+body[data-screen='game'] .topbar,
+body[data-screen='blitz'] .topbar {
+  display: none !important;
+}
+
+body[data-screen='game'] #gameScreen,
+body[data-screen='blitz'] #blitzScreen {
+  padding-top: max(14px, env(safe-area-inset-top));
+}
+
+body[data-screen='game'] #gameScreen .game-head,
+body[data-screen='game'] #gameScreen .progress-bar,
+body[data-screen='game'] #gameScreen .progress-meta-row,
+body[data-screen='game'] #gameScreen .swipe-help,
+body[data-screen='game'] #gameScreen .answer-actions,
+body[data-screen='blitz'] #blitzScreen .game-head,
+body[data-screen='blitz'] #blitzScreen .stats-grid,
+body[data-screen='blitz'] #blitzScreen .answer-actions {
+  display: none !important;
+}
+
+body[data-screen='game'] #gameScreen.screen-active,
+body[data-screen='blitz'] #blitzScreen.screen-active {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+body[data-screen='game'] #gameScreen .question-stage,
+body[data-screen='blitz'] #blitzScreen .question-card.blitz-card {
+  margin: 0;
+}
+
+body[data-screen='game'] #gameScreen .question-stage {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body[data-screen='game'] #gameScreen .stack-card {
+  display: none !important;
+}
+
+body[data-screen='game'] #gameScreen #questionCard,
+body[data-screen='blitz'] #blitzScreen .question-card.blitz-card {
+  width: 100%;
+  min-height: clamp(360px, 62vh, 620px);
+  margin: 0;
+}
+
+body[data-screen='game'] #gameScreen #questionCard .swipe-badge {
+  display: none !important;
+}
+
+body[data-screen='game'] #gameScreen .question-text,
+body[data-screen='blitz'] #blitzScreen .question-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  text-align: center;
+}
