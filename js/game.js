@@ -160,35 +160,15 @@ export const game = {
 };
 
 export const swipe = {
-  getActiveContext() {
-    if (app.screens.blitz.classList.contains('screen-active')) {
-      return {
-        mode: 'blitz',
-        card: ui.blitzCard,
-        allowUp: false
-      };
-    }
-    if (app.screens.game.classList.contains('screen-active')) {
-      return {
-        mode: 'game',
-        card: ui.questionCard,
-        allowUp: true
-      };
-    }
-    return null;
-  },
   updateHint(offsetX, offsetY = 0) {
-    const context = this.getActiveContext();
-    const card = context?.card;
-    if (!card) return;
     const intensity = Math.min(Math.max(Math.abs(offsetX), Math.abs(offsetY)) / 120, 1);
     let direction = 'none';
-    if (context.allowUp && offsetY < -70 && Math.abs(offsetX) < 100) direction = 'up';
+    if (offsetY < -70 && Math.abs(offsetX) < 100) direction = 'up';
     else if (offsetX > 0) direction = 'right';
     else if (offsetX < 0) direction = 'left';
-    card.dataset.swipe = direction;
-    card.style.setProperty('--swipe-opacity', intensity.toFixed(2));
-    if (!ui.swipeHelp || context.mode !== 'game') return;
+    ui.questionCard.dataset.swipe = direction;
+    ui.questionCard.style.setProperty('--swipe-opacity', intensity.toFixed(2));
+    if (!ui.swipeHelp) return;
     ui.swipeHelp.textContent = {
       none: SWIPE_HELP,
       left: 'Отпускай — отметим «Не совпало»',
@@ -197,15 +177,14 @@ export const swipe = {
     }[direction];
   },
   animateOut(type, callback) {
-    const context = this.getActiveContext();
-    const card = context?.card || ui.questionCard;
+    const card = ui.questionCard;
     const map = {
       match: { x: 420, y: -20, rotate: 16 },
       mismatch: { x: -420, y: -20, rotate: -16 },
       skip: { x: 0, y: -360, rotate: 0 }
     };
     const config = map[type];
-    if (!config || !card) return callback?.();
+    if (!config) return;
     if (!state.settings.animations) return callback();
     card.style.transition = 'transform 320ms cubic-bezier(.2,.9,.2,1), opacity 260ms ease';
     card.style.opacity = '0';
@@ -213,9 +192,7 @@ export const swipe = {
     setTimeout(callback, 280);
   },
   onPointerDown(event) {
-    const context = this.getActiveContext();
-    const card = context?.card;
-    if (!card || event.currentTarget !== card) return;
+    if (!app.screens.game.classList.contains('screen-active')) return;
     if (event.pointerType === 'mouse' && event.button !== 0) return;
     state.swipe.active = true;
     state.swipe.dragging = true;
@@ -224,13 +201,11 @@ export const swipe = {
     state.swipe.startY = event.clientY;
     state.swipe.currentX = event.clientX;
     state.swipe.currentY = event.clientY;
-    card.setPointerCapture?.(event.pointerId);
-    card.style.transition = 'none';
+    ui.questionCard.setPointerCapture?.(event.pointerId);
+    ui.questionCard.style.transition = 'none';
   },
   onPointerMove(event) {
-    const context = this.getActiveContext();
-    const card = context?.card;
-    if (!card || !state.swipe.active || state.swipe.pointerId !== event.pointerId) return;
+    if (!state.swipe.active || state.swipe.pointerId !== event.pointerId) return;
     if (event.cancelable) event.preventDefault();
     state.swipe.currentX = event.clientX;
     state.swipe.currentY = event.clientY;
@@ -238,14 +213,13 @@ export const swipe = {
       requestAnimationFrame(() => {
         const deltaX = state.swipe.currentX - state.swipe.startX;
         const deltaY = state.swipe.currentY - state.swipe.startY;
-        if (context.allowUp && Math.abs(deltaY) > Math.abs(deltaX) * 1.2 && Math.abs(deltaY) < 50) {
+        if (Math.abs(deltaY) > Math.abs(deltaX) * 1.2 && Math.abs(deltaY) < 50) {
           state.swipe.isAnimating = false;
           return;
         }
         const rotate = deltaX / 18;
-        const visualY = context.allowUp ? deltaY * 0.18 : 0;
         const stretch = 1 - Math.min(Math.abs(deltaX) / 1200, 0.03);
-        card.style.transform = `translate3d(${deltaX}px, ${visualY}px, 0) rotate(${rotate}deg) scale(${stretch})`;
+        ui.questionCard.style.transform = `translate3d(${deltaX}px, ${deltaY * 0.18}px, 0) rotate(${rotate}deg) scale(${stretch})`;
         this.updateHint(deltaX, deltaY);
         state.swipe.isAnimating = false;
       });
@@ -253,39 +227,30 @@ export const swipe = {
     }
   },
   onPointerUp(event) {
-    const context = this.getActiveContext();
-    const card = context?.card;
-    if (!card || !state.swipe.active || state.swipe.pointerId !== event.pointerId) return;
+    if (!state.swipe.active || state.swipe.pointerId !== event.pointerId) return;
     state.swipe.active = false;
     state.swipe.dragging = false;
     const deltaX = state.swipe.currentX - state.swipe.startX;
     const deltaY = state.swipe.currentY - state.swipe.startY;
     const velocity = Math.abs(deltaX) / Math.max(1, Math.abs(deltaY) + 1);
     const threshold = window.innerWidth < 480 ? 70 : 90;
-    card.releasePointerCapture?.(event.pointerId);
+    ui.questionCard.releasePointerCapture?.(event.pointerId);
     state.swipe.pointerId = null;
-    if (context.mode === 'blitz') {
-      if (deltaX > threshold || (deltaX > 45 && velocity > 2.4)) return game.answerBlitz(true);
-      if (deltaX < -threshold || (deltaX < -45 && velocity > 2.4)) return game.answerBlitz(false);
-    } else {
-      if (deltaX > threshold || (deltaX > 45 && velocity > 2.4)) return game.answer('match');
-      if (deltaX < -threshold || (deltaX < -45 && velocity > 2.4)) return game.answer('mismatch');
-      if (context.allowUp && deltaY < -110 && Math.abs(deltaX) < 100) return game.answer('skip');
-    }
-    card.style.transition = 'transform 220ms cubic-bezier(.2,.9,.2,1)';
-    card.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
+    if (deltaX > threshold || (deltaX > 45 && velocity > 2.4)) return game.answer('match');
+    if (deltaX < -threshold || (deltaX < -45 && velocity > 2.4)) return game.answer('mismatch');
+    if (deltaY < -110 && Math.abs(deltaX) < 100) return game.answer('skip');
+    ui.questionCard.style.transition = 'transform 220ms cubic-bezier(.2,.9,.2,1)';
+    ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
     this.updateHint(0, 0);
   },
   attachHandlers() {
-    [ui.questionCard, ui.blitzCard].filter(Boolean).forEach((card) => {
-      card.addEventListener('pointerdown', this.onPointerDown.bind(this));
-      card.addEventListener('pointermove', this.onPointerMove.bind(this));
-      card.addEventListener('pointerup', this.onPointerUp.bind(this));
-      card.addEventListener('pointercancel', this.onPointerUp.bind(this));
-      card.addEventListener('touchmove', (event) => {
-        if (event.cancelable) event.preventDefault();
-      }, { passive: false });
-    });
+    ui.questionCard.addEventListener('pointerdown', this.onPointerDown.bind(this));
+    ui.questionCard.addEventListener('pointermove', this.onPointerMove.bind(this));
+    ui.questionCard.addEventListener('pointerup', this.onPointerUp.bind(this));
+    ui.questionCard.addEventListener('pointercancel', this.onPointerUp.bind(this));
+    ui.questionCard.addEventListener('touchmove', (event) => {
+      if (event.cancelable) event.preventDefault();
+    }, { passive: false });
   },
   preventDoubleTapZoom() {
     let lastTouchEnd = 0;

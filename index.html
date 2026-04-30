@@ -16,11 +16,6 @@
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <link rel="stylesheet" href="style.css" />
-
-  <style id="remove-bottom-answer-buttons">
-    #gameScreen .answer-actions,
-    #blitzScreen .answer-actions { display: none !important; }
-  </style>
 </head>
 <body>
   <div class="bg-stack" aria-hidden="true">
@@ -199,6 +194,11 @@
         </div>
         <div class="swipe-help" id="swipeHelp">Свайп: влево — не совпало, вправо — совпало, вверх — пропуск.</div>
 
+        <div class="answer-actions">
+          <button class="answer-btn answer-match" id="matchBtn">Совпало</button>
+          <button class="answer-btn answer-mismatch" id="mismatchBtn">Не совпало</button>
+          <button class="answer-btn answer-skip" id="skipBtn">Пропуск</button>
+        </div>
       </section>
 
       <section class="screen" id="blitzScreen">
@@ -225,6 +225,10 @@
           <p class="question-text" id="blitzQuestionText"></p>
         </article>
 
+        <div class="answer-actions" style="grid-template-columns: 1fr 1fr;">
+          <button class="answer-btn answer-mismatch" id="blitzIncorrectBtn">✗ Неправильно</button>
+          <button class="answer-btn answer-match" id="blitzCorrectBtn">✓ Правильно</button>
+        </div>
       </section>
 
       <section class="screen" id="resultsScreen">

@@ -1,0 +1,198 @@
+:root {
+  --lux-surface: linear-gradient(180deg, rgba(255,255,255,.24), rgba(255,255,255,.10));
+  --lux-border: rgba(255,255,255,.16);
+  --lux-shadow: 0 24px 60px rgba(6,10,30,.30);
+  --lux-shadow-soft: 0 12px 28px rgba(6,10,30,.18);
+}
+
+/* One focused upgrade: make question slides feel modern and premium */
+.game-head {
+  margin-bottom: 14px;
+}
+
+.game-head h2 {
+  font-size: clamp(28px, 6vw, 42px);
+  letter-spacing: -.04em;
+}
+
+#gameCategory,
+#blitzScreen .eyebrow {
+  background: rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.12);
+  color: rgba(255,255,255,.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.progress-badge,
+.timer-badge,
+.turn-badge {
+  background: rgba(8,12,28,.42);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: var(--lux-shadow-soft);
+}
+
+.question-stage {
+  perspective: 1400px;
+  margin-top: 10px;
+}
+
+.stack-card {
+  border-radius: 32px;
+  background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.04));
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: none;
+}
+
+.stack-card-back {
+  transform: translateY(16px) scale(.94);
+  opacity: .14;
+}
+
+.stack-card-mid {
+  transform: translateY(8px) scale(.97);
+  opacity: .22;
+}
+
+.question-card,
+.blitz-card {
+  position: relative;
+  min-height: clamp(360px, 54dvh, 620px);
+  padding: 34px 24px;
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,.26), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(244,114,182,.12), transparent 28%),
+    radial-gradient(circle at 50% 120%, rgba(99,102,241,.18), transparent 36%),
+    linear-gradient(180deg, rgba(19,24,48,.82), rgba(10,13,28,.92));
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: var(--lux-shadow), inset 0 1px 0 rgba(255,255,255,.12);
+  color: #fff;
+  isolation: isolate;
+}
+
+.question-card::before,
+.question-card::after,
+.blitz-card::before,
+.blitz-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.question-card::before,
+.blitz-card::before {
+  inset: 1px;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255,255,255,.06), transparent 24%, transparent 76%, rgba(255,255,255,.04));
+  z-index: 0;
+}
+
+.question-card::after,
+.blitz-card::after {
+  inset: 18px;
+  border-radius: 26px;
+  border: 1px solid rgba(255,255,255,.06);
+  opacity: .9;
+  z-index: 0;
+}
+
+.question-text,
+#blitzQuestionText {
+  position: relative;
+  z-index: 1;
+  max-width: 11.5ch;
+  margin: 0 auto;
+  font-size: clamp(31px, 6.4vw, 56px);
+  line-height: 1.06;
+  letter-spacing: -.045em;
+  font-weight: 800;
+  text-wrap: balance;
+  text-shadow: 0 10px 30px rgba(0,0,0,.22);
+}
+
+.question-card .question-text::before,
+.blitz-card .question-text::before,
+#blitzQuestionText::before {
+  content: "Вопрос";
+  display: block;
+  margin-bottom: 18px;
+  font-size: 12px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: rgba(255,255,255,.56);
+}
+
+.swipe-badge {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background: rgba(8,12,28,.46);
+  border: 1px solid rgba(255,255,255,.12);
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(0,0,0,.18);
+}
+
+.swipe-help {
+  margin-top: 14px;
+  text-align: center;
+  color: rgba(255,255,255,.70);
+  font-size: 13px;
+  letter-spacing: -.01em;
+}
+
+body.light .question-card,
+body.light .blitz-card {
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,.78), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(236,72,153,.10), transparent 30%),
+    radial-gradient(circle at 50% 120%, rgba(129,140,248,.12), transparent 36%),
+    linear-gradient(180deg, rgba(255,255,255,.98), rgba(244,247,255,.96));
+  color: #101828;
+  border-color: rgba(15,23,42,.08);
+  box-shadow: 0 20px 50px rgba(15,23,42,.16), inset 0 1px 0 rgba(255,255,255,.85);
+}
+
+body.light .question-card::before,
+body.light .blitz-card::before {
+  background: linear-gradient(180deg, rgba(255,255,255,.84), transparent 22%, transparent 78%, rgba(124,92,200,.05));
+}
+
+body.light .question-card::after,
+body.light .blitz-card::after {
+  border-color: rgba(15,23,42,.06);
+}
+
+body.light .question-text,
+body.light #blitzQuestionText {
+  color: #0f172a;
+  text-shadow: none;
+}
+
+body.light .question-card .question-text::before,
+body.light #blitzQuestionText::before {
+  color: rgba(15,23,42,.42);
+}
+
+@media (max-width: 720px) {
+  .question-card,
+  .blitz-card {
+    min-height: 50dvh;
+    border-radius: 30px;
+    padding: 28px 20px;
+  }
+
+  .question-card::after,
+  .blitz-card::after {
+    inset: 14px;
+    border-radius: 22px;
+  }
+
+  .question-text,
+  #blitzQuestionText {
+    max-width: 12.5ch;
+    font-size: clamp(28px, 8.4vw, 42px);
+  }
+}

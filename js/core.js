@@ -112,7 +112,6 @@ const ui = {
   blitzCorrectScore: document.getElementById('blitzCorrectScore'),
   blitzTotalScore: document.getElementById('blitzTotalScore'),
   blitzQuestionText: document.getElementById('blitzQuestionText'),
-  blitzCard: document.querySelector('.blitz-card'),
   blitzCorrectBtn: document.getElementById('blitzCorrectBtn'),
   blitzIncorrectBtn: document.getElementById('blitzIncorrectBtn'),
 

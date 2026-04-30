@@ -274,40 +274,28 @@ export const render = {
   },
   blitzQuestion() {
     if (state.currentIndex >= state.currentQuestions.length) return app.game.finish(true);
-    const card = ui.blitzCard;
-    if (!card) return;
-    state.swipe.active = false;
-    state.swipe.dragging = false;
-    state.swipe.pointerId = null;
-    state.swipe.isAnimating = false;
-    card.dataset.swipe = 'none';
-    card.style.removeProperty('--swipe-opacity');
+    const card = document.querySelector('.blitz-card');
     card.style.transition = 'none';
     card.style.transform = state.settings.animations ? 'scale(0.98)' : 'scale(1)';
     card.style.opacity = state.settings.animations ? '0.5' : '1';
     ui.blitzQuestionText.textContent = state.currentQuestions[state.currentIndex];
     requestAnimationFrame(() => {
       card.style.transition = state.settings.animations ? 'transform 150ms ease, opacity 150ms ease' : 'none';
-      card.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
+      card.style.transform = 'scale(1)';
       card.style.opacity = '1';
     });
   },
-  resetCard(card, resetHint = false) {
-    if (!card) return;
+  resetQuestionCard() {
     state.swipe.active = false;
     state.swipe.dragging = false;
     state.swipe.pointerId = null;
     state.swipe.isAnimating = false;
-    card.dataset.swipe = 'none';
-    card.style.removeProperty('--swipe-opacity');
-    card.style.transition = '';
-    card.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
-    card.style.opacity = '1';
-    if (resetHint && ui.swipeHelp) ui.swipeHelp.textContent = SWIPE_HELP;
-  },
-  resetQuestionCard() {
-    this.resetCard(ui.questionCard, true);
-    this.resetCard(ui.blitzCard, false);
+    ui.questionCard.dataset.swipe = 'none';
+    ui.questionCard.style.removeProperty('--swipe-opacity');
+    ui.questionCard.style.transition = '';
+    ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
+    ui.questionCard.style.opacity = '1';
+    if (ui.swipeHelp) ui.swipeHelp.textContent = SWIPE_HELP;
   },
   syncSettingsUI() {
     if (ui.vibrationToggle) ui.vibrationToggle.checked = !!state.settings.vibration;
