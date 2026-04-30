@@ -930,3 +930,6 @@ body.light {
 .bg-layer {
   background-color: #E7BEF8 !important;
 }
+
+/* removed accidental home dashboard widgets */
+.quick-grid, .quick-card, .daily-card { display:none !important; }
