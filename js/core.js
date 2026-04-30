@@ -609,12 +609,6 @@ const theme = {
     }
     if (ui.themeBtnIcon) ui.themeBtnIcon.innerHTML = this.icon(resolved === 'light' ? 'dark' : 'light');
     if (tg?.setHeaderColor) tg.setHeaderColor(resolved === 'light' ? '#efe7ff' : '#9f7aea');
-    if (tg?.setBackgroundColor) {
-      try { tg.setBackgroundColor(resolved === 'light' ? '#efe7ff' : '#140f1f'); } catch {}
-    }
-    if (tg?.setBottomBarColor) {
-      try { tg.setBottomBarColor(resolved === 'light' ? '#efe7ff' : '#140f1f'); } catch {}
-    }
   },
   init() {
     const saved = storage.getRaw(STORAGE_KEYS.theme);
@@ -739,52 +733,13 @@ const premium = {
   }
 };
 
-function applyTelegramViewport() {
-  if (!tg) return;
-  const root = document.documentElement;
-  const contentInset = tg.contentSafeAreaInset || tg.safeAreaInset || {};
-  const top = Number.isFinite(contentInset.top) ? contentInset.top : 0;
-  const bottom = Number.isFinite(contentInset.bottom) ? contentInset.bottom : 0;
-  root.style.setProperty('--tg-safe-top', `${top}px`);
-  root.style.setProperty('--tg-safe-bottom', `${bottom}px`);
-}
-
-function requestTelegramFullscreen() {
-  if (!tg) return;
-  try {
-    if (typeof tg.requestFullscreen === 'function' && !tg.isFullscreen) {
-      tg.requestFullscreen();
-    }
-  } catch {}
-  try {
-    if (typeof tg.expand === 'function') tg.expand();
-  } catch {}
-}
-
 async function initTelegram() {
   if (!tg) return;
   tg.ready();
-  applyTelegramViewport();
-  requestTelegramFullscreen();
+  tg.expand();
   if (typeof tg.disableVerticalSwipes === 'function') {
     try { tg.disableVerticalSwipes(); } catch {}
   }
-  if (typeof tg.onEvent === 'function') {
-    try {
-      tg.onEvent('contentSafeAreaChanged', applyTelegramViewport);
-      tg.onEvent('safeAreaChanged', applyTelegramViewport);
-      tg.onEvent('viewportChanged', applyTelegramViewport);
-    } catch {}
-  }
-  const fullscreenKick = () => {
-    requestTelegramFullscreen();
-    document.removeEventListener('touchstart', fullscreenKick, true);
-    document.removeEventListener('pointerdown', fullscreenKick, true);
-    document.removeEventListener('click', fullscreenKick, true);
-  };
-  document.addEventListener('touchstart', fullscreenKick, true);
-  document.addEventListener('pointerdown', fullscreenKick, true);
-  document.addEventListener('click', fullscreenKick, true);
   if (tg.BackButton) tg.BackButton.onClick(() => router.back());
 }
 
@@ -815,7 +770,5 @@ Object.assign(app, {
   data,
   premium,
   meta,
-  initTelegram,
-  requestTelegramFullscreen,
-  applyTelegramViewport
+  initTelegram
 });
