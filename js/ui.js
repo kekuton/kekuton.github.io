@@ -210,7 +210,6 @@ export const render = {
       <p class="intro-subtext">${helpers.escapeHtml(introText)}</p>
       <div class="hero-actions stacked">
         <button class="primary-btn" id="playCategoryBtn">${categoryId === 'Блиц' ? 'Начать блиц' : 'Новая игра'}</button>
-        ${categoryId !== 'Блиц' ? '<button class="secondary-btn" id="duoCategoryBtn">Играть вдвоём</button>' : ''}
         <button class="secondary-btn" id="backToCategoriesBtn">Назад</button>
       </div>
     `;
