@@ -644,23 +644,9 @@ html, body {
 }
 
 /* --- СТИЛИ ДЛЯ СВОЕЙ ИГРЫ И ПРЕМИУМА --- */
-.category-card.premium-locked {
-  position: relative;
-  overflow: hidden;
-}
 
-.category-card.premium-locked::after {
-  content: '🔒';
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  backdrop-filter: blur(4px);
-  display: grid;
-  place-items: center;
-  font-size: 42px;
-  border-radius: inherit;
-  z-index: 2;
-}
+
+
 
 .custom-question-input {
   width: 100%;

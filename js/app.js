@@ -3,7 +3,7 @@ import './ui.js';
 import './game.js';
 import './settings.js';
 
-const { ui, state, router, theme, data, background, render, loading, swipe, initTelegram, modals, premium, settings, game, fx, storage, STORAGE_KEYS, ONBOARDING_STEPS, helpers, CATEGORY_META, meta, notify } = app;
+const { ui, state, router, theme, data, background, render, loading, swipe, initTelegram, modals, settings, game, fx, storage, STORAGE_KEYS, ONBOARDING_STEPS, helpers, CATEGORY_META, meta, notify } = app;
 
 function finishOnboarding() {
   storage.setRaw(STORAGE_KEYS.onboardingSeen, 'yes');
@@ -172,11 +172,7 @@ function bindEvents() {
     game.start();
   });
 
-  ui.buyPremiumBtn?.addEventListener('click', () => premium.purchase());
-  ui.closePremiumBtn?.addEventListener('click', () => {
-    modals.close(ui.premiumModal);
-    router.syncBackButton(router.current());
-  });
+
 
   ui.adultConfirmBtn?.addEventListener('click', () => {
     app.storage.setRaw(app.STORAGE_KEYS.adult, 'yes');

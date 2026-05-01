@@ -1,7 +1,7 @@
 import { app } from './core.js';
 import { render, results } from './ui.js';
 
-const { ui, state, helpers, router, modals, premium, fx, CATEGORY_META, SWIPE_HELP, background } = app;
+const { ui, state, helpers, router, modals, fx, CATEGORY_META, SWIPE_HELP, background } = app;
 
 
 export const game = {
@@ -25,11 +25,6 @@ export const game = {
     if (categoryId === '18+' && !helpers.isAdultConfirmed()) {
       state.pendingAdultCategory = categoryId;
       modals.open(ui.adultModal);
-      router.syncBackButton(router.current());
-      return;
-    }
-    if (state.currentCategory.isPremium && !helpers.getPremiumUnlocked()) {
-      modals.open(ui.premiumModal);
       router.syncBackButton(router.current());
       return;
     }

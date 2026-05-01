@@ -1,4 +1,4 @@
-/* Question screen: dark premium card, no bottom buttons */
+/* Question screen: dark аккуратную card, no bottom buttons */
 body[data-screen='game'] {
   background:
     radial-gradient(circle at 18% 8%, rgba(186, 117, 255, .24), transparent 32%),

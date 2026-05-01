@@ -5,7 +5,6 @@ const tg = window.Telegram?.WebApp;
 const STORAGE_KEYS = {
   theme: 'couples_theme',
   history: 'couples_history',
-  premium: 'premium_unlocked',
   adult: 'adult_ok',
   customQuestions: 'custom_questions',
   questionsCache: 'couples_questions_v4',
@@ -32,7 +31,7 @@ const CATEGORY_META = [
   { id: 'Психология', icon: 'mind', desc: 'Эмоции и границы', color: 'linear-gradient(180deg,#22c55e,#14b8a6)', cover: 'images/bg_psychology_card.jpg' },
   { id: 'Воспоминания', icon: 'memory', desc: 'Лучшие моменты вместе', color: 'linear-gradient(180deg,#60a5fa,#8b5cf6)', cover: 'images/bg_memory_card.png' },
   { id: 'Блиц', icon: 'bolt', desc: 'Проверка знаний (30 сек)', color: 'linear-gradient(180deg,#eab308,#ef4444)', cover: 'images/bg_blitz_card.png' },
-  { id: 'Своя игра', icon: 'edit', desc: 'Создай свои вопросы', color: 'linear-gradient(180deg,#10b981,#3b82f6)', isPremium: true, cover: 'images/bg_custom_card.png' }
+  { id: 'Своя игра', icon: 'edit', desc: 'Создай свои вопросы', color: 'linear-gradient(180deg,#10b981,#3b82f6)', cover: 'images/bg_custom_card.png' }
 ];
 
 const CATEGORY_BACKGROUNDS = {};
@@ -150,16 +149,12 @@ const ui = {
   customQuestionsList: document.getElementById('customQuestionsList'),
   addCustomQuestionBtn: document.getElementById('addCustomQuestionBtn'),
   saveCustomGameBtn: document.getElementById('saveCustomGameBtn'),
-  premiumModal: document.getElementById('premiumModal'),
-  buyPremiumBtn: document.getElementById('buyPremiumBtn'),
-  closePremiumBtn: document.getElementById('closePremiumBtn'),
 
   vibrationToggle: document.getElementById('vibrationToggle'),
   animationsToggle: document.getElementById('animationsToggle'),
   roundSizeSelect: document.getElementById('roundSizeSelect'),
   clearHistoryBtn: document.getElementById('clearHistoryBtn'),
   resetCustomBtn: document.getElementById('resetCustomBtn'),
-  resetFlagsBtn: document.getElementById('resetFlagsBtn'),
   toastStack: document.getElementById('toastStack')
 };
 
@@ -245,9 +240,6 @@ const helpers = {
   },
   getCurrentCategoryQuestions(categoryId) {
     return state.questionsData[categoryId] || [];
-  },
-  getPremiumUnlocked() {
-    return storage.getRaw(STORAGE_KEYS.premium) === 'true';
   },
   todayKey() {
     return new Date().toISOString().slice(0, 10);
@@ -541,7 +533,7 @@ const modals = {
     element.setAttribute('aria-hidden', 'true');
   },
   closeAll() {
-    [ui.adultModal, ui.premiumModal].forEach((modal) => this.close(modal));
+    [ui.adultModal].forEach((modal) => this.close(modal));
   }
 };
 
@@ -718,23 +710,6 @@ const meta = {
   }
 };
 
-const premium = {
-  purchase() {
-    const originalText = ui.buyPremiumBtn.textContent;
-    ui.buyPremiumBtn.textContent = 'Оплата...';
-    ui.buyPremiumBtn.disabled = true;
-    setTimeout(() => {
-      storage.setRaw(STORAGE_KEYS.premium, 'true');
-      modals.close(ui.premiumModal);
-      ui.buyPremiumBtn.textContent = originalText;
-      ui.buyPremiumBtn.disabled = false;
-      fx.vibrate('success');
-      fx.launchConfetti();
-      app.render?.categories();
-    }, 1200);
-  }
-};
-
 async function initTelegram() {
   if (!tg) return;
   tg.ready();
@@ -769,7 +744,6 @@ Object.assign(app, {
   router,
   theme,
   data,
-  premium,
   meta,
   initTelegram
 });

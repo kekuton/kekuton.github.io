@@ -153,12 +153,10 @@ export const render = {
     }, 2600);
   },
   categories() {
-    const premiumUnlocked = helpers.getPremiumUnlocked();
     const fragment = document.createDocumentFragment();
     CATEGORY_META.forEach((category) => {
       let count = helpers.getCurrentCategoryQuestions(category.id).length;
-      const isLocked = category.isPremium && !premiumUnlocked;
-      if (category.id === 'Своя игра' && premiumUnlocked) count = storage.get(STORAGE_KEYS.customQuestions, []).length;
+      if (category.id === 'Своя игра') count = storage.get(STORAGE_KEYS.customQuestions, []).length;
       const card = templates.clone(ui.categoryCardTemplate);
       if (!card) return;
       const categoryIndex = CATEGORY_META.indexOf(category) + 1;
@@ -174,7 +172,6 @@ export const render = {
         poster.classList.remove('hidden');
       }
       card.classList.toggle('category-card-cover', !!category.cover);
-      card.classList.toggle('premium-locked', isLocked);
       card.querySelector('[data-role="icon"]').innerHTML = helpers.categoryIconSvg(category.icon);
       const badge = card.querySelector('[data-role="badge"]');
       if (badge) {

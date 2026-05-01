@@ -31,13 +31,6 @@ export const settings = {
       fx.vibrate('light');
       notify.success('Свои вопросы удалены.');
     });
-    ui.resetFlagsBtn?.addEventListener('click', () => {
-      storage.remove(STORAGE_KEYS.adult);
-      storage.remove(STORAGE_KEYS.premium);
-      render.categories();
-      fx.vibrate('light');
-      notify.success('18+ и premium сброшены.');
-    });
   }
 };
 

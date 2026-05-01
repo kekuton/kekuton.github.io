@@ -12,15 +12,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Вопросы для двоих</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
-  <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <link rel="stylesheet" href="style.css" />
-
-  <style id="remove-bottom-answer-buttons">
-    #gameScreen .answer-actions,
-    #blitzScreen .answer-actions { display: none !important; }
-  </style>
 </head>
 <body>
   <div class="bg-stack" aria-hidden="true">
@@ -316,7 +308,6 @@
             <div class="hero-actions stacked">
               <button class="settings-action-btn settings-action-btn-neutral" id="clearHistoryBtn"><span class="settings-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5l3 2"></path><circle cx="12" cy="12" r="9"></circle></svg></span><span>Очистить историю</span></button>
               <button class="settings-action-btn settings-action-btn-warm" id="resetCustomBtn"><span class="settings-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M19 6l-1 13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg></span><span>Удалить свои вопросы</span></button>
-              <button class="settings-action-btn settings-action-btn-danger" id="resetFlagsBtn"><span class="settings-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.3-6.36L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-15.3 6.36L3 16"></path><path d="M8 16H3v5"></path></svg></span><span>Сбросить 18+ и Premium</span></button>
             </div>
           </article>
         </div>
@@ -372,20 +363,6 @@
       </div>
     </div>
   </div>
-
-  <div class="modal hidden" id="premiumModal" aria-hidden="true">
-    <div class="modal-card" style="text-align: center;">
-      <div class="intro-illu" style="margin: 0 auto 16px;">⭐️</div>
-      <span class="eyebrow">Премиум</span>
-      <h3 style="margin-top: 8px;">Режим «Своя игра»</h3>
-      <p style="margin-bottom: 24px;">Создай уникальную колоду со своими вопросами. Сейчас это тестовый режим оплаты.</p>
-      <div class="hero-actions stacked">
-        <button class="primary-btn" id="buyPremiumBtn">Купить за 50 ⭐️ · тест</button>
-        <button class="secondary-btn" id="closePremiumBtn">Позже</button>
-      </div>
-    </div>
-  </div>
-
 
 
 <template id="categoryCardTemplate">
