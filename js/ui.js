@@ -5,7 +5,7 @@ const { state, ui, storage, helpers, historyStore, router, fx, CATEGORY_META, ST
 const ONBOARDING_STEPS = [
   {
     title: 'Начать разговор станет проще',
-    text: 'Выбирай категорию под настроение и проходи игру в обычном режиме или вдвоём по очереди.',
+    text: 'Выбирай категорию под настроение и проходи игру в обычном режиме.',
     visual: '💞',
     points: ['Красивые категории', 'Процент совместимости', 'Быстрый старт без регистрации']
   },
@@ -215,7 +215,6 @@ export const render = {
     `;
     router.show('intro');
     document.getElementById('playCategoryBtn')?.addEventListener('click', () => app.game.start('solo'));
-    document.getElementById('duoCategoryBtn')?.addEventListener('click', () => app.game.start('duo'));
     document.getElementById('backToCategoriesBtn')?.addEventListener('click', () => router.back());
   },
   onboarding() {
@@ -228,18 +227,18 @@ export const render = {
     ui.onboardingNextBtn.textContent = state.onboardingStep === ONBOARDING_STEPS.length - 1 ? 'Начать' : 'Дальше';
   },
   updateModeUI() {
-    const duoMode = state.gameMode === 'duo';
+    const duoMode = false;
     ui.turnBadge.classList.toggle('hidden', !duoMode);
     ui.turnBadge.textContent = duoMode ? DUO_PLAYERS[state.duoActivePlayer] : '';
     if (ui.gameCategory && state.currentCategory) {
-      ui.gameCategory.textContent = duoMode ? `${state.currentCategory.id} · Игра вдвоём` : state.currentCategory.id;
+      ui.gameCategory.textContent = state.currentCategory.id;
     }
   },
   gameQuestion(isInitial = false) {
     const question = state.currentQuestions[state.currentIndex];
     const total = state.currentQuestions.length;
-    ui.gameCategory.textContent = state.gameMode === 'duo' ? `${state.currentCategory.id} · Игра вдвоём` : state.currentCategory.id;
-    ui.gameTitle.textContent = state.gameMode === 'duo' ? `Ход: ${DUO_PLAYERS[state.duoActivePlayer]}` : 'Вопрос';
+    ui.gameCategory.textContent = state.currentCategory.id;
+    ui.gameTitle.textContent = 'Вопрос';
     this.updateModeUI();
     ui.questionText.textContent = question;
     ui.progressLabel.textContent = `${state.currentIndex + 1} / ${total}`;
@@ -317,7 +316,7 @@ export const render = {
 
 export const results = {
   buildShareText() {
-    const modeText = state.gameMode === 'duo' ? 'Игра вдвоём' : 'Обычная игра';
+    const modeText = 'Обычная игра';
     return `Вопросы для двоих\nКатегория: ${state.currentCategory?.id || '—'}\nРезультат: ${ui.resultsScore?.textContent || '0%'}\nСовпало: ${state.stats.match} · Не совпало: ${state.stats.mismatch} · Пропуск: ${state.stats.skip}\nРежим: ${modeText}`;
   },
   roundRect(ctx, x, y, width, height, radius, fill, stroke) {
@@ -376,7 +375,7 @@ export const results = {
     ctx.fillText(`Совпало: ${state.stats.match}`, 110, 760);
     ctx.fillText(`Не совпало: ${state.stats.mismatch}`, 110, 820);
     ctx.fillText(`Пропуск: ${state.stats.skip}`, 110, 880);
-    ctx.fillText(`Режим: ${state.gameMode === 'duo' ? 'Игра вдвоём' : 'Обычная игра'}`, 110, 940);
+    ctx.fillText(`Режим: ${'Обычная игра'}`, 110, 940);
     if (state.shareAchievement) {
       const rarity = helpers.achievementRarityMeta(state.shareAchievement.rarity);
       ctx.fillStyle = 'rgba(255,255,255,0.14)';
@@ -427,7 +426,7 @@ export const results = {
     ui.resultsScore.textContent = '0%';
     document.getElementById('resultModeNote')?.remove();
     ui.resultsMessage.textContent = helpers.resultMessage(score, isBlitz);
-    ui.resultsMessage.insertAdjacentHTML('afterend', `<div class="result-mini-note" id="resultModeNote">${isBlitz ? 'Режим: Блиц' : (state.gameMode === 'duo' ? 'Режим: Играть вдвоём' : 'Режим: Обычная игра')}</div>`);
+    ui.resultsMessage.insertAdjacentHTML('afterend', `<div class="result-mini-note" id="resultModeNote">${isBlitz ? 'Режим: Блиц' : ('Режим: Обычная игра')}</div>`);
     if (ui.resultsVibe) ui.resultsVibe.textContent = `Ваш вайб: ${helpers.vibeByScore(score)}`;
     ui.statMatch.textContent = state.stats.match;
     ui.statMismatch.textContent = state.stats.mismatch;
@@ -446,7 +445,7 @@ export const results = {
       fx.vibrate('success');
       fx.launchConfetti();
     }
-    const modeText = isBlitz ? 'Блиц' : (state.gameMode === 'duo' ? 'Игра вдвоём' : 'Обычная игра');
+    const modeText = isBlitz ? 'Блиц' : ('Обычная игра');
     historyStore.save({
       category: state.currentCategory.id,
       score,
