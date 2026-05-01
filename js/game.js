@@ -249,4 +249,4 @@ export const swipe = {
   }
 };
 
-Object.assign(app, { modalFlows, game, swipe, premium });
+Object.assign(app, { game, swipe });
