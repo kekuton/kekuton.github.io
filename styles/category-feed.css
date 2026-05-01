@@ -171,7 +171,7 @@ body.light #categoriesScreen .category-card {
   pointer-events: none;
 }
 
-#categoriesScreen .category-card.premium-locked::after { content: 'Открыть режим'; }
+#categoriesScreen .category-card.premium-locked::after { content: 'Начать'; }
 
 #categoriesScreen .category-card-top,
 #categoriesScreen .category-copy,
@@ -564,7 +564,7 @@ body.light #categoriesScreen .category-card {
 }
 
 #categoriesScreen .category-card.premium-locked::after {
-  content: 'Открыть режим' !important;
+  content: 'Начать' !important;
 }
 
 #categoriesScreen .category-feed-counter,
