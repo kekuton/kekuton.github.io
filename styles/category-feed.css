@@ -407,3 +407,244 @@ body.light #categoriesScreen .category-card {
 
   #categoriesScreen .category-badge { display: none !important; }
 }
+
+/* Final mobile composition fix for TikTok-style category feed */
+#categoriesScreen.screen-active {
+  height: calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 76px) !important;
+  max-height: calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 76px) !important;
+  overflow-y: auto !important;
+  padding: 0 !important;
+}
+
+#categoriesScreen .categories-grid {
+  min-height: 100% !important;
+  height: auto !important;
+}
+
+#categoriesScreen .category-card,
+body.light #categoriesScreen .category-card {
+  height: calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 76px) !important;
+  min-height: calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 76px) !important;
+  max-height: calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 76px) !important;
+  border: 0 !important;
+  outline: 0 !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#categoriesScreen .category-card:focus,
+#categoriesScreen .category-card:focus-visible {
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+#categoriesScreen .category-poster {
+  object-position: center center !important;
+  filter: saturate(1.04) contrast(1.02) brightness(.78) !important;
+}
+
+#categoriesScreen .category-card::before {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  background:
+    linear-gradient(180deg,
+      rgba(6, 6, 18, .36) 0%,
+      rgba(6, 6, 18, .08) 24%,
+      rgba(6, 6, 18, .12) 47%,
+      rgba(6, 6, 18, .72) 72%,
+      rgba(6, 6, 18, .94) 100%) !important;
+  pointer-events: none !important;
+}
+
+#categoriesScreen .section-head {
+  top: calc(var(--safe-top, 0px) + 10px) !important;
+  padding: 0 18px !important;
+  z-index: 20 !important;
+}
+
+#categoriesScreen .section-head .eyebrow {
+  padding: 8px 13px !important;
+  max-width: calc(100vw - 36px) !important;
+  font-size: 11px !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+#categoriesScreen .category-card-top {
+  top: calc(var(--safe-top, 0px) + 70px) !important;
+  left: 20px !important;
+  right: 20px !important;
+  z-index: 9 !important;
+  padding: 0 !important;
+}
+
+#categoriesScreen .category-icon {
+  width: 54px !important;
+  height: 54px !important;
+  min-width: 54px !important;
+  border-radius: 20px !important;
+}
+
+#categoriesScreen .category-badge {
+  max-width: 44vw !important;
+  min-height: 34px !important;
+  padding: 0 12px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+#categoriesScreen .category-copy {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: calc(var(--safe-bottom, 0px) + 104px) !important;
+  z-index: 10 !important;
+  box-sizing: border-box !important;
+  padding: 0 22px !important;
+  transform: none !important;
+  opacity: 1 !important;
+}
+
+#categoriesScreen .category-copy h3,
+#categoriesScreen .category-copy p {
+  max-width: 100% !important;
+  width: 100% !important;
+  color: #fff !important;
+  text-align: left !important;
+  text-shadow: 0 3px 18px rgba(0,0,0,.46) !important;
+}
+
+#categoriesScreen .category-copy h3 {
+  margin: 0 0 8px !important;
+  font-size: clamp(30px, 8.3vw, 46px) !important;
+  line-height: 1.02 !important;
+  letter-spacing: -.045em !important;
+  font-weight: 950 !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  text-wrap: balance;
+}
+
+#categoriesScreen .category-copy p {
+  margin: 0 !important;
+  font-size: clamp(14px, 3.55vw, 17px) !important;
+  line-height: 1.35 !important;
+  font-weight: 650 !important;
+  color: rgba(255,255,255,.86) !important;
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+  overflow: hidden !important;
+}
+
+#categoriesScreen .category-card::after {
+  content: 'Начать' !important;
+  display: flex !important;
+  position: absolute !important;
+  left: 22px !important;
+  right: 22px !important;
+  bottom: calc(var(--safe-bottom, 0px) + 42px) !important;
+  z-index: 11 !important;
+  min-height: 50px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 18px !important;
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  letter-spacing: .02em !important;
+  text-transform: uppercase !important;
+  color: #251a31 !important;
+  background: rgba(255,255,255,.92) !important;
+  border: 1px solid rgba(255,255,255,.64) !important;
+  box-shadow: 0 14px 34px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.75) !important;
+  pointer-events: none !important;
+}
+
+#categoriesScreen .category-card.premium-locked::after {
+  content: 'Открыть режим' !important;
+}
+
+#categoriesScreen .category-feed-counter,
+#categoriesScreen .category-card > .category-feed-counter {
+  position: absolute !important;
+  top: calc(var(--safe-top, 0px) + 22px) !important;
+  right: 18px !important;
+  bottom: auto !important;
+  left: auto !important;
+  z-index: 21 !important;
+  padding: 7px 10px !important;
+  min-width: 0 !important;
+  border-radius: 999px !important;
+  font-size: 11px !important;
+  line-height: 1 !important;
+  color: #fff !important;
+  background: rgba(0,0,0,.22) !important;
+  border: 1px solid rgba(255,255,255,.22) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.18) !important;
+}
+
+#categoriesScreen .categories-grid::after {
+  content: 'Листай вверх' !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: calc(var(--safe-bottom, 0px) + 8px) !important;
+  transform: translateX(-50%) !important;
+  z-index: 12 !important;
+  max-width: calc(100vw - 40px) !important;
+  padding: 6px 10px !important;
+  font-size: 9px !important;
+  letter-spacing: .08em !important;
+  opacity: .58 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+@media (max-width: 390px), (max-height: 720px) {
+  #categoriesScreen .category-card-top {
+    top: calc(var(--safe-top, 0px) + 62px) !important;
+    left: 16px !important;
+    right: 16px !important;
+  }
+
+  #categoriesScreen .category-icon {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    border-radius: 18px !important;
+  }
+
+  #categoriesScreen .category-badge {
+    min-height: 30px !important;
+    font-size: 9px !important;
+  }
+
+  #categoriesScreen .category-copy {
+    bottom: calc(var(--safe-bottom, 0px) + 92px) !important;
+    padding: 0 18px !important;
+  }
+
+  #categoriesScreen .category-copy h3 {
+    font-size: clamp(26px, 7.6vw, 38px) !important;
+    line-height: 1.04 !important;
+  }
+
+  #categoriesScreen .category-copy p {
+    font-size: 13px !important;
+    -webkit-line-clamp: 2 !important;
+  }
+
+  #categoriesScreen .category-card::after {
+    left: 18px !important;
+    right: 18px !important;
+    bottom: calc(var(--safe-bottom, 0px) + 36px) !important;
+    min-height: 46px !important;
+    border-radius: 16px !important;
+    font-size: 13px !important;
+  }
+}
