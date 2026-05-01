@@ -23,6 +23,8 @@ const DEFAULT_SETTINGS = {
 };
 
 const CATEGORY_META = [
+  { id: 'Вечер для двоих', icon: 'heart', desc: 'Готовый тёплый сценарий на вечер', color: 'linear-gradient(180deg,#fb7185,#8b5cf6)', badge: 'Сценарий', isScenario: true },
+  { id: 'После ссоры', icon: 'peace', desc: 'Спокойные вопросы для примирения', color: 'linear-gradient(180deg,#38bdf8,#22c55e)', badge: 'Мягко' },
   { id: '18+', icon: 'spark', desc: 'Откровенные вопросы', color: 'linear-gradient(180deg,#f59e0b,#fb7185)', badge: '18+', cover: 'images/bg_intimate_card.jpg' },
   { id: 'На расстоянии', icon: 'distance', desc: 'Для пар в разлуке', color: 'linear-gradient(180deg,#38bdf8,#6366f1)', cover: 'images/bg_distance_card.jpg' },
   { id: 'Будущее', icon: 'future', desc: 'Планы, мечты и семья', color: 'linear-gradient(180deg,#c084fc,#ec4899)', cover: 'images/bg_future_card.jpg' },
@@ -35,7 +37,6 @@ const CATEGORY_META = [
 
 const CATEGORY_BACKGROUNDS = {};
 
-const DUO_PLAYERS = ['Игрок 1', 'Игрок 2'];
 const ROOT_SCREENS = ['home', 'categories', 'onboarding', 'error'];
 const SWIPE_HELP = 'Свайп: влево — не совпало, вправо — совпало, вверх — пропуск';
 
@@ -80,7 +81,6 @@ const ui = {
   achievementLegend: document.getElementById('achievementLegend'),
   achievementUnlock: document.getElementById('achievementUnlock'),
   achievementUnlockCard: document.getElementById('achievementUnlockCard'),
-  inviteBtn: document.getElementById('inviteBtn'),
   onboardingTitle: document.getElementById('onboardingTitle'),
   onboardingText: document.getElementById('onboardingText'),
   onboardingVisual: document.getElementById('onboardingVisual'),
@@ -107,7 +107,6 @@ const ui = {
   matchBtn: document.getElementById('matchBtn'),
   mismatchBtn: document.getElementById('mismatchBtn'),
   skipBtn: document.getElementById('skipBtn'),
-  turnBadge: document.getElementById('turnBadge'),
 
   blitzTimerDisplay: document.getElementById('blitzTimerDisplay'),
   blitzCorrectScore: document.getElementById('blitzCorrectScore'),
@@ -149,10 +148,6 @@ const ui = {
   premiumModal: document.getElementById('premiumModal'),
   buyPremiumBtn: document.getElementById('buyPremiumBtn'),
   closePremiumBtn: document.getElementById('closePremiumBtn'),
-  passModal: document.getElementById('passModal'),
-  passModalTitle: document.getElementById('passModalTitle'),
-  passModalText: document.getElementById('passModalText'),
-  passModalBtn: document.getElementById('passModalBtn'),
 
   vibrationToggle: document.getElementById('vibrationToggle'),
   animationsToggle: document.getElementById('animationsToggle'),
@@ -196,8 +191,6 @@ const state = {
   currentIndex: 0,
   stats: { match: 0, mismatch: 0, skip: 0 },
   gameMode: 'solo',
-  duoRoundAnswers: [null, null],
-  duoActivePlayer: 0,
   pendingAdultCategory: null,
   navStack: ['home'],
   blitzTimer: null,
@@ -290,7 +283,9 @@ const helpers = {
       mind: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M8.7 14.6A6.5 6.5 0 1 1 15.3 14.6c-.7.7-1.1 1.5-1.3 2.4h-4c-.2-.9-.6-1.7-1.3-2.4z"></path><path d="M10 9.2c.4-.8 1.2-1.2 2-1.2 1.1 0 2 .8 2 1.9 0 1.4-2 1.8-2 3.1"></path></svg>`,
       memory: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"></rect><circle cx="9" cy="10" r="2"></circle><path d="M21 16l-5.2-5.2a1.2 1.2 0 0 0-1.7 0L8 17"></path></svg>`,
       bolt: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"></path></svg>`,
-      edit: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg>`
+      edit: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg>`,
+      heart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.4 5.4 0 0 0-7.6 0L12 5.8l-1.2-1.2a5.4 5.4 0 1 0-7.6 7.6L12 21l8.8-8.8a5.4 5.4 0 0 0 0-7.6z"></path></svg>`,
+      peace: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M8 11.5V7a2 2 0 0 1 4 0v5"></path><path d="M12 12V6a2 2 0 0 1 4 0v7"></path><path d="M16 13V9a2 2 0 0 1 4 0v4.5c0 4.1-3.1 7.5-7.5 7.5H11a7 7 0 0 1-7-7v-2.5a2 2 0 0 1 4 0V14"></path></svg>`
     };
     return icons[iconId] || icons.spark;
   },
@@ -541,7 +536,7 @@ const modals = {
     element.setAttribute('aria-hidden', 'true');
   },
   closeAll() {
-    [ui.adultModal, ui.premiumModal, ui.passModal].forEach((modal) => this.close(modal));
+    [ui.adultModal, ui.premiumModal].forEach((modal) => this.close(modal));
   }
 };
 
@@ -751,7 +746,6 @@ Object.assign(app, {
   DEFAULT_SETTINGS,
   CATEGORY_META,
   CATEGORY_BACKGROUNDS,
-  DUO_PLAYERS,
   ROOT_SCREENS,
   SWIPE_HELP,
   screens,

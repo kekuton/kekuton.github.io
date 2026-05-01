@@ -1,11 +1,11 @@
 import { app } from './core.js';
 
-const { state, ui, storage, helpers, historyStore, router, fx, CATEGORY_META, STORAGE_KEYS, DUO_PLAYERS, SWIPE_HELP, templates, meta, notify } = app;
+const { state, ui, storage, helpers, historyStore, router, fx, CATEGORY_META, STORAGE_KEYS, SWIPE_HELP, templates, meta, notify } = app;
 
 const ONBOARDING_STEPS = [
   {
     title: 'Начать разговор станет проще',
-    text: 'Выбирай категорию под настроение и проходи игру в обычном режиме.',
+    text: 'Выбирай категорию под настроение и проходи игру в простом режиме без лишних кнопок.',
     visual: '💞',
     points: ['Красивые категории', 'Процент совместимости', 'Быстрый старт без регистрации']
   },
@@ -94,7 +94,7 @@ export const render = {
       if (!card) return;
       card.querySelector('[data-role="category"]').textContent = item.category;
       card.querySelector('[data-role="score"]').textContent = `${item.score}% ${item.category === 'Блиц' ? 'правильных ответов' : 'совместимости'}`;
-      card.querySelector('[data-role="mode"]').textContent = item.mode || 'Обычная игра';
+      card.querySelector('[data-role="mode"]').textContent = item.mode || 'Категория';
       card.querySelector('[data-role="details"]').textContent = `Совпало: ${item.match ?? 0} · Не совпало: ${item.mismatch ?? 0} · Пропуск: ${item.skip ?? 0}`;
       card.querySelector('[data-role="date"]').textContent = item.date || '';
       fragment.appendChild(card);
@@ -199,9 +199,10 @@ export const render = {
   },
   intro(categoryId) {
     const total = helpers.getCurrentCategoryQuestions(categoryId).length;
-    const introText = categoryId === 'Блиц'
-      ? 'Вам дается ровно 30 секунд. Ответьте правильно на как можно больше вопросов о вашем партнере.'
-      : `${total} вопросов в колоде. Нажми ниже, чтобы начать новую игру.`;
+    let introText = `${total} вопросов в колоде. Нажми ниже, чтобы начать новую игру.`;
+    if (categoryId === 'Блиц') introText = 'Вам дается ровно 30 секунд. Ответьте правильно на как можно больше вопросов о вашем партнере.';
+    if (categoryId === 'Вечер для двоих') introText = 'Готовый сценарий из тёплых вопросов: от лёгких воспоминаний к более близкому разговору.';
+    if (categoryId === 'После ссоры') introText = 'Спокойный набор вопросов, чтобы снизить напряжение, услышать друг друга и договориться о следующем шаге.';
     ui.introCard.innerHTML = `
       <div class="intro-illu intro-illu-icon">${helpers.categoryIconSvg(state.currentCategory.icon)}</div>
       <span class="eyebrow">${state.currentCategory.badge || 'Категория'}</span>
@@ -209,7 +210,7 @@ export const render = {
       <p class="intro-subtext">${helpers.escapeHtml(state.currentCategory.desc)}</p>
       <p class="intro-subtext">${helpers.escapeHtml(introText)}</p>
       <div class="hero-actions stacked">
-        <button class="primary-btn" id="playCategoryBtn">${categoryId === 'Блиц' ? 'Начать блиц' : 'Новая игра'}</button>
+        <button class="primary-btn" id="playCategoryBtn">${categoryId === 'Блиц' ? 'Начать блиц' : categoryId === 'Вечер для двоих' ? 'Начать вечер' : 'Новая игра'}</button>
         <button class="secondary-btn" id="backToCategoriesBtn">Назад</button>
       </div>
     `;
@@ -227,9 +228,6 @@ export const render = {
     ui.onboardingNextBtn.textContent = state.onboardingStep === ONBOARDING_STEPS.length - 1 ? 'Начать' : 'Дальше';
   },
   updateModeUI() {
-    const duoMode = false;
-    ui.turnBadge.classList.toggle('hidden', !duoMode);
-    ui.turnBadge.textContent = duoMode ? DUO_PLAYERS[state.duoActivePlayer] : '';
     if (ui.gameCategory && state.currentCategory) {
       ui.gameCategory.textContent = state.currentCategory.id;
     }
@@ -316,8 +314,7 @@ export const render = {
 
 export const results = {
   buildShareText() {
-    const modeText = 'Обычная игра';
-    return `Вопросы для двоих\nКатегория: ${state.currentCategory?.id || '—'}\nРезультат: ${ui.resultsScore?.textContent || '0%'}\nСовпало: ${state.stats.match} · Не совпало: ${state.stats.mismatch} · Пропуск: ${state.stats.skip}\nРежим: ${modeText}`;
+    return `Вопросы для двоих\nКатегория: ${state.currentCategory?.id || '—'}\nРезультат: ${ui.resultsScore?.textContent || '0%'}\nСовпало: ${state.stats.match} · Не совпало: ${state.stats.mismatch} · Пропуск: ${state.stats.skip}`;
   },
   roundRect(ctx, x, y, width, height, radius, fill, stroke) {
     const r = typeof radius === 'number' ? { tl: radius, tr: radius, br: radius, bl: radius } : radius;
@@ -375,7 +372,6 @@ export const results = {
     ctx.fillText(`Совпало: ${state.stats.match}`, 110, 760);
     ctx.fillText(`Не совпало: ${state.stats.mismatch}`, 110, 820);
     ctx.fillText(`Пропуск: ${state.stats.skip}`, 110, 880);
-    ctx.fillText(`Режим: ${'Обычная игра'}`, 110, 940);
     if (state.shareAchievement) {
       const rarity = helpers.achievementRarityMeta(state.shareAchievement.rarity);
       ctx.fillStyle = 'rgba(255,255,255,0.14)';
@@ -426,7 +422,7 @@ export const results = {
     ui.resultsScore.textContent = '0%';
     document.getElementById('resultModeNote')?.remove();
     ui.resultsMessage.textContent = helpers.resultMessage(score, isBlitz);
-    ui.resultsMessage.insertAdjacentHTML('afterend', `<div class="result-mini-note" id="resultModeNote">${isBlitz ? 'Режим: Блиц' : ('Режим: Обычная игра')}</div>`);
+    if (isBlitz) ui.resultsMessage.insertAdjacentHTML('afterend', `<div class="result-mini-note" id="resultModeNote">Режим: Блиц</div>`);
     if (ui.resultsVibe) ui.resultsVibe.textContent = `Ваш вайб: ${helpers.vibeByScore(score)}`;
     ui.statMatch.textContent = state.stats.match;
     ui.statMismatch.textContent = state.stats.mismatch;
@@ -434,9 +430,6 @@ export const results = {
     if (isBlitz) {
       ui.statLabelMatch.textContent = 'Правильно';
       ui.statLabelMismatch.textContent = 'Ошибка';
-    } else if (state.gameMode === 'duo') {
-      ui.statLabelMatch.textContent = 'Одинаковые ответы';
-      ui.statLabelMismatch.textContent = 'Разные ответы';
     } else {
       ui.statLabelMatch.textContent = 'Совпало';
       ui.statLabelMismatch.textContent = 'Не совпало';
@@ -445,7 +438,7 @@ export const results = {
       fx.vibrate('success');
       fx.launchConfetti();
     }
-    const modeText = isBlitz ? 'Блиц' : ('Обычная игра');
+    const modeText = isBlitz ? 'Блиц' : 'Категория';
     historyStore.save({
       category: state.currentCategory.id,
       score,

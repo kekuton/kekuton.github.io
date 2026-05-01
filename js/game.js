@@ -1,24 +1,8 @@
 import { app } from './core.js';
 import { render, results } from './ui.js';
 
-const { ui, state, helpers, router, modals, premium, fx, CATEGORY_META, SWIPE_HELP, DUO_PLAYERS, background } = app;
+const { ui, state, helpers, router, modals, premium, fx, CATEGORY_META, SWIPE_HELP, background } = app;
 
-const modalFlows = {
-  showPass(playerIndex, onReady) {
-    const label = DUO_PLAYERS[playerIndex] || 'Игрок';
-    ui.passModalTitle.textContent = 'Передайте телефон';
-    ui.passModalText.textContent = `Сейчас отвечает ${label}`;
-    modals.open(ui.passModal);
-    router.syncBackButton(router.current());
-    const handleReady = () => {
-      modals.close(ui.passModal);
-      router.syncBackButton(router.current());
-      ui.passModalBtn.removeEventListener('click', handleReady);
-      if (typeof onReady === 'function') onReady();
-    };
-    ui.passModalBtn.addEventListener('click', handleReady);
-  }
-};
 
 export const game = {
   clearBlitzTimer() {
@@ -32,8 +16,6 @@ export const game = {
     state.currentIndex = 0;
     state.stats = { match: 0, mismatch: 0, skip: 0 };
     state.questionStreak = 0;
-    state.duoRoundAnswers = [null, null];
-    state.duoActivePlayer = 0;
     render.resetQuestionCard();
     render.updateModeUI();
   },
@@ -70,17 +52,13 @@ export const game = {
       router.show('categories');
       return;
     }
-    const limit = helpers.getRoundSize(sourceQuestions.length);
-    state.currentQuestions = helpers.shuffle(sourceQuestions).slice(0, limit);
+    const isScenario = state.currentCategory?.isScenario;
+    const limit = isScenario ? Math.min(12, sourceQuestions.length) : helpers.getRoundSize(sourceQuestions.length);
+    state.currentQuestions = isScenario ? sourceQuestions.slice(0, limit) : helpers.shuffle(sourceQuestions).slice(0, limit);
     this.resetRound(mode);
     router.show('game');
-    const renderFirst = () => {
-      state.duoActivePlayer = 0;
-      render.updateModeUI();
-      render.gameQuestion(true);
-    };
-    if (state.gameMode === 'duo') modalFlows.showPass(0, renderFirst);
-    else renderFirst();
+    render.updateModeUI();
+    render.gameQuestion(true);
   },
   startBlitz() {
     state.gameMode = 'solo';
@@ -108,33 +86,7 @@ export const game = {
     if (type === 'match') fx.vibrate('success');
     else if (type === 'mismatch') fx.vibrate('error');
     else fx.vibrate('warning');
-    if (type === 'match' && state.gameMode !== 'duo') setTimeout(() => fx.launchConfetti(), 40);
-    if (state.gameMode === 'duo') {
-      swipe.animateOut(type, () => {
-        state.duoRoundAnswers[state.duoActivePlayer] = type;
-        render.resetQuestionCard();
-        if (state.duoActivePlayer === 0) {
-          state.duoActivePlayer = 1;
-          render.updateModeUI();
-          modalFlows.showPass(1, () => render.gameQuestion(true));
-          return;
-        }
-        const [first, second] = state.duoRoundAnswers;
-        if (first === 'skip' || second === 'skip') state.stats.skip += 1;
-        else if (first === second) {
-          state.stats.match += 1;
-          state.questionStreak += 1;
-          setTimeout(() => fx.launchConfetti(), 50);
-        } else { state.stats.mismatch += 1; state.questionStreak = 0; }
-        state.currentIndex += 1;
-        state.duoRoundAnswers = [null, null];
-        state.duoActivePlayer = 0;
-        render.resetQuestionCard();
-        if (state.currentIndex >= state.currentQuestions.length) this.finish();
-        else modalFlows.showPass(0, () => render.gameQuestion());
-      });
-      return;
-    }
+    if (type === 'match') setTimeout(() => fx.launchConfetti(), 40);
     swipe.animateOut(type, () => {
       state.stats[type] += 1;
       if (type === 'match') state.questionStreak += 1;

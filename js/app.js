@@ -59,18 +59,6 @@ function bindEvents() {
     ui.favoriteQuestionBtn.textContent = added ? '★' : '☆';
     fx.vibrate('light');
   });
-  ui.inviteBtn?.addEventListener('click', async () => {
-    const inviteLink = location.href.split('?')[0];
-    const text = `Погнали играть в «Вопросы для двоих» 💜
-${inviteLink}`;
-    try {
-      await navigator.clipboard.writeText(text);
-      notify.success('Ссылка-приглашение скопирована.');
-    } catch {
-      notify.info('Не удалось скопировать ссылку. Отправь её вручную.');
-    }
-  });
-
   ui.onboardingNextBtn?.addEventListener('click', () => {
     if (state.onboardingStep >= ONBOARDING_STEPS.length - 1) {
       finishOnboarding();
