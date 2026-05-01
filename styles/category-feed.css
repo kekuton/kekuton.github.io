@@ -282,3 +282,128 @@ body.light #categoriesScreen .category-card {
   #categoriesScreen .category-card h3 { font-size: clamp(38px, 13vw, 62px) !important; }
   #categoriesScreen .category-card p { max-width: 92%; }
 }
+
+/* Layout fix: keep feed labels pinned and readable on different phone sizes */
+#categoriesScreen.screen-active {
+  height: calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 72px) !important;
+  min-height: 0 !important;
+}
+
+#categoriesScreen .categories-grid::before {
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.48) 0%, rgba(0,0,0,.06) 28%, rgba(0,0,0,.10) 48%, rgba(0,0,0,.88) 100%) !important;
+}
+
+#categoriesScreen .categories-grid::after {
+  left: 20px !important;
+  right: auto !important;
+  bottom: calc(var(--safe-bottom, 0px) + 14px) !important;
+  transform: none !important;
+  z-index: 7 !important;
+  padding: 8px 11px !important;
+  font-size: 10px !important;
+  max-width: 44vw !important;
+  white-space: nowrap !important;
+  opacity: .72 !important;
+}
+
+#categoriesScreen .category-card,
+body.light #categoriesScreen .category-card {
+  min-height: calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 72px) !important;
+  height: calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 72px) !important;
+  justify-content: initial !important;
+}
+
+#categoriesScreen .category-card-top {
+  top: calc(var(--safe-top, 0px) + 16px) !important;
+  left: 20px !important;
+  right: 20px !important;
+  z-index: 8 !important;
+}
+
+#categoriesScreen .category-copy {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: calc(var(--safe-bottom, 0px) + 102px) !important;
+  z-index: 8 !important;
+  box-sizing: border-box !important;
+  padding: 0 22px !important;
+  margin: 0 !important;
+  transform: translateY(10px);
+}
+
+#categoriesScreen .category-card.is-feed-active .category-copy {
+  transform: translateY(0) !important;
+}
+
+#categoriesScreen .category-card h3 {
+  width: min(100%, 440px) !important;
+  max-width: 100% !important;
+  margin: 0 0 10px !important;
+  font-size: clamp(34px, 10.5vw, 58px) !important;
+  line-height: .98 !important;
+  letter-spacing: -.055em !important;
+  overflow-wrap: anywhere !important;
+  text-wrap: balance;
+}
+
+#categoriesScreen .category-card p {
+  width: min(100%, 390px) !important;
+  max-width: 100% !important;
+  font-size: clamp(14px, 3.8vw, 18px) !important;
+  line-height: 1.36 !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 3 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+#categoriesScreen .category-card::after {
+  left: 22px !important;
+  right: 22px !important;
+  bottom: calc(var(--safe-bottom, 0px) + 34px) !important;
+  min-height: 52px !important;
+  border-radius: 20px !important;
+  z-index: 8 !important;
+}
+
+#categoriesScreen .category-feed-counter {
+  top: calc(var(--safe-top, 0px) + 28px) !important;
+  right: 22px !important;
+  bottom: auto !important;
+  z-index: 9 !important;
+}
+
+@media (max-width: 380px), (max-height: 700px) {
+  #categoriesScreen .category-card h3 {
+    font-size: clamp(28px, 9.8vw, 46px) !important;
+    line-height: 1.02 !important;
+    margin-bottom: 8px !important;
+  }
+
+  #categoriesScreen .category-card p {
+    font-size: 13px !important;
+    line-height: 1.32 !important;
+    -webkit-line-clamp: 2 !important;
+  }
+
+  #categoriesScreen .category-copy {
+    bottom: calc(var(--safe-bottom, 0px) + 92px) !important;
+    padding: 0 18px !important;
+  }
+
+  #categoriesScreen .category-card::after {
+    left: 18px !important;
+    right: 18px !important;
+    min-height: 48px !important;
+  }
+
+  #categoriesScreen .category-icon {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 18px !important;
+  }
+
+  #categoriesScreen .category-badge { display: none !important; }
+}
