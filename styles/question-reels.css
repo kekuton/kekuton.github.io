@@ -1,0 +1,641 @@
+/* Question screen: dark premium card, no bottom buttons */
+body[data-screen='game'] {
+  background:
+    radial-gradient(circle at 18% 8%, rgba(186, 117, 255, .24), transparent 32%),
+    radial-gradient(circle at 86% 88%, rgba(236, 72, 153, .18), transparent 34%),
+    #080712;
+}
+
+body[data-screen='game'] .topbar {
+  display: none !important;
+}
+
+body[data-screen='game'] #gameScreen {
+  min-height: 100svh;
+  padding: max(18px, env(safe-area-inset-top)) 18px max(20px, env(safe-area-inset-bottom));
+  display: none;
+}
+
+body[data-screen='game'] #gameScreen.screen-active {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+body[data-screen='game'] #gameScreen .game-head {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+body[data-screen='game'] #gameScreen .game-head::before {
+  content: '←';
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  color: rgba(255,255,255,.86);
+  font-size: 26px;
+  font-weight: 500;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: 0 14px 34px rgba(0,0,0,.24);
+}
+
+body[data-screen='game'] #gameScreen .game-head > div:first-child {
+  min-width: 0;
+  text-align: center;
+  order: 2;
+}
+
+body[data-screen='game'] #gameScreen .game-head .eyebrow {
+  display: block;
+  margin: 0;
+  color: #fff;
+  opacity: .96;
+  font-size: clamp(20px, 5.2vw, 26px);
+  line-height: 1.08;
+  font-weight: 800;
+  letter-spacing: -.035em;
+  text-transform: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+body[data-screen='game'] #gameScreen .game-head h2 {
+  margin: 3px 0 0;
+  color: rgba(216,180,254,.96);
+  font-size: 13px;
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+body[data-screen='game'] #gameScreen .progress-badge {
+  display: none;
+}
+
+body[data-screen='game'] #favoriteQuestionBtn {
+  order: 3;
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  font-size: 22px;
+  color: rgba(255,255,255,.88);
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: 0 14px 34px rgba(0,0,0,.24);
+}
+
+body[data-screen='game'] #favoriteQuestionBtn.is-active {
+  color: #f0abfc;
+  text-shadow: 0 0 18px rgba(240,171,252,.7);
+}
+
+body[data-screen='game'] #gameScreen .progress-bar {
+  display: block;
+  height: 6px;
+  margin: 4px 34px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.10);
+  overflow: hidden;
+  border: 0;
+}
+
+body[data-screen='game'] #gameScreen .progress-bar span {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #e879f9, #8b5cf6);
+  box-shadow: 0 0 22px rgba(216, 180, 254, .55);
+}
+
+body[data-screen='game'] #gameScreen .progress-meta-row,
+body[data-screen='game'] #gameScreen .answer-actions {
+  display: none !important;
+}
+
+body[data-screen='game'] #gameScreen .question-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  margin: 0;
+  perspective: 1400px;
+}
+
+body[data-screen='game'] #gameScreen .stack-card {
+  display: none !important;
+}
+
+body[data-screen='game'] #questionCard {
+  width: 100%;
+  min-height: 0;
+  height: 100%;
+  max-height: 690px;
+  margin: 0 auto;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 30px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+  isolation: isolate;
+  background:
+    linear-gradient(180deg, rgba(8,7,18,.06) 0%, rgba(8,7,18,.18) 34%, rgba(8,7,18,.82) 78%, rgba(8,7,18,.96) 100%),
+    var(--question-cover, radial-gradient(circle at 50% 0%, rgba(168,85,247,.55), transparent 42%)),
+    #111020;
+  background-size: cover;
+  background-position: center;
+  border: 1px solid rgba(255,255,255,.14);
+  box-shadow:
+    0 28px 76px rgba(0,0,0,.48),
+    0 0 0 1px rgba(168,85,247,.10),
+    inset 0 1px 0 rgba(255,255,255,.14);
+}
+
+body[data-screen='game'] #questionCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255,255,255,.05), transparent 30%),
+    linear-gradient(180deg, transparent 42%, rgba(12,9,20,.68) 74%, rgba(7,6,13,.95) 100%);
+  pointer-events: none;
+}
+
+body[data-screen='game'] #questionCard::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  border: 1px solid rgba(255,255,255,.08);
+  pointer-events: none;
+}
+
+body[data-screen='game'] #questionCard .swipe-badge,
+body[data-screen='game'] #questionCard .swipe-badge-left,
+body[data-screen='game'] #questionCard .swipe-badge-right,
+body[data-screen='game'] #questionCard .swipe-badge-up {
+  display: none !important;
+}
+
+body[data-screen='game'] #questionCard .question-text {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 58px;
+  z-index: 2;
+  max-width: 100%;
+  margin: 0;
+  color: #fff;
+  text-align: center;
+  font-size: clamp(28px, 8vw, 44px);
+  line-height: 1.12;
+  letter-spacing: -.045em;
+  font-weight: 850;
+  text-wrap: balance;
+  text-shadow: 0 14px 34px rgba(0,0,0,.58);
+}
+
+body[data-screen='game'] #questionCard .question-text::before {
+  content: attr(data-progress);
+  display: inline-flex;
+  width: auto;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  margin: 0 auto 18px;
+  border-radius: 999px;
+  color: rgba(255,255,255,.92);
+  background: rgba(15,12,26,.54);
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 12px 34px rgba(0,0,0,.28);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  font-size: 15px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -.01em;
+  text-transform: none;
+  text-shadow: none;
+}
+
+body[data-screen='game'] #questionCard .question-text::after {
+  content: 'Вопрос';
+  display: block;
+  margin: 0 auto 12px;
+  color: rgba(216,180,254,.92);
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  text-shadow: none;
+  order: -1;
+}
+
+body[data-screen='game'] #gameScreen .swipe-help {
+  display: block;
+  margin: 0;
+  color: rgba(216,180,254,.74);
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+}
+
+body[data-screen='game'] #gameScreen .swipe-help::before {
+  content: '⌃';
+  display: block;
+  margin-bottom: 4px;
+  color: rgba(255,255,255,.78);
+  font-size: 20px;
+  line-height: 1;
+}
+
+body[data-screen='game'] #gameScreen .swipe-help {
+  font-size: 0;
+}
+
+body[data-screen='game'] #gameScreen .swipe-help::after {
+  content: 'Свайпни вверх для следующего вопроса';
+  font-size: 13px;
+}
+
+@media (max-height: 720px) {
+  body[data-screen='game'] #gameScreen {
+    padding-top: max(12px, env(safe-area-inset-top));
+    gap: 10px;
+  }
+
+  body[data-screen='game'] #gameScreen .progress-bar {
+    margin-bottom: 8px;
+  }
+
+  body[data-screen='game'] #questionCard {
+    border-radius: 26px;
+  }
+
+  body[data-screen='game'] #questionCard .question-text {
+    bottom: 34px;
+    font-size: clamp(24px, 7.2vw, 34px);
+  }
+}
+
+@media (max-width: 390px) {
+  body[data-screen='game'] #gameScreen {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  body[data-screen='game'] #questionCard .question-text {
+    left: 18px;
+    right: 18px;
+    font-size: clamp(24px, 7.4vw, 36px);
+  }
+}
+
+/* FINAL: question screen matched to the provided mockups */
+body[data-screen='game'] {
+  background:
+    radial-gradient(circle at 20% 0%, rgba(184, 96, 255, .20), transparent 34%),
+    radial-gradient(circle at 86% 100%, rgba(236, 72, 153, .14), transparent 38%),
+    linear-gradient(180deg, #070611 0%, #0c0916 50%, #05050b 100%) !important;
+  color: #fff;
+}
+
+body[data-screen='game'] #gameScreen.screen-active {
+  min-height: 100svh !important;
+  height: 100svh !important;
+  padding: max(18px, env(safe-area-inset-top)) 18px max(12px, env(safe-area-inset-bottom)) !important;
+  gap: 12px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+body[data-screen='game'] #gameScreen .game-head {
+  grid-template-columns: 48px minmax(0, 1fr) 48px !important;
+  gap: 12px !important;
+  flex: 0 0 auto !important;
+}
+
+body[data-screen='game'] #gameScreen .game-head::before,
+body[data-screen='game'] #favoriteQuestionBtn {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 18px !important;
+  background: rgba(255,255,255,.07) !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+  box-shadow: 0 16px 38px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.08) !important;
+  backdrop-filter: blur(16px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(140%) !important;
+}
+
+body[data-screen='game'] #favoriteQuestionBtn {
+  font-size: 27px !important;
+  line-height: 1 !important;
+  color: #ecc7ff !important;
+}
+
+body[data-screen='game'] #gameScreen .game-head .eyebrow {
+  font-size: clamp(22px, 5.7vw, 29px) !important;
+  font-weight: 850 !important;
+  letter-spacing: -.045em !important;
+  color: rgba(255,255,255,.94) !important;
+}
+
+body[data-screen='game'] #gameScreen .game-head h2 {
+  color: #d493ff !important;
+  font-size: clamp(14px, 3.9vw, 18px) !important;
+  font-weight: 700 !important;
+}
+
+body[data-screen='game'] #gameScreen .progress-bar {
+  display: flex !important;
+  height: 6px !important;
+  margin: 4px 42px 12px !important;
+  border-radius: 999px !important;
+  background: repeating-linear-gradient(90deg,
+    rgba(255,255,255,.18) 0 32px,
+    transparent 32px 40px) !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+}
+
+body[data-screen='game'] #gameScreen .progress-bar span {
+  display: block !important;
+  height: 100% !important;
+  background: linear-gradient(90deg, #f08bff, #ad6dff) !important;
+  border-radius: 999px !important;
+  box-shadow: 0 0 22px rgba(224, 128, 255, .72) !important;
+}
+
+body[data-screen='game'] #gameScreen .question-stage {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 0 !important;
+  align-items: center !important;
+}
+
+body[data-screen='game'] #questionCard {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  border-radius: 30px !important;
+  overflow: hidden !important;
+  background:
+    linear-gradient(180deg, rgba(5,5,15,.08) 0%, rgba(5,5,15,.06) 34%, rgba(7,5,13,.55) 67%, rgba(6,5,11,.95) 100%),
+    var(--question-cover, url('../images/bg_evening_card.jpg')) center / cover no-repeat,
+    #0c0a16 !important;
+  border: 1px solid rgba(255, 178, 228, .22) !important;
+  box-shadow:
+    0 28px 80px rgba(0,0,0,.58),
+    0 0 0 1px rgba(167, 91, 255, .13),
+    inset 0 1px 0 rgba(255,255,255,.11) !important;
+}
+
+body[data-screen='game'] #questionCard::before {
+  z-index: 0 !important;
+  background:
+    radial-gradient(circle at 82% 2%, rgba(255, 174, 96, .24), transparent 18%),
+    linear-gradient(180deg, rgba(12,9,19,.02) 0%, rgba(12,9,19,.12) 42%, rgba(13,10,20,.77) 76%, rgba(8,7,14,.97) 100%) !important;
+}
+
+body[data-screen='game'] #questionCard::after {
+  content: '' !important;
+  position: absolute !important;
+  inset: 1px !important;
+  border-radius: 29px !important;
+  border: 1px solid rgba(255,255,255,.07) !important;
+  pointer-events: none !important;
+}
+
+body[data-screen='game'] .question-card-topline {
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  top: 22px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+body[data-screen='game'] .question-card-count,
+body[data-screen='game'] .question-card-fav {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,.94);
+  background: rgba(13,10,25,.50);
+  border: 1px solid rgba(255,255,255,.14);
+  box-shadow: 0 14px 34px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.08);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+body[data-screen='game'] .question-card-fav {
+  color: #f3d7ff;
+  max-width: 58%;
+}
+
+body[data-screen='game'] .question-glow-icon {
+  position: absolute;
+  left: 50%;
+  bottom: min(300px, 43%);
+  z-index: 2;
+  width: 72px;
+  height: 72px;
+  margin-left: -36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #f2d1ff;
+  font-size: 32px;
+  background: rgba(255,255,255,.09);
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 0 40px rgba(205, 116, 255, .22), inset 0 1px 0 rgba(255,255,255,.09);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  opacity: .94;
+}
+
+body[data-screen='game'] #questionCard .question-text {
+  left: 28px !important;
+  right: 28px !important;
+  bottom: 54px !important;
+  z-index: 4 !important;
+  color: #fff !important;
+  font-size: clamp(28px, 7.7vw, 42px) !important;
+  line-height: 1.16 !important;
+  letter-spacing: -.045em !important;
+  font-weight: 850 !important;
+  text-align: center !important;
+  text-shadow: 0 16px 38px rgba(0,0,0,.72) !important;
+}
+
+body[data-screen='game'] #questionCard .question-text::before {
+  content: 'ВОПРОС' !important;
+  display: block !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 0 !important;
+  margin: 0 0 14px !important;
+  color: #d493ff !important;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+  font-weight: 950 !important;
+  letter-spacing: .16em !important;
+  text-transform: uppercase !important;
+}
+
+body[data-screen='game'] #questionCard .question-text::after { content: none !important; display: none !important; }
+
+body[data-screen='game'] #gameScreen .swipe-help {
+  flex: 0 0 auto !important;
+  margin: 0 !important;
+  min-height: 26px !important;
+  color: rgba(216,180,254,.72) !important;
+  font-size: 0 !important;
+  text-align: center !important;
+  font-weight: 750 !important;
+}
+
+body[data-screen='game'] #gameScreen .swipe-help::before {
+  content: '⌃' !important;
+  display: block !important;
+  margin: 0 0 4px !important;
+  color: rgba(255,255,255,.78) !important;
+  font-size: 20px !important;
+  line-height: 1 !important;
+}
+
+body[data-screen='game'] #gameScreen .swipe-help::after {
+  content: 'Свайпни вверх для следующего вопроса' !important;
+  font-size: 13px !important;
+}
+
+body[data-screen='game'] .question-primary-next {
+  flex: 0 0 auto;
+  width: 100%;
+  height: 58px;
+  border: 0;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #fff;
+  background: linear-gradient(135deg, #dd79d9 0%, #884dff 100%);
+  box-shadow: 0 20px 52px rgba(137, 76, 255, .33), inset 0 1px 0 rgba(255,255,255,.28);
+  font-size: 17px;
+  font-weight: 850;
+  letter-spacing: -.02em;
+}
+
+body[data-screen='game'] .question-next-arrow {
+  margin-left: auto;
+  margin-right: 18px;
+  font-size: 28px;
+  line-height: 1;
+}
+
+body[data-screen='game'] .game-bottom-nav {
+  flex: 0 0 auto;
+  height: 70px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 28px 28px 0 0;
+  background: rgba(14, 12, 24, .72);
+  border: 1px solid rgba(255,255,255,.08);
+  border-bottom: 0;
+  box-shadow: 0 -14px 44px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.06);
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+}
+
+body[data-screen='game'] .game-bottom-nav button {
+  height: 54px;
+  border: 0;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  background: transparent;
+  color: rgba(228, 210, 244, .66);
+  font: inherit;
+}
+
+body[data-screen='game'] .game-bottom-nav button span {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 22px;
+  line-height: 1;
+}
+
+body[data-screen='game'] .game-bottom-nav button small {
+  font-size: 12px;
+  font-weight: 650;
+}
+
+body[data-screen='game'] .game-bottom-nav button.is-active {
+  color: #d493ff;
+}
+
+body[data-screen='game'] .game-bottom-nav button.is-active span {
+  color: #170f1d;
+  background: linear-gradient(135deg, #d493ff, #9f6bff);
+  font-weight: 900;
+}
+
+@media (max-height: 760px) {
+  body[data-screen='game'] #gameScreen.screen-active { gap: 9px !important; padding-left: 14px !important; padding-right: 14px !important; }
+  body[data-screen='game'] #gameScreen .game-head::before,
+  body[data-screen='game'] #favoriteQuestionBtn { width: 42px !important; height: 42px !important; border-radius: 15px !important; }
+  body[data-screen='game'] #gameScreen .progress-bar { margin-bottom: 6px !important; }
+  body[data-screen='game'] #questionCard { border-radius: 26px !important; }
+  body[data-screen='game'] .question-card-topline { top: 16px; left: 16px; right: 16px; }
+  body[data-screen='game'] .question-card-count,
+  body[data-screen='game'] .question-card-fav { min-height: 36px; padding: 0 12px; font-size: 13px; }
+  body[data-screen='game'] .question-glow-icon { width: 58px; height: 58px; margin-left: -29px; bottom: min(220px, 42%); font-size: 26px; }
+  body[data-screen='game'] #questionCard .question-text { bottom: 34px !important; font-size: clamp(23px, 6.7vw, 32px) !important; }
+  body[data-screen='game'] .question-primary-next { height: 52px; font-size: 15px; }
+  body[data-screen='game'] .game-bottom-nav { height: 62px; border-radius: 24px 24px 0 0; }
+  body[data-screen='game'] .game-bottom-nav button { height: 46px; }
+}
+
+@media (max-width: 380px) {
+  body[data-screen='game'] .question-card-fav { font-size: 0; width: 44px; padding: 0; }
+  body[data-screen='game'] .question-card-fav::before { content: '♡'; font-size: 20px; }
+  body[data-screen='game'] #questionCard .question-text { left: 20px !important; right: 20px !important; }
+  body[data-screen='game'] .game-bottom-nav button small { font-size: 11px; }
+}

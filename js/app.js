@@ -105,6 +105,10 @@ function bindEvents() {
     router.show('game');
     render.gameQuestion(true);
   });
+  ui.questionNextBtn?.addEventListener('click', () => game.answer('skip'));
+  ui.gameNavCategories?.addEventListener('click', () => router.show('categories'));
+  ui.gameNavFavorites?.addEventListener('click', openFavorites);
+
   ui.favoriteQuestionBtn?.addEventListener('click', () => {
     const added = meta.toggleFavorite();
     render.favorites();

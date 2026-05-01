@@ -245,7 +245,11 @@ export const render = {
     ui.gameTitle.textContent = 'Вопрос';
     this.updateModeUI();
     ui.questionText.textContent = question;
+    ui.questionText.dataset.progress = `${state.currentIndex + 1} / ${total}`;
+    const cover = state.currentCategory?.cover || 'images/bg_future_card.jpg';
+    if (ui.questionCard) ui.questionCard.style.setProperty('--question-cover', `url("${cover}")`);
     ui.progressLabel.textContent = `${state.currentIndex + 1} / ${total}`;
+    if (ui.questionCardCount) ui.questionCardCount.textContent = `${state.currentIndex + 1} / ${total}`;
     ui.progressFill.style.width = `${((state.currentIndex + 1) / total) * 100}%`;
     if (ui.remainingQuestionsLabel) ui.remainingQuestionsLabel.textContent = `Осталось ${Math.max(total - state.currentIndex - 1, 0)} вопросов`;
     if (ui.streakLabel) ui.streakLabel.textContent = `Серия: ${state.questionStreak || 0}`;
@@ -253,7 +257,8 @@ export const render = {
       ui.favoriteQuestionBtn.classList.remove('hidden');
       const active = helpers.isFavorite(question, state.currentCategory?.id);
       ui.favoriteQuestionBtn.classList.toggle('is-active', active);
-      ui.favoriteQuestionBtn.textContent = active ? '★' : '☆';
+      ui.favoriteQuestionBtn.textContent = active ? '♡' : '♡';
+      if (ui.questionCardFavoriteLabel) ui.questionCardFavoriteLabel.textContent = active ? '♡ В избранном' : '♡ В избранное';
     }
     ui.questionCard.classList.remove('card-fly-left', 'card-fly-right', 'card-fly-up', 'card-return');
     if (!isInitial && state.settings.animations) ui.questionCard.classList.add('card-enter');
