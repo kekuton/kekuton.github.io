@@ -115,3 +115,15 @@ body.light #categoriesScreen.screen-active { background: radial-gradient(circle 
     font-size: 23px !important;
   }
 }
+
+/* Remove the dark rectangular backing behind the category poster */
+#categoriesScreen.screen-active,
+body.light #categoriesScreen.screen-active {
+  background: transparent !important;
+}
+#categoriesScreen .categories-grid {
+  background: transparent !important;
+}
+#categoriesScreen .section-head {
+  background: transparent !important;
+}
