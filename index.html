@@ -1,437 +1,75 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#8b5cf6" />
-  <meta name="description" content="Игра для пары с красивыми категориями вопросов, совместимостью, блиц-режимом и историей результатов." />
-  <meta property="og:title" content="Вопросы для двоих" />
-  <meta property="og:description" content="Красивый Telegram Mini App для пары: категории вопросов, совместимость, блиц и история." />
-  <meta property="og:type" content="website" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Вопросы для двоих</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
-  <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <link rel="stylesheet" href="style.css" />
-
-  <style id="remove-bottom-answer-buttons">
-    #gameScreen .answer-actions,
-    #blitzScreen .answer-actions { display: none !important; }
-  </style>
 </head>
 <body>
-  <div class="bg-stack" aria-hidden="true">
-    <div class="bg-layer bg-layer-a active"></div>
-    <div class="bg-layer bg-layer-b"></div>
-    <div class="bg-overlay"></div>
-    <div class="bg-noise"></div>
-  </div>
-  <div class="loading-screen" id="loadingScreen">
-    <div class="loading-card">
-      <div class="loading-spinner"></div>
-      <strong>Вопросы для двоих</strong>
-      <p id="loadingText">Подготавливаем приложение...</p>
-    </div>
-  </div>
-  <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="true"></div>
-  <div class="app-shell">
-    <header class="topbar">
-      <button class="icon-btn hidden" id="backBtn" aria-label="Назад">←</button>
-      <div class="brand">
+  <main class="app">
+    <section id="categoriesScreen" class="screen active">
+      <header class="topbar">
         <div class="brand-pill">Вопросы для двоих</div>
-      </div>
-      <div class="topbar-actions" role="group" aria-label="Управление приложением">
-        <button class="icon-btn icon-btn-soft" id="favoritesBtn" aria-label="Открыть избранное" title="Избранное">
-          <span class="icon-btn-glyph icon-svg" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 3.4l2.7 5.46 6.03.88-4.36 4.25 1.03 6.01L12 17.2l-5.4 2.84 1.03-6L3.27 9.74l6.03-.88L12 3.4z"></path>
-            </svg>
-          </span>
-        </button>
-        <button class="icon-btn icon-btn-soft" id="settingsBtn" aria-label="Открыть настройки" title="Открыть настройки">
-          <span class="icon-btn-glyph icon-svg" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 3.75l1.1 1.91a2 2 0 0 0 1.74.99h2.2l.83 1.44-1.1 1.9a2 2 0 0 0 0 1.99l1.1 1.9-.83 1.44h-2.2a2 2 0 0 0-1.74.99L12 20.25l-1.1-1.91a2 2 0 0 0-1.74-.99h-2.2l-.83-1.44 1.1-1.9a2 2 0 0 0 0-1.99l-1.1-1.9.83-1.44h2.2a2 2 0 0 0 1.74-.99L12 3.75z"></path>
-              <circle cx="12" cy="12" r="3.25"></circle>
-            </svg>
-          </span>
-        </button>
-        <button class="icon-btn icon-btn-theme" id="themeBtn" aria-label="Сменить тему" title="Сменить тему">
-          <span class="icon-btn-glyph icon-svg" aria-hidden="true" id="themeBtnIcon"></span>
-        </button>
-      </div>
-    </header>
-
-    <main class="screen-wrap">
-      <section class="screen screen-active" id="homeScreen">
-        <div class="hero-card">
-          <span class="eyebrow">Игра для пары</span>
-          <h1>Поговорим по‑настоящему?</h1>
-          <p>Проходите красивые категории вопросов, отмечайте совпадения и смотрите вашу совместимость.</p>
-          <div class="hero-actions">
-            <button class="primary-btn" id="startBtn">Начать игру</button>
-            <button class="secondary-btn" id="historyBtn">История</button>
-            <button class="secondary-btn" id="openSettingsBtn">Настройки</button>
+        <div class="tools">
+          <button>☆</button><button>⚙</button><button>☼</button>
+        </div>
+      </header>
+      <div class="deck" id="deck">
+        <article class="mode-card active" data-category="evening">
+          <img src="assets/evening-category.jpg" alt="" class="mode-img" />
+          <div class="shade"></div>
+          <div class="mode-top"><span>1 / 10</span><span>♙ 36 вопросов</span></div>
+          <div class="mode-copy">
+            <div class="mode-icon">♡</div>
+            <p class="eyebrow">КАТЕГОРИЯ</p>
+            <h1>Вечер для двоих</h1>
+            <p>Тёплые вопросы для уютных разговоров и настоящей близости.</p>
+            <button class="start-btn" data-start="evening">Начать <b>→</b></button>
           </div>
-        </div>
-
-        <div class="feature-row">
-          <article class="feature-chip">
-            <span class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.7-4.35-9.1-8A5.46 5.46 0 0 1 12 6.7 5.46 5.46 0 0 1 21.1 13C18.7 16.65 12 21 12 21z"></path></svg></span>
-            <div>
-              <strong>Совместимость</strong>
-              <small>Процент по вашим ответам</small>
-            </div>
-          </article>
-          <article class="feature-chip">
-            <span class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"></path></svg></span>
-            <div>
-              <strong>Блиц-режим</strong>
-              <small>Проверка знаний на время</small>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      
-      <section class="screen" id="onboardingScreen">
-        <div class="hero-card onboarding-card">
-          <span class="eyebrow">Добро пожаловать</span>
-          <div class="onboarding-progress" id="onboardingProgress"></div>
-          <div class="onboarding-visual" id="onboardingVisual"></div>
-          <h2 id="onboardingTitle">Пара шагов перед началом</h2>
-          <p id="onboardingText">Покажем, как устроена игра и что в ней можно делать.</p>
-          <div class="onboarding-points" id="onboardingPoints"></div>
-          <div class="hero-actions stacked">
-            <button class="primary-btn" id="onboardingNextBtn">Дальше</button>
-            <button class="secondary-btn" id="onboardingSkipBtn">Пропустить</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="screen" id="errorScreen">
-        <div class="results-card error-card">
-          <span class="eyebrow">Ошибка загрузки</span>
-          <div class="error-visual" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 9v4"></path>
-              <path d="M12 17h.01"></path>
-              <path d="M10.3 3.84L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.7 3.84a2 2 0 0 0-3.4 0z"></path>
-            </svg>
-          </div>
-          <h2>Не удалось загрузить вопросы</h2>
-          <p class="results-message" id="errorText">Проверь подключение к интернету или попробуй ещё раз. Если раньше игра уже открывалась, можно продолжить с кэшем.</p>
-          <div class="hero-actions stacked">
-            <button class="primary-btn" id="retryLoadBtn">Повторить загрузку</button>
-            <button class="secondary-btn" id="goHomeFromErrorBtn">На главный экран</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="screen" id="categoriesScreen">
-        <div class="section-head">
-          <span class="eyebrow">Выбор категории</span>
-          <h2>Выбери настроение игры</h2>
-          <p>Сначала выбери тему, а потом начни новую игру.</p>
-        </div>
-        <div class="categories-grid" id="categoriesGrid"></div>
-      </section>
-
-      <section class="screen" id="categoryIntroScreen">
-        <div class="intro-card" id="categoryIntroCard"></div>
-      </section>
-
-      <section class="screen" id="customGameScreen">
-        <div class="section-head compact">
-          <span class="eyebrow">Эксклюзив</span>
-          <h2>Своя игра</h2>
-          <p>Добавь свои личные вопросы для партнёра.</p>
-        </div>
-        
-        <div class="custom-questions-list" id="customQuestionsList">
-        </div>
-
-        <div class="hero-actions stacked">
-          <button class="secondary-btn" id="addCustomQuestionBtn" style="width: 100%;">+ Добавить вопрос</button>
-          <button class="primary-btn" id="saveCustomGameBtn" style="width: 100%;">Сохранить и играть</button>
-        </div>
-      </section>
-
-      <section class="screen" id="gameScreen">
-        <div class="game-head">
-          <div>
-            <span class="eyebrow" id="gameCategory">Категория</span>
-            <h2 id="gameTitle">Вопрос</h2>
-          </div>
-          <div class="progress-badge" id="progressLabel">1 / 10</div>
-          <button class="icon-btn icon-btn-soft hidden" id="favoriteQuestionBtn" aria-label="Добавить в избранное" title="Добавить в избранное">★</button>
-        </div>
-
-        <div class="progress-bar">
-          <span id="progressFill"></span>
-        </div>
-        <div class="progress-meta-row">
-          <span id="remainingQuestionsLabel">Осталось 0 вопросов</span>
-          <span id="streakLabel">Серия: 0</span>
-        </div>
-
-        <div class="question-stage">
-          <div class="stack-card stack-card-back"></div>
-          <div class="stack-card stack-card-mid"></div>
-          <article class="question-card" id="questionCard">
-            <div class="question-card-topline">
-              <span class="question-card-count" id="questionCardCount">1 / 10</span>
-              <span class="question-card-fav" id="questionCardFavoriteLabel">♡ В избранное</span>
-            </div>
-            <div class="question-glow-icon">✦</div>
-            <div class="swipe-badge swipe-badge-left">✕ Не совпало</div>
-            <div class="swipe-badge swipe-badge-right">❤ Совпало</div>
-            <div class="swipe-badge swipe-badge-up">↟ Пропуск</div>
-            <p class="question-text" id="questionText"></p>
-          </article>
-        </div>
-        <div class="swipe-help" id="swipeHelp">Свайпни вверх для следующего вопроса</div>
-        <button class="question-primary-next" id="questionNextBtn" type="button">
-          <span>Следующий вопрос</span>
-          <span class="question-next-arrow">↑</span>
-        </button>
-        <nav class="game-bottom-nav" aria-label="Навигация игры">
-          <button type="button" id="gameNavCategories"><span>▰</span><small>Категории</small></button>
-          <button type="button" class="is-active"><span>?</span><small>Вопросы</small></button>
-          <button type="button" id="gameNavFavorites"><span>♡</span><small>Избранное</small></button>
-        </nav>
-
-      </section>
-
-      <section class="screen" id="blitzScreen">
-        <div class="game-head">
-          <div>
-            <span class="eyebrow">Блиц-опрос</span>
-            <h2>На время!</h2>
-          </div>
-          <div class="timer-badge" id="blitzTimerDisplay">30</div>
-        </div>
-
-        <div class="stats-grid" style="margin-top: 0; margin-bottom: 18px;">
-          <div class="stat-box">
-            <small>Правильно</small>
-            <strong id="blitzCorrectScore">0</strong>
-          </div>
-          <div class="stat-box">
-            <small>Всего</small>
-            <strong id="blitzTotalScore">0</strong>
-          </div>
-        </div>
-
-        <article class="question-card blitz-card">
-          <p class="question-text" id="blitzQuestionText"></p>
         </article>
-
-      </section>
-
-      <section class="screen" id="resultsScreen">
-        <div class="results-card">
-          <span class="eyebrow">Результат</span>
-          <h2 id="resultsCategory">Категория</h2>
-          <div class="results-score" id="resultsScore">0%</div>
-          <p class="results-message" id="resultsMessage"></p>
-          <div class="results-vibe" id="resultsVibe">Ваш вайб: —</div>
-
-          <div class="stats-grid">
-            <div class="stat-box">
-              <small id="statLabelMatch">Совпало</small>
-              <strong id="statMatch">0</strong>
-            </div>
-            <div class="stat-box">
-              <small id="statLabelMismatch">Не совпало</small>
-              <strong id="statMismatch">0</strong>
-            </div>
-            <div class="stat-box">
-              <small>Пропуск</small>
-              <strong id="statSkip">0</strong>
-            </div>
+        <article class="mode-card side" data-category="fight">
+          <img src="assets/evening-category.jpg" alt="" class="mode-img" />
+          <div class="shade"></div>
+          <div class="mode-top"><span>2 / 10</span><span>☁ 24 вопроса</span></div>
+          <div class="mode-copy">
+            <div class="mode-icon">✦</div>
+            <p class="eyebrow">КАТЕГОРИЯ</p>
+            <h1>После ссоры</h1>
+            <p>Спокойные вопросы, чтобы услышать друг друга и помириться.</p>
+            <button class="start-btn" data-start="fight">Начать <b>→</b></button>
           </div>
-          <div class="results-breakdown" id="resultsBreakdown"></div>
-          <div class="results-achievements" id="resultsAchievements"></div>
-
-          <div class="hero-actions stacked">
-            <button class="primary-btn" id="restartBtn">Пройти ещё раз</button>
-            <button class="secondary-btn" id="changeCategoryBtn">Другая категория</button>
-            <button class="secondary-btn" id="shareBtn">Поделиться результатом</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="screen" id="settingsScreen">
-        <div class="section-head compact">
-          <span class="eyebrow">Настройки</span>
-          <h2>Настрой игру под себя</h2>
-          <p>Настрой игру под себя и быстро очисти лишние данные.</p>
-        </div>
-
-        <div class="settings-list">
-          <article class="settings-card">
-            <div>
-              <strong>Вибрация</strong>
-              <p>Отклик при свайпах и результатах.</p>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="vibrationToggle" />
-              <span class="switch-slider"></span>
-            </label>
-          </article>
-
-          <article class="settings-card">
-            <div>
-              <strong>Анимации</strong>
-              <p>Конфетти, вылет карточек и анимированные переходы.</p>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="animationsToggle" />
-              <span class="switch-slider"></span>
-            </label>
-          </article>
-
-          <article class="settings-card settings-card-stack">
-            <div>
-              <strong>Вопросов за раунд</strong>
-              <p>Сколько карточек брать для обычной игры.</p>
-            </div>
-            <select class="settings-select" id="roundSizeSelect">
-              <option value="5">5 вопросов</option>
-              <option value="8">8 вопросов</option>
-              <option value="10">10 вопросов</option>
-              <option value="12">12 вопросов</option>
-            </select>
-          </article>
-
-          <article class="settings-card settings-card-stack">
-            <div>
-              <strong>Данные</strong>
-              <p>Быстрая очистка истории и служебных флагов.</p>
-            </div>
-            <div class="hero-actions stacked">
-              <button class="settings-action-btn settings-action-btn-neutral" id="clearHistoryBtn"><span class="settings-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5l3 2"></path><circle cx="12" cy="12" r="9"></circle></svg></span><span>Очистить историю</span></button>
-              <button class="settings-action-btn settings-action-btn-warm" id="resetCustomBtn"><span class="settings-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M19 6l-1 13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg></span><span>Удалить свои вопросы</span></button>
-              <button class="settings-action-btn settings-action-btn-danger" id="resetFlagsBtn"><span class="settings-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.3-6.36L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-15.3 6.36L3 16"></path><path d="M8 16H3v5"></path></svg></span><span>Сбросить 18+ и Premium</span></button>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section class="screen" id="historyScreen">
-        <div class="section-head compact">
-          <span class="eyebrow">История</span>
-          <h2>История игр</h2>
-        </div>
-        <div class="history-toolbar">
-          <input class="history-search-input" id="historySearchInput" type="search" placeholder="Поиск по категории" autocomplete="off" />
-        </div>
-        <div class="history-list" id="historyList"></div>
-      </section>
-
-      <section class="screen" id="favoritesScreen">
-        <div class="section-head compact">
-          <span class="eyebrow">Любимые</span>
-          <h2>Избранные вопросы</h2>
-          <p>Сохраняй лучшие карточки и запускай отдельный раунд только по ним.</p>
-        </div>
-        <div class="history-list" id="favoritesList"></div>
-        <div class="hero-actions stacked">
-          <button class="primary-btn" id="startFavoritesBtn">Играть по избранному</button>
-        </div>
-      </section>
-
-      <section class="screen" id="achievementsScreen">
-        <div class="section-head compact">
-          <span class="eyebrow">Награды</span>
-          <h2>Все достижения</h2>
-          <p>Открытые и закрытые награды с редкостью, прогрессом и иллюстрациями.</p>
-        </div>
-        <div class="achievement-legend" id="achievementLegend"></div>
-        <div class="achievement-screen-grid" id="achievementsList"></div>
-      </section>
-
-      <div class="achievement-unlock hidden" id="achievementUnlock" aria-live="polite">
-        <div class="achievement-unlock-card" id="achievementUnlockCard"></div>
+        </article>
       </div>
-    </main>
-  </div>
+      <div class="scroll-hint">ЛИСТАЙ ВВЕРХ<br><span>⌃</span></div>
+      <div class="dots"><i></i><i class="on"></i><i></i><i></i><i></i></div>
+    </section>
 
-  <div class="modal hidden" id="adultModal" aria-hidden="true">
-    <div class="modal-card">
-      <span class="eyebrow">18+</span>
-      <h3>Подтверждение возраста</h3>
-      <p>Эта категория содержит откровенные вопросы. Продолжайте только, если вам уже исполнилось 18 лет.</p>
-      <div class="hero-actions stacked">
-        <button class="primary-btn" id="adultConfirmBtn">Мне есть 18</button>
-        <button class="secondary-btn" id="adultCancelBtn">Назад</button>
+    <section id="questionScreen" class="screen question-screen">
+      <header class="question-head">
+        <button id="backBtn" class="round">←</button>
+        <div><h2 id="qCategory">Вечер для двоих</h2><p id="qSub">Вопрос 4 из 36</p></div>
+        <button id="favTop" class="round">♡</button>
+      </header>
+      <div class="progress" id="progress"></div>
+      <div class="question-card" id="questionCard">
+        <img src="assets/question-photo.jpg" alt="" class="q-photo" />
+        <div class="q-glow"></div>
+        <div class="q-content">
+          <div class="q-icon">♡</div>
+          <h1 id="qText">Какой момент<br>из детства сформировал<br>тебя больше всего?</h1>
+          <p id="qHint">Расскажи, что сделал тебя тем, кто ты есть сегодня.</p>
+        </div>
       </div>
-    </div>
-  </div>
-
-  <div class="modal hidden" id="premiumModal" aria-hidden="true">
-    <div class="modal-card" style="text-align: center;">
-      <div class="intro-illu" style="margin: 0 auto 16px;">⭐️</div>
-      <span class="eyebrow">Премиум</span>
-      <h3 style="margin-top: 8px;">Режим «Своя игра»</h3>
-      <p style="margin-bottom: 24px;">Создай уникальную колоду со своими вопросами. Сейчас это тестовый режим оплаты.</p>
-      <div class="hero-actions stacked">
-        <button class="primary-btn" id="buyPremiumBtn">Купить за 50 ⭐️ · тест</button>
-        <button class="secondary-btn" id="closePremiumBtn">Позже</button>
-      </div>
-    </div>
-  </div>
-
-
-
-<template id="categoryCardTemplate">
-  <article class="category-card" role="button" tabindex="0">
-    <img class="category-poster hidden" data-role="poster" alt="">
-    <div class="category-card-top">
-      <span class="category-feed-counter" data-role="counter"></span>
-      <span class="category-badge hidden" data-role="badge"></span>
-    </div>
-    <div class="category-copy">
-      <div class="category-icon" data-role="icon"></div>
-      <span class="category-label">Категория</span>
-      <h3 data-role="title"></h3>
-      <p data-role="desc"></p>
-      <div class="category-start" aria-hidden="true">Начать <span>→</span></div>
-    </div>
-  </article>
-</template>
-
-<template id="historyItemTemplate">
-  <article class="history-item">
-    <strong data-role="category"></strong>
-    <div data-role="score"></div>
-    <div class="history-meta">
-      <span class="history-pill" data-role="mode"></span>
-      <span class="history-detail" data-role="details"></span>
-    </div>
-    <small data-role="date"></small>
-  </article>
-</template>
-
-<template id="emptyStateTemplate">
-  <div class="history-empty" data-role="message"></div>
-</template>
-
-<template id="favoriteItemTemplate">
-  <article class="history-item favorite-item">
-    <strong data-role="category"></strong>
-    <div class="favorite-question" data-role="question"></div>
-    <div class="history-meta">
-      <span class="history-pill" data-role="tag">Любимое</span>
-      <span class="history-detail" data-role="date"></span>
-    </div>
-  </article>
-</template>
-
-<script type="module" src="js/app.js"></script>
+      <div class="swipe-hint">Свайпни вверх для следующего вопроса<br><span>⌃</span></div>
+      <button id="nextBtn" class="next-main">Следующий вопрос <span>↑</span></button>
+      <nav class="bottom-nav">
+        <button id="navCats">▰<span>Категории</span></button>
+        <button class="active">?<span>Вопросы</span></button>
+        <button>♡<span>Избранное</span></button>
+      </nav>
+    </section>
+  </main>
+  <script src="script.js"></script>
 </body>
 </html>
