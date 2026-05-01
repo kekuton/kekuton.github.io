@@ -12,7 +12,25 @@ function finishOnboarding() {
 }
 
 function bindEvents() {
+  let categoryTouchY = 0;
+  let categorySwipeMoved = false;
+
+  ui.categoriesGrid.addEventListener('touchstart', (event) => {
+    categoryTouchY = event.touches?.[0]?.clientY || 0;
+    categorySwipeMoved = false;
+  }, { passive: true });
+
+  ui.categoriesGrid.addEventListener('touchmove', (event) => {
+    const currentY = event.touches?.[0]?.clientY || 0;
+    if (Math.abs(currentY - categoryTouchY) > 18) categorySwipeMoved = true;
+  }, { passive: true });
+
   ui.categoriesGrid.addEventListener('click', (event) => {
+    if (categorySwipeMoved) {
+      event.preventDefault();
+      categorySwipeMoved = false;
+      return;
+    }
     const card = event.target.closest('.category-card');
     if (card?.dataset.id) game.openCategory(card.dataset.id);
   });

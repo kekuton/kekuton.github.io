@@ -161,7 +161,10 @@ export const render = {
       if (category.id === 'Своя игра' && premiumUnlocked) count = storage.get(STORAGE_KEYS.customQuestions, []).length;
       const card = templates.clone(ui.categoryCardTemplate);
       if (!card) return;
+      const categoryIndex = CATEGORY_META.indexOf(category) + 1;
       card.dataset.id = category.id;
+      card.dataset.index = String(categoryIndex);
+      card.setAttribute('aria-label', `${category.id}. ${category.desc}. Нажмите, чтобы открыть категорию.`);
       card.style.background = 'transparent';
       card.style.backgroundColor = 'transparent';
       const poster = card.querySelector('[data-role="poster"]');
@@ -180,6 +183,10 @@ export const render = {
       }
       card.querySelector('[data-role="title"]').textContent = category.id;
       card.querySelector('[data-role="desc"]').textContent = category.desc;
+      const counter = document.createElement('span');
+      counter.className = 'category-feed-counter';
+      counter.textContent = `${categoryIndex} / ${CATEGORY_META.length}`;
+      card.appendChild(counter);
       fragment.appendChild(card);
     });
     ui.categoriesGrid.replaceChildren(fragment);
