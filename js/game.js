@@ -177,6 +177,7 @@ export const swipe = {
     state.swipe.currentX = event.clientX;
     state.swipe.currentY = event.clientY;
     card.setPointerCapture?.(event.pointerId);
+    card.classList.add('is-swiping');
     card.style.transition = 'none';
   },
   onPointerMove(event) {
@@ -195,7 +196,7 @@ export const swipe = {
           return;
         }
         const rotate = deltaX / 18;
-        const visualY = context.allowUp ? deltaY * 0.18 : 0;
+        const visualY = context.allowUp ? deltaY * 0.35 : 0;
         const stretch = 1 - Math.min(Math.abs(deltaX) / 1200, 0.03);
         card.style.transform = `translate3d(${deltaX}px, ${visualY}px, 0) rotate(${rotate}deg) scale(${stretch})`;
         this.updateHint(deltaX, deltaY);
@@ -214,6 +215,7 @@ export const swipe = {
     const deltaY = state.swipe.currentY - state.swipe.startY;
     const velocity = Math.abs(deltaX) / Math.max(1, Math.abs(deltaY) + 1);
     const threshold = window.innerWidth < 480 ? 70 : 90;
+    card.classList.remove('is-swiping');
     card.releasePointerCapture?.(event.pointerId);
     state.swipe.pointerId = null;
     if (context.mode === 'blitz') {
@@ -224,6 +226,7 @@ export const swipe = {
       if (deltaX < -threshold || (deltaX < -45 && velocity > 2.4)) return game.answer('mismatch');
       if (context.allowUp && deltaY < -110 && Math.abs(deltaX) < 100) return game.answer('skip');
     }
+    card.classList.remove('is-swiping');
     card.style.transition = 'transform 220ms cubic-bezier(.2,.9,.2,1)';
     card.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
     this.updateHint(0, 0);

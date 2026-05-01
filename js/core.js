@@ -23,8 +23,8 @@ const DEFAULT_SETTINGS = {
 };
 
 const CATEGORY_META = [
-  { id: 'Вечер для двоих', icon: 'heart', desc: 'Готовый тёплый сценарий на вечер', color: 'linear-gradient(180deg,#fb7185,#8b5cf6)', badge: 'Сценарий', isScenario: true },
-  { id: 'После ссоры', icon: 'peace', desc: 'Спокойные вопросы для примирения', color: 'linear-gradient(180deg,#38bdf8,#22c55e)', badge: 'Мягко' },
+  { id: 'Вечер для двоих', icon: 'heart', desc: 'Готовый тёплый сценарий на вечер', color: 'linear-gradient(180deg,#fb7185,#8b5cf6)', badge: 'Сценарий', isScenario: true, cover: 'images/bg_evening_card.jpg' },
+  { id: 'После ссоры', icon: 'peace', desc: 'Спокойные вопросы для примирения', color: 'linear-gradient(180deg,#38bdf8,#22c55e)', badge: 'Мягко', cover: 'images/bg_after_fight_card.jpg' },
   { id: '18+', icon: 'spark', desc: 'Откровенные вопросы', color: 'linear-gradient(180deg,#f59e0b,#fb7185)', badge: '18+', cover: 'images/bg_intimate_card.jpg' },
   { id: 'На расстоянии', icon: 'distance', desc: 'Для пар в разлуке', color: 'linear-gradient(180deg,#38bdf8,#6366f1)', cover: 'images/bg_distance_card.jpg' },
   { id: 'Будущее', icon: 'future', desc: 'Планы, мечты и семья', color: 'linear-gradient(180deg,#c084fc,#ec4899)', cover: 'images/bg_future_card.jpg' },

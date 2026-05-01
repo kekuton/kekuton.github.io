@@ -63,3 +63,18 @@ body[data-screen='blitz'] #blitzScreen .question-text {
   min-height: 100%;
   text-align: center;
 }
+
+/* Restore visible card movement while swiping on mobile/Telegram */
+body[data-screen='game'] #questionCard,
+body[data-screen='blitz'] #blitzScreen .question-card.blitz-card {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+  will-change: transform, opacity, box-shadow;
+}
+
+body[data-screen='game'] #questionCard.is-swiping,
+body[data-screen='blitz'] #blitzScreen .question-card.blitz-card.is-swiping {
+  cursor: grabbing;
+}
