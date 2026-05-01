@@ -375,17 +375,20 @@
 
 
 <template id="categoryCardTemplate">
-  <button class="category-card">
+  <article class="category-card" role="button" tabindex="0">
     <img class="category-poster hidden" data-role="poster" alt="">
     <div class="category-card-top">
-      <div class="category-icon" data-role="icon"></div>
+      <span class="category-feed-counter" data-role="counter"></span>
       <span class="category-badge hidden" data-role="badge"></span>
     </div>
     <div class="category-copy">
+      <div class="category-icon" data-role="icon"></div>
+      <span class="category-label">Категория</span>
       <h3 data-role="title"></h3>
       <p data-role="desc"></p>
+      <div class="category-start" aria-hidden="true">Начать <span>→</span></div>
     </div>
-  </button>
+  </article>
 </template>
 
 <template id="historyItemTemplate">

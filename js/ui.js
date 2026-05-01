@@ -177,19 +177,18 @@ export const render = {
       card.classList.toggle('premium-locked', isLocked);
       card.querySelector('[data-role="icon"]').innerHTML = helpers.categoryIconSvg(category.icon);
       const badge = card.querySelector('[data-role="badge"]');
-      if (category.badge) {
-        badge.textContent = category.badge;
+      if (badge) {
+        badge.textContent = category.id === 'Своя игра' ? 'Свои вопросы' : `${count} вопросов`;
         badge.classList.remove('hidden');
       }
       card.querySelector('[data-role="title"]').textContent = category.id;
       card.querySelector('[data-role="desc"]').textContent = category.desc;
-      const counter = document.createElement('span');
-      counter.className = 'category-feed-counter';
-      counter.textContent = `${categoryIndex} / ${CATEGORY_META.length}`;
-      card.appendChild(counter);
+      const counter = card.querySelector('[data-role="counter"]');
+      if (counter) counter.textContent = `${categoryIndex} / ${CATEGORY_META.length}`;
       fragment.appendChild(card);
     });
     ui.categoriesGrid.replaceChildren(fragment);
+    ui.categoriesGrid.querySelector('.category-card')?.classList.add('is-feed-active');
   },
   customGameEditor() {
     const customQuestions = storage.get(STORAGE_KEYS.customQuestions, ['', '']);

@@ -25,6 +25,33 @@ function bindEvents() {
     if (Math.abs(currentY - categoryTouchY) > 18) categorySwipeMoved = true;
   }, { passive: true });
 
+  const updateActiveCategoryCard = () => {
+    const cards = [...ui.categoriesGrid.querySelectorAll('.category-card')];
+    if (!cards.length) return;
+    const viewportCenter = window.innerHeight / 2;
+    let active = cards[0];
+    let minDistance = Infinity;
+    cards.forEach((card) => {
+      const rect = card.getBoundingClientRect();
+      const cardCenter = rect.top + rect.height / 2;
+      const distance = Math.abs(cardCenter - viewportCenter);
+      if (distance < minDistance) {
+        minDistance = distance;
+        active = card;
+      }
+    });
+    cards.forEach((card) => card.classList.toggle('is-feed-active', card === active));
+  };
+
+  let categoryScrollRaf = 0;
+  ui.categoriesGrid.addEventListener('scroll', () => {
+    if (categoryScrollRaf) return;
+    categoryScrollRaf = requestAnimationFrame(() => {
+      categoryScrollRaf = 0;
+      updateActiveCategoryCard();
+    });
+  }, { passive: true });
+
   ui.categoriesGrid.addEventListener('click', (event) => {
     if (categorySwipeMoved) {
       event.preventDefault();
@@ -33,6 +60,15 @@ function bindEvents() {
     }
     const card = event.target.closest('.category-card');
     if (card?.dataset.id) game.openCategory(card.dataset.id);
+  });
+
+  ui.categoriesGrid.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    const card = event.target.closest('.category-card');
+    if (card?.dataset.id) {
+      event.preventDefault();
+      game.openCategory(card.dataset.id);
+    }
   });
 
   ui.startBtn?.addEventListener('click', () => router.show('categories'));
