@@ -8,7 +8,7 @@ const STORAGE_KEYS = {
   adult: 'adult_ok',
   customQuestions: 'custom_questions',
   questionsCache: 'couples_questions_v4',
-  settings: 'couples_settings_v1',
+  settings: 'couples_settings_v2',
   onboardingSeen: 'couples_onboarding_seen_v1',
   favorites: 'couples_favorites_v1',
   challenge: 'couples_challenge_v1',
@@ -18,7 +18,7 @@ const STORAGE_KEYS = {
 const DEFAULT_SETTINGS = {
   vibration: true,
   animations: true,
-  roundSize: 8
+  roundSize: 25
 };
 
 const CATEGORY_META = [
@@ -239,7 +239,8 @@ const helpers = {
     return 'У вас разные взгляды — отличный повод поговорить откровенно и без давления.';
   },
   getCurrentCategoryQuestions(categoryId) {
-    return state.questionsData[categoryId] || [];
+    const questions = state.questionsData[categoryId] || [];
+    return Array.isArray(questions) ? questions.slice(0, 25) : [];
   },
   todayKey() {
     return new Date().toISOString().slice(0, 10);
@@ -337,9 +338,8 @@ const helpers = {
       .replace(/'/g, '&#39;');
   },
   getRoundSize(sourceLength) {
-    const preferred = Number(state.settings.roundSize) || DEFAULT_SETTINGS.roundSize;
     if (!sourceLength) return 0;
-    return Math.min(preferred, sourceLength);
+    return Math.min(25, sourceLength);
   }
 };
 
@@ -618,6 +618,7 @@ const theme = {
 const data = {
   loadSettings() {
     state.settings = { ...DEFAULT_SETTINGS, ...storage.get(STORAGE_KEYS.settings, {}) };
+    state.settings.roundSize = 25;
   },
   saveSettings() {
     storage.set(STORAGE_KEYS.settings, state.settings);

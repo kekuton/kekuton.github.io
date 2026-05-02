@@ -48,7 +48,7 @@ export const game = {
       return;
     }
     const isScenario = state.currentCategory?.isScenario;
-    const limit = isScenario ? Math.min(12, sourceQuestions.length) : helpers.getRoundSize(sourceQuestions.length);
+    const limit = helpers.getRoundSize(sourceQuestions.length);
     state.currentQuestions = isScenario ? sourceQuestions.slice(0, limit) : helpers.shuffle(sourceQuestions).slice(0, limit);
     this.resetRound(mode);
     router.show('game');

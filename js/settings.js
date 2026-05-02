@@ -11,7 +11,7 @@ export const settings = {
   applyFromControls() {
     state.settings.vibration = !!ui.vibrationToggle?.checked;
     state.settings.animations = !!ui.animationsToggle?.checked;
-    state.settings.roundSize = Number(ui.roundSizeSelect?.value || 8);
+    state.settings.roundSize = 25;
     data.saveSettings();
   },
   bind() {

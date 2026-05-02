@@ -245,9 +245,9 @@ export const render = {
     ui.questionText.removeAttribute('data-progress');
     const cover = state.currentCategory?.cover || 'images/bg_future_card.jpg';
     if (ui.questionCard) ui.questionCard.style.setProperty('--question-cover', `url("${cover}")`);
-    ui.progressLabel.textContent = `${state.currentIndex + 1} / ${total}`;
+    if (ui.progressLabel) ui.progressLabel.textContent = `${state.currentIndex + 1} / ${total}`;
     if (ui.questionCardCount) ui.questionCardCount.textContent = `${state.currentIndex + 1} / ${total}`;
-    ui.progressFill.style.width = `${((state.currentIndex + 1) / total) * 100}%`;
+    if (ui.progressFill) ui.progressFill.style.width = `${((state.currentIndex + 1) / total) * 100}%`;
     if (ui.remainingQuestionsLabel) ui.remainingQuestionsLabel.textContent = `Осталось ${Math.max(total - state.currentIndex - 1, 0)} вопросов`;
     if (ui.streakLabel) ui.streakLabel.textContent = `Серия: ${state.questionStreak || 0}`;
     if (ui.favoriteQuestionBtn) {
@@ -322,7 +322,7 @@ export const render = {
   syncSettingsUI() {
     if (ui.vibrationToggle) ui.vibrationToggle.checked = !!state.settings.vibration;
     if (ui.animationsToggle) ui.animationsToggle.checked = !!state.settings.animations;
-    if (ui.roundSizeSelect) ui.roundSizeSelect.value = String(state.settings.roundSize || 8);
+    if (ui.roundSizeSelect) ui.roundSizeSelect.value = String(25);
   }
 };
 

@@ -206,15 +206,20 @@ function bindEvents() {
 
 function removeQuestionScreenJunk() {
   const selectors = [
+    '#gameScreen .progress-bar',
+    '#gameScreen .progress-meta-row',
+    '#gameScreen .progress-badge',
     '#gameScreen .question-card-topline',
     '#gameScreen .question-card-count',
     '#gameScreen .question-card-fav',
+    '#gameScreen #favoriteQuestionBtn',
     '#gameScreen .question-primary-next',
     '#gameScreen .game-bottom-nav',
     '#gameScreen .question-bottom-nav',
     '#gameScreen .bottom-nav',
     '#gameScreen .tabs',
     '#gameScreen .tabbar',
+    '#gameScreen .answer-actions',
     '#gameScreen button',
     '#gameScreen > button'
   ];
@@ -223,11 +228,15 @@ function removeQuestionScreenJunk() {
   });
   document.querySelectorAll('button').forEach((button) => {
     const text = (button.textContent || '').replace(/\s+/g, ' ').trim();
-    if (['Следующий вопрос ↑', 'Категории', 'Вопросы', 'Избранное'].includes(text)) {
-      const gameScreen = button.closest('#gameScreen');
-      if (gameScreen || document.body.dataset.screen === 'game') button.remove();
+    const blocked = ['Следующий вопрос ↑', 'Категории', 'Вопросы', 'Избранное', 'В избранное'];
+    if (blocked.includes(text) || (document.body.dataset.screen === 'game' && button.closest('#gameScreen'))) {
+      button.remove();
     }
   });
+  const questionText = document.getElementById('questionText');
+  if (questionText) {
+    questionText.removeAttribute('data-progress');
+  }
 }
 
 const questionJunkObserver = new MutationObserver(removeQuestionScreenJunk);
