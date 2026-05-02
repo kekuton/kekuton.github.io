@@ -652,3 +652,22 @@ body[data-screen='game'] .question-card-topline {
 body[data-screen='game'] #questionCard.is-swiping {
   transition: none !important;
 }
+
+/* HARD FIX: убираем нижние кнопки и левую надпись внутри карточки вопроса */
+#gameScreen .question-card-topline,
+#gameScreen .question-card-count,
+#gameScreen .question-card-fav,
+#gameScreen .question-primary-next,
+#gameScreen .game-bottom-nav,
+#gameScreen .question-bottom-nav,
+#gameScreen .bottom-nav,
+#gameScreen .tabs,
+#gameScreen .tabbar,
+#gameScreen .answer-actions,
+#gameScreen > button,
+#gameScreen > .question-primary-next,
+#gameScreen > .game-bottom-nav {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}

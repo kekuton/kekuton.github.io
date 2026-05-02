@@ -203,6 +203,34 @@ function bindEvents() {
   });
 }
 
+
+function removeQuestionScreenJunk() {
+  const selectors = [
+    '#gameScreen .question-card-topline',
+    '#gameScreen .question-card-count',
+    '#gameScreen .question-card-fav',
+    '#gameScreen .question-primary-next',
+    '#gameScreen .game-bottom-nav',
+    '#gameScreen .question-bottom-nav',
+    '#gameScreen .bottom-nav',
+    '#gameScreen .tabs',
+    '#gameScreen .tabbar',
+    '#gameScreen > button'
+  ];
+  selectors.forEach((selector) => {
+    document.querySelectorAll(selector).forEach((node) => node.remove());
+  });
+  document.querySelectorAll('button').forEach((button) => {
+    const text = (button.textContent || '').replace(/\s+/g, ' ').trim();
+    if (['Следующий вопрос ↑', 'Категории', 'Вопросы', 'Избранное'].includes(text)) {
+      const gameScreen = button.closest('#gameScreen');
+      if (gameScreen || document.body.dataset.screen === 'game') button.remove();
+    }
+  });
+}
+
+const questionJunkObserver = new MutationObserver(removeQuestionScreenJunk);
+
 async function init() {
   loading.show('Подготавливаем приложение...');
   data.loadSettings();
@@ -221,6 +249,8 @@ async function init() {
   swipe.attachHandlers();
   settings.bind();
   bindEvents();
+  removeQuestionScreenJunk();
+  questionJunkObserver.observe(document.body, { childList: true, subtree: true });
 
   if (!questionsLoaded) {
     render.errorScreen(state.loadError || 'Не удалось загрузить вопросы.');
