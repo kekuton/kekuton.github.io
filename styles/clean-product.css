@@ -375,3 +375,47 @@ body[data-screen='game'] #gameScreen .swipe-help::after {
 body[data-screen='game'] #questionCard {
   opacity: 1 !important;
 }
+
+/* Remove category hover animation/effects */
+#categoriesScreen .category-card,
+#categoriesScreen .category-card::before,
+#categoriesScreen .category-poster,
+#categoriesScreen .category-copy {
+  transition: none !important;
+  animation: none !important;
+}
+
+#categoriesScreen .category-card::before,
+#categoriesScreen .category-card:hover::before,
+#categoriesScreen .category-card:active::before {
+  content: none !important;
+  display: none !important;
+  transform: none !important;
+}
+
+#categoriesScreen .category-card:hover,
+#categoriesScreen .category-card:active {
+  box-shadow: 0 28px 70px rgba(0,0,0,.44), inset 0 1px 0 rgba(255,255,255,.10) !important;
+  filter: none !important;
+}
+
+#categoriesScreen .category-card:not(.is-feed-active):hover,
+#categoriesScreen .category-card:not(.is-feed-active):active {
+  transform: translateZ(0) scale(.965) !important;
+  opacity: .76 !important;
+}
+
+#categoriesScreen .category-card.is-feed-active:hover,
+#categoriesScreen .category-card.is-feed-active:active {
+  transform: translateZ(0) scale(1) !important;
+  opacity: 1 !important;
+  filter: saturate(1.06) contrast(1.02) !important;
+  box-shadow: 0 34px 82px rgba(0,0,0,.52), 0 0 0 1px rgba(255,255,255,.08), inset 0 1px 0 rgba(255,255,255,.13) !important;
+}
+
+#categoriesScreen .category-card:hover .category-poster,
+#categoriesScreen .category-card:active .category-poster,
+#categoriesScreen .category-card:hover .category-copy,
+#categoriesScreen .category-card:active .category-copy {
+  transition: none !important;
+}
