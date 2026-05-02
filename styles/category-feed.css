@@ -127,3 +127,9 @@ body.light #categoriesScreen.screen-active {
 #categoriesScreen .section-head {
   background: transparent !important;
 }
+
+/* removed category label and start button from category cards */
+#categoriesScreen .category-label,
+#categoriesScreen .category-start,
+#categoriesScreen .category-start span { display: none !important; }
+#categoriesScreen .category-copy p { margin-bottom: 0 !important; }

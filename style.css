@@ -97,3 +97,6 @@ body[data-screen="game"] #questionCard .question-text {
 .topbar-actions {
   display: none !important;
 }
+
+/* safety: category cards open by tapping the whole card */
+.category-label,.category-start{display:none!important;}
