@@ -639,3 +639,16 @@ body[data-screen='game'] .game-bottom-nav button.is-active span {
   body[data-screen='game'] #questionCard .question-text { left: 20px !important; right: 20px !important; }
   body[data-screen='game'] .game-bottom-nav button small { font-size: 11px; }
 }
+
+/* CLEANUP: no lower buttons and no inner favorite label on question card */
+body[data-screen='game'] .question-primary-next,
+body[data-screen='game'] .game-bottom-nav,
+body[data-screen='game'] .question-card-fav {
+  display: none !important;
+}
+body[data-screen='game'] .question-card-topline {
+  justify-content: flex-start !important;
+}
+body[data-screen='game'] #questionCard.is-swiping {
+  transition: none !important;
+}

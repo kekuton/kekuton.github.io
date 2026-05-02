@@ -255,13 +255,19 @@ export const render = {
       const active = helpers.isFavorite(question, state.currentCategory?.id);
       ui.favoriteQuestionBtn.classList.toggle('is-active', active);
       ui.favoriteQuestionBtn.textContent = active ? '♡' : '♡';
-      if (ui.questionCardFavoriteLabel) ui.questionCardFavoriteLabel.textContent = active ? '♡ В избранном' : '♡ В избранное';
     }
-    ui.questionCard.classList.remove('card-fly-left', 'card-fly-right', 'card-fly-up', 'card-return');
-    if (!isInitial && state.settings.animations) ui.questionCard.classList.add('card-enter');
+    state.swipe.active = false;
+    state.swipe.dragging = false;
+    state.swipe.pointerId = null;
+    state.swipe.isAnimating = false;
+    ui.questionCard.classList.remove('card-fly-left', 'card-fly-right', 'card-fly-up', 'card-return', 'is-swiping', 'card-enter');
+    ui.questionCard.dataset.swipe = 'none';
+    ui.questionCard.style.removeProperty('--swipe-opacity');
     ui.questionCard.style.transition = 'none';
-    ui.questionCard.style.transform = isInitial || !state.settings.animations ? 'translateY(0) scale(1)' : 'translateY(22px) scale(0.98)';
+    ui.questionCard.style.transform = isInitial || !state.settings.animations ? 'translate3d(0,0,0) rotate(0deg) scale(1)' : 'translate3d(0,22px,0) rotate(0deg) scale(0.98)';
     ui.questionCard.style.opacity = isInitial || !state.settings.animations ? '1' : '0';
+    void ui.questionCard.offsetHeight;
+    if (!isInitial && state.settings.animations) ui.questionCard.classList.add('card-enter');
     app.swipe.updateHint(0, 0);
     requestAnimationFrame(() => {
       ui.questionCard.style.transition = state.settings.animations

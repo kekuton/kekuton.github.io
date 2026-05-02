@@ -157,7 +157,12 @@ export const swipe = {
     card.style.transition = 'transform 320ms cubic-bezier(.2,.9,.2,1), opacity 260ms ease';
     card.style.opacity = '0';
     card.style.transform = `translate3d(${config.x}px, ${config.y}px, 0) rotate(${config.rotate}deg) scale(0.96)`;
-    setTimeout(callback, 280);
+    setTimeout(() => {
+      state.swipe.isAnimating = false;
+      card.classList.remove('is-swiping');
+      card.style.willChange = '';
+      callback?.();
+    }, 280);
   },
   onPointerDown(event) {
     const context = this.getActiveContext();
@@ -172,8 +177,10 @@ export const swipe = {
     state.swipe.currentX = event.clientX;
     state.swipe.currentY = event.clientY;
     card.setPointerCapture?.(event.pointerId);
+    state.swipe.isAnimating = false;
     card.classList.add('is-swiping');
     card.style.transition = 'none';
+    card.style.willChange = 'transform, opacity';
   },
   onPointerMove(event) {
     const context = this.getActiveContext();
@@ -186,13 +193,10 @@ export const swipe = {
       requestAnimationFrame(() => {
         const deltaX = state.swipe.currentX - state.swipe.startX;
         const deltaY = state.swipe.currentY - state.swipe.startY;
-        if (context.allowUp && Math.abs(deltaY) > Math.abs(deltaX) * 1.2 && Math.abs(deltaY) < 50) {
-          state.swipe.isAnimating = false;
-          return;
-        }
-        const rotate = deltaX / 18;
-        const visualY = context.allowUp ? deltaY * 0.35 : 0;
-        const stretch = 1 - Math.min(Math.abs(deltaX) / 1200, 0.03);
+        const rotate = context.allowUp && Math.abs(deltaY) > Math.abs(deltaX) ? deltaX / 34 : deltaX / 18;
+        const visualY = context.allowUp ? deltaY * 0.72 : 0;
+        const distance = Math.max(Math.abs(deltaX), Math.abs(deltaY));
+        const stretch = 1 - Math.min(distance / 1800, 0.035);
         card.style.transform = `translate3d(${deltaX}px, ${visualY}px, 0) rotate(${rotate}deg) scale(${stretch})`;
         this.updateHint(deltaX, deltaY);
         state.swipe.isAnimating = false;
@@ -222,8 +226,10 @@ export const swipe = {
       if (context.allowUp && deltaY < -110 && Math.abs(deltaX) < 100) return game.answer('skip');
     }
     card.classList.remove('is-swiping');
+    state.swipe.isAnimating = false;
     card.style.transition = 'transform 220ms cubic-bezier(.2,.9,.2,1)';
     card.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
+    card.style.willChange = '';
     this.updateHint(0, 0);
   },
   attachHandlers() {
