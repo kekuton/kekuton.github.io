@@ -483,25 +483,8 @@ const fx = {
     setTimeout(() => wrap.remove(), 900);
   },
   launchConfetti() {
-    if (!this.canAnimate()) return;
-    const wrap = document.createElement('div');
-    const colors = ['#f59e0b', '#f472b6', '#22c55e', '#60a5fa', '#ffffff', '#fde047'];
-    wrap.className = 'confetti-wrap';
-    document.body.appendChild(wrap);
-    for (let i = 0; i < 120; i += 1) {
-      const piece = document.createElement('span');
-      piece.className = 'confetti-piece';
-      piece.style.left = `${Math.random() * 100}%`;
-      piece.style.top = `${-10 - Math.random() * 20}%`;
-      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
-      piece.style.transform = `translate3d(0,0,0) rotate(${Math.random() * 360}deg)`;
-      piece.style.animationDuration = `${2.6 + Math.random() * 1.8}s`;
-      piece.style.animationDelay = `${Math.random() * 0.18}s`;
-      piece.style.setProperty('--drift', `${-80 + Math.random() * 160}px`);
-      wrap.appendChild(piece);
-    }
-    document.body.appendChild(wrap);
-    setTimeout(() => wrap.remove(), 4600);
+    // Конфетти отключено.
+    return;
   }
 };
 

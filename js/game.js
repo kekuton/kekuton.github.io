@@ -1,5 +1,5 @@
 import { app } from './core.js';
-import { render, results } from './ui.js';
+import { render } from './ui.js';
 
 const { ui, state, helpers, router, modals, fx, CATEGORY_META, SWIPE_HELP, background } = app;
 
@@ -81,7 +81,6 @@ export const game = {
     if (type === 'match') fx.vibrate('success');
     else if (type === 'mismatch') fx.vibrate('error');
     else fx.vibrate('warning');
-    if (type === 'match') setTimeout(() => fx.launchConfetti(), 40);
     swipe.animateOut(type, () => {
       state.stats[type] += 1;
       if (type === 'match') state.questionStreak += 1;
@@ -102,7 +101,14 @@ export const game = {
   },
   finish(isBlitz = false) {
     this.clearBlitzTimer();
-    results.render(isBlitz);
+    // Результаты больше не показываем: после последнего вопроса возвращаем на выбор категорий.
+    state.currentIndex = 0;
+    state.currentQuestions = [];
+    state.stats = { match: 0, mismatch: 0, skip: 0 };
+    state.questionStreak = 0;
+    render.resetQuestionCard();
+    render.homeDashboard?.();
+    router.show('categories');
   }
 };
 

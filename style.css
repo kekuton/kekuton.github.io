@@ -73,3 +73,6 @@ body[data-screen="game"] #questionCard .question-text {
   bottom: 52px !important;
   max-width: calc(100% - 48px) !important;
 }
+
+/* Results/confetti removed */
+#resultsScreen, .confetti-wrap, .confetti-piece { display: none !important; }
