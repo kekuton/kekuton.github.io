@@ -242,7 +242,7 @@ export const render = {
     ui.gameTitle.textContent = 'Вопрос';
     this.updateModeUI();
     ui.questionText.textContent = question;
-    ui.questionText.dataset.progress = `${state.currentIndex + 1} / ${total}`;
+    ui.questionText.removeAttribute('data-progress');
     const cover = state.currentCategory?.cover || 'images/bg_future_card.jpg';
     if (ui.questionCard) ui.questionCard.style.setProperty('--question-cover', `url("${cover}")`);
     ui.progressLabel.textContent = `${state.currentIndex + 1} / ${total}`;

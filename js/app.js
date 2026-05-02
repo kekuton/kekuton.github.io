@@ -215,6 +215,7 @@ function removeQuestionScreenJunk() {
     '#gameScreen .bottom-nav',
     '#gameScreen .tabs',
     '#gameScreen .tabbar',
+    '#gameScreen button',
     '#gameScreen > button'
   ];
   selectors.forEach((selector) => {
@@ -231,7 +232,23 @@ function removeQuestionScreenJunk() {
 
 const questionJunkObserver = new MutationObserver(removeQuestionScreenJunk);
 
+async function clearOldPwaCache() {
+  try {
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map((reg) => reg.unregister()));
+    }
+    if ('caches' in window) {
+      const keys = await caches.keys();
+      await Promise.all(keys.map((key) => caches.delete(key)));
+    }
+  } catch (error) {
+    console.warn('Cache cleanup skipped', error);
+  }
+}
+
 async function init() {
+  await clearOldPwaCache();
   loading.show('Подготавливаем приложение...');
   data.loadSettings();
   theme.init();

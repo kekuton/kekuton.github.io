@@ -671,3 +671,33 @@ body[data-screen='game'] #questionCard.is-swiping {
   visibility: hidden !important;
   pointer-events: none !important;
 }
+
+
+/* FINAL HARD CLEAN: game screen has NO lower controls and NO left/inner labels */
+body[data-screen="game"] #gameScreen button,
+body[data-screen="game"] #gameScreen .question-primary-next,
+body[data-screen="game"] #gameScreen .game-bottom-nav,
+body[data-screen="game"] #gameScreen .question-bottom-nav,
+body[data-screen="game"] #gameScreen .bottom-nav,
+body[data-screen="game"] #gameScreen .answer-actions,
+body[data-screen="game"] #gameScreen .question-card-topline,
+body[data-screen="game"] #gameScreen .question-card-count,
+body[data-screen="game"] #gameScreen .question-card-fav {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+body[data-screen="game"] #questionCard .question-text::before,
+body[data-screen="game"] #questionCard .question-text::after {
+  content: none !important;
+  display: none !important;
+}
+
+body[data-screen="game"] #questionCard,
+body[data-screen="game"] .question-card {
+  touch-action: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
