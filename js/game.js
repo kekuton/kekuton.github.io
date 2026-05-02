@@ -28,17 +28,11 @@ export const game = {
       router.syncBackButton(router.current());
       return;
     }
-    if (categoryId === 'Своя игра') {
-      render.customGameEditor();
-      router.show('customGame');
-      return;
-    }
     background.apply(categoryId);
-    render.intro(categoryId);
+    this.start('solo');
   },
   start(mode = 'solo') {
     state.gameMode = mode;
-    if (state.currentCategory?.id === 'Блиц') return this.startBlitz();
     let sourceQuestions = helpers.getCurrentCategoryQuestions(state.currentCategory.id);
     if ((!sourceQuestions || !sourceQuestions.length) && state.currentCategory?.id === 'Избранное') sourceQuestions = state.favorites.map((item) => item.question);
     if ((!sourceQuestions || !sourceQuestions.length) && state.currentQuestions.length) sourceQuestions = state.currentQuestions;
@@ -114,14 +108,14 @@ export const game = {
 
 export const swipe = {
   getActiveContext() {
-    if (app.screens.blitz.classList.contains('screen-active')) {
+    if (app.screens.blitz?.classList.contains('screen-active')) {
       return {
         mode: 'blitz',
         card: ui.blitzCard,
         allowUp: false
       };
     }
-    if (app.screens.game.classList.contains('screen-active')) {
+    if (app.screens.game?.classList.contains('screen-active')) {
       return {
         mode: 'game',
         card: ui.questionCard,
@@ -227,9 +221,7 @@ export const swipe = {
       if (deltaX > threshold || (deltaX > 45 && velocity > 2.4)) return game.answerBlitz(true);
       if (deltaX < -threshold || (deltaX < -45 && velocity > 2.4)) return game.answerBlitz(false);
     } else {
-      if (deltaX > threshold || (deltaX > 45 && velocity > 2.4)) return game.answer('match');
-      if (deltaX < -threshold || (deltaX < -45 && velocity > 2.4)) return game.answer('mismatch');
-      if (context.allowUp && deltaY < -110 && Math.abs(deltaX) < 100) return game.answer('skip');
+      if (context.allowUp && deltaY < -90 && Math.abs(deltaY) > Math.abs(deltaX) * 0.8) return game.answer('skip');
     }
     card.classList.remove('is-swiping');
     state.swipe.isAnimating = false;
