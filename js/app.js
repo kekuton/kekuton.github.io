@@ -73,10 +73,7 @@ function bindEvents() {
 
   ui.startBtn?.addEventListener('click', () => router.show('categories'));
   ui.historyBtn?.addEventListener('click', () => router.show('history'));
-  ui.settingsBtn?.addEventListener('click', () => settings.open());
-  ui.openSettingsBtn?.addEventListener('click', () => settings.open());
   ui.backBtn?.addEventListener('click', () => router.back());
-  ui.themeBtn?.addEventListener('click', () => theme.toggle());
 
   ui.dailyQuestionBtn?.addEventListener('click', () => {
     const daily = helpers.dailyQuestion();
@@ -87,36 +84,15 @@ function bindEvents() {
     router.show('game');
     render.gameQuestion(true);
   });
-  const openFavorites = () => {
-    render.favorites();
-    router.show('favorites');
-  };
-  ui.favoritesBtn?.addEventListener('click', openFavorites);
-  ui.openFavoritesBtn?.addEventListener('click', openFavorites);
+  const openFavorites = () => router.show('categories');
   ui.achievementsBtn?.addEventListener('click', () => {
     render.achievements();
     router.show('achievements');
-  });
-  ui.startFavoritesBtn?.addEventListener('click', () => {
-    if (!state.favorites.length) return;
-    state.currentCategory = { id: 'Избранное' };
-    state.currentQuestions = state.favorites.map((item) => item.question).slice(0, Math.max(5, Math.min(12, state.favorites.length)));
-    game.resetRound('solo');
-    router.show('game');
-    render.gameQuestion(true);
   });
   ui.questionNextBtn?.addEventListener('click', () => game.answer('skip'));
   ui.gameNavCategories?.addEventListener('click', () => router.show('categories'));
   ui.gameNavFavorites?.addEventListener('click', openFavorites);
 
-  ui.favoriteQuestionBtn?.addEventListener('click', () => {
-    const added = meta.toggleFavorite();
-    render.favorites();
-    render.homeDashboard();
-    ui.favoriteQuestionBtn.classList.toggle('is-active', added);
-    ui.favoriteQuestionBtn.textContent = added ? '★' : '☆';
-    fx.vibrate('light');
-  });
   ui.onboardingNextBtn?.addEventListener('click', () => {
     if (state.onboardingStep >= ONBOARDING_STEPS.length - 1) {
       finishOnboarding();
@@ -266,7 +242,6 @@ async function init() {
   const questionsLoaded = await data.loadQuestions();
   render.categories();
   render.history();
-  render.favorites();
   render.achievements();
   render.homeDashboard();
   render.onboarding();

@@ -588,9 +588,9 @@ const theme = {
     if (tg?.setHeaderColor) tg.setHeaderColor(resolved === 'light' ? '#efe7ff' : '#9f7aea');
   },
   init() {
-    const saved = storage.getRaw(STORAGE_KEYS.theme);
-    if (tg?.colorScheme) this.apply(saved || tg.colorScheme);
-    else this.apply(saved === 'light' ? 'light' : 'dark');
+    // Смена режима/темы отключена: всегда используем основной тёмный стиль.
+    storage.remove(STORAGE_KEYS.theme);
+    this.apply('dark');
   },
   toggle() {
     this.apply(document.body.classList.contains('light') ? 'dark' : 'light');

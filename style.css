@@ -76,3 +76,24 @@ body[data-screen="game"] #questionCard .question-text {
 
 /* Results/confetti removed */
 #resultsScreen, .confetti-wrap, .confetti-piece { display: none !important; }
+
+/* Simplified header: settings, favorites and theme/mode switch removed */
+#favoritesBtn,
+#settingsBtn,
+#themeBtn,
+#openSettingsBtn,
+#openFavoritesBtn,
+#settingsScreen,
+#favoritesScreen,
+#favoriteQuestionBtn,
+.question-card-fav,
+.question-card-count,
+.favorite-item {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.topbar-actions {
+  display: none !important;
+}

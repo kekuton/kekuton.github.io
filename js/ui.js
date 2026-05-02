@@ -57,24 +57,10 @@ export const render = {
     }
   },
   favorites() {
-    const favorites = state.favorites || [];
-    if (!favorites.length) {
-      ui.favoritesList?.replaceChildren(emptyState('Пока нет избранных вопросов. Нажми на ★ во время игры, чтобы сохранить карточку.'));
-      ui.startFavoritesBtn?.classList.add('hidden');
-      return;
-    }
-    ui.startFavoritesBtn?.classList.remove('hidden');
-    const fragment = document.createDocumentFragment();
-    favorites.forEach((item) => {
-      const card = templates.clone(ui.favoriteItemTemplate);
-      if (!card) return;
-      card.querySelector('[data-role="category"]').textContent = item.category;
-      card.querySelector('[data-role="question"]').textContent = item.question;
-      card.querySelector('[data-role="date"]').textContent = item.date || '';
-      fragment.appendChild(card);
-    });
-    ui.favoritesList?.replaceChildren(fragment);
+    // Избранное отключено в упрощённой версии приложения.
+    return;
   },
+
   history() {
     const history = historyStore.load();
     const query = (state.historyFilter || '').trim().toLowerCase();

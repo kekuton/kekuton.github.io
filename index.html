@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="theme-color" content="#8b5cf6" />
-  <meta name="description" content="Игра для пары с красивыми категориями вопросов, совместимостью, блиц-режимом и историей результатов." />
+  <meta name="description" content="Игра для пары с красивыми категориями вопросов." />
   <meta property="og:title" content="Вопросы для двоих" />
   <meta property="og:description" content="Красивый Telegram Mini App для пары: категории вопросов, совместимость, блиц и история." />
   <meta property="og:type" content="website" />
@@ -35,26 +35,6 @@
       <div class="brand">
         <div class="brand-pill">Вопросы для двоих</div>
       </div>
-      <div class="topbar-actions" role="group" aria-label="Управление приложением">
-        <button class="icon-btn icon-btn-soft" id="favoritesBtn" aria-label="Открыть избранное" title="Избранное">
-          <span class="icon-btn-glyph icon-svg" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 3.4l2.7 5.46 6.03.88-4.36 4.25 1.03 6.01L12 17.2l-5.4 2.84 1.03-6L3.27 9.74l6.03-.88L12 3.4z"></path>
-            </svg>
-          </span>
-        </button>
-        <button class="icon-btn icon-btn-soft" id="settingsBtn" aria-label="Открыть настройки" title="Открыть настройки">
-          <span class="icon-btn-glyph icon-svg" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 3.75l1.1 1.91a2 2 0 0 0 1.74.99h2.2l.83 1.44-1.1 1.9a2 2 0 0 0 0 1.99l1.1 1.9-.83 1.44h-2.2a2 2 0 0 0-1.74.99L12 20.25l-1.1-1.91a2 2 0 0 0-1.74-.99h-2.2l-.83-1.44 1.1-1.9a2 2 0 0 0 0-1.99l-1.1-1.9.83-1.44h2.2a2 2 0 0 0 1.74-.99L12 3.75z"></path>
-              <circle cx="12" cy="12" r="3.25"></circle>
-            </svg>
-          </span>
-        </button>
-        <button class="icon-btn icon-btn-theme" id="themeBtn" aria-label="Сменить тему" title="Сменить тему">
-          <span class="icon-btn-glyph icon-svg" aria-hidden="true" id="themeBtnIcon"></span>
-        </button>
-      </div>
     </header>
 
     <main class="screen-wrap">
@@ -66,7 +46,6 @@
           <div class="hero-actions">
             <button class="primary-btn" id="startBtn">Начать игру</button>
             <button class="secondary-btn" id="historyBtn">История</button>
-            <button class="secondary-btn" id="openSettingsBtn">Настройки</button>
           </div>
         </div>
 
@@ -201,59 +180,6 @@
 
       </section>
 
-      <section class="screen" id="settingsScreen">
-        <div class="section-head compact">
-          <span class="eyebrow">Настройки</span>
-          <h2>Настрой игру под себя</h2>
-          <p>Настрой игру под себя и быстро очисти лишние данные.</p>
-        </div>
-
-        <div class="settings-list">
-          <article class="settings-card">
-            <div>
-              <strong>Вибрация</strong>
-              <p>Отклик при свайпах и результатах.</p>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="vibrationToggle" />
-              <span class="switch-slider"></span>
-            </label>
-          </article>
-
-          <article class="settings-card">
-            <div>
-              <strong>Анимации</strong>
-              <p>Конфетти, вылет карточек и анимированные переходы.</p>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="animationsToggle" />
-              <span class="switch-slider"></span>
-            </label>
-          </article>
-
-          <article class="settings-card settings-card-stack">
-            <div>
-              <strong>Вопросов за раунд</strong>
-              <p>Сколько карточек брать для обычной игры.</p>
-            </div>
-            <select class="settings-select" id="roundSizeSelect">
-              <option value="25" selected>25 вопросов</option>
-            </select>
-          </article>
-
-          <article class="settings-card settings-card-stack">
-            <div>
-              <strong>Данные</strong>
-              <p>Быстрая очистка истории и служебных флагов.</p>
-            </div>
-            <div class="hero-actions stacked">
-              <button class="settings-action-btn settings-action-btn-neutral" id="clearHistoryBtn"><span class="settings-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5l3 2"></path><circle cx="12" cy="12" r="9"></circle></svg></span><span>Очистить историю</span></button>
-              <button class="settings-action-btn settings-action-btn-warm" id="resetCustomBtn"><span class="settings-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M19 6l-1 13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg></span><span>Удалить свои вопросы</span></button>
-            </div>
-          </article>
-        </div>
-      </section>
-
       <section class="screen" id="historyScreen">
         <div class="section-head compact">
           <span class="eyebrow">История</span>
@@ -263,18 +189,6 @@
           <input class="history-search-input" id="historySearchInput" type="search" placeholder="Поиск по категории" autocomplete="off" />
         </div>
         <div class="history-list" id="historyList"></div>
-      </section>
-
-      <section class="screen" id="favoritesScreen">
-        <div class="section-head compact">
-          <span class="eyebrow">Любимые</span>
-          <h2>Избранные вопросы</h2>
-          <p>Сохраняй лучшие карточки и запускай отдельный раунд только по ним.</p>
-        </div>
-        <div class="history-list" id="favoritesList"></div>
-        <div class="hero-actions stacked">
-          <button class="primary-btn" id="startFavoritesBtn">Играть по избранному</button>
-        </div>
       </section>
 
       <section class="screen" id="achievementsScreen">
@@ -337,17 +251,6 @@
 
 <template id="emptyStateTemplate">
   <div class="history-empty" data-role="message"></div>
-</template>
-
-<template id="favoriteItemTemplate">
-  <article class="history-item favorite-item">
-    <strong data-role="category"></strong>
-    <div class="favorite-question" data-role="question"></div>
-    <div class="history-meta">
-      <span class="history-pill" data-role="tag">Любимое</span>
-      <span class="history-detail" data-role="date"></span>
-    </div>
-  </article>
 </template>
 
 <script type="module" src="js/app.js?v=final-clean-2"></script>
