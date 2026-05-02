@@ -267,7 +267,7 @@ body[data-screen='game'] #gameScreen .swipe-help {
 }
 
 body[data-screen='game'] #gameScreen .swipe-help::after {
-  content: 'Свайпни вверх для следующего вопроса';
+  content: none;
   font-size: 13px;
 }
 
@@ -534,7 +534,7 @@ body[data-screen='game'] #gameScreen .swipe-help::before {
 }
 
 body[data-screen='game'] #gameScreen .swipe-help::after {
-  content: 'Свайпни вверх для следующего вопроса' !important;
+  content: none !important;
   font-size: 13px !important;
 }
 

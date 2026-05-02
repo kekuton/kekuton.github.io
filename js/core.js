@@ -36,7 +36,7 @@ const CATEGORY_META = [
 const CATEGORY_BACKGROUNDS = {};
 
 const ROOT_SCREENS = ['categories', 'error'];
-const SWIPE_HELP = 'Свайп вверх — следующий вопрос';
+const SWIPE_HELP = '';
 
 const screens = {
   home: document.getElementById('homeScreen'),
