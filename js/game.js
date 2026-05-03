@@ -72,28 +72,31 @@ export const game = {
     if (!['match', 'mismatch', 'skip'].includes(type)) return;
     if (state.questionTransitionLocked) return;
     state.questionTransitionLocked = true;
-    fx.pulseAnswerButton(type);
-    fx.launchReactionBurst(type, type === 'match' ? ui.matchBtn : type === 'mismatch' ? ui.mismatchBtn : ui.skipBtn);
-    if (type === 'match') fx.vibrate('success');
-    else if (type === 'mismatch') fx.vibrate('error');
-    else fx.vibrate('warning');
 
-    const goNext = () => {
+    const finishTransition = () => {
       state.stats[type] += 1;
       if (type === 'match') state.questionStreak += 1;
       else if (type === 'mismatch') state.questionStreak = 0;
+
       state.currentIndex += 1;
-      render.resetQuestionCard();
+
       if (state.currentIndex >= state.currentQuestions.length) {
-        state.questionTransitionLocked = false;
         this.finish();
-      } else {
-        render.gameQuestion();
-        window.setTimeout(() => { state.questionTransitionLocked = false; }, 180);
+        state.questionTransitionLocked = false;
+        return;
       }
+
+      render.resetQuestionCard();
+      render.gameQuestion();
+      window.setTimeout(() => {
+        state.questionTransitionLocked = false;
+      }, 80);
     };
 
-    swipe.animateOut(type, goNext);
+    // На экране вопросов сейчас используется только свайп вверх.
+    // Эффекты кнопок удалены из интерфейса, поэтому не привязываемся к старым кнопкам.
+    try { fx.vibrate(type === 'match' ? 'success' : type === 'mismatch' ? 'error' : 'light'); } catch (_) {}
+    swipe.animateOut(type, finishTransition);
   },
   answerBlitz(isCorrect) {
     fx.vibrate('light');
@@ -237,8 +240,10 @@ export const swipe = {
     } else {
       // На экране вопросов нужен только жест вверх. Порог намеренно мягкий,
       // чтобы в Telegram Mini App переход срабатывал стабильно на каждом свайпе.
-      const isUpSwipe = context.allowUp && deltaY < -42 && Math.abs(deltaY) > Math.abs(deltaX) * 0.45;
-      if (isUpSwipe) return game.answer('skip');
+      // После удаления кнопок любой уверенный свайп по карточке переводит на следующий вопрос.
+      const distance = Math.max(Math.abs(deltaX), Math.abs(deltaY));
+      const isIntentionalSwipe = distance > 42;
+      if (context.allowUp && isIntentionalSwipe) return game.answer('skip');
     }
     card.classList.remove('is-swiping');
     state.swipe.isAnimating = false;
@@ -248,13 +253,20 @@ export const swipe = {
     this.updateHint(0, 0);
   },
   attachHandlers() {
-    [ui.questionCard, ui.blitzCard].filter(Boolean).forEach((card) => {
+    const bindCard = (card) => {
+      if (!card || card.dataset.swipeBound === '1') return;
+      card.dataset.swipeBound = '1';
+
       card.addEventListener('pointerdown', this.onPointerDown.bind(this));
       card.addEventListener('pointermove', this.onPointerMove.bind(this));
       card.addEventListener('pointerup', this.onPointerUp.bind(this));
       card.addEventListener('pointercancel', this.onPointerUp.bind(this));
+      card.addEventListener('lostpointercapture', (event) => {
+        if (state.swipe.active && state.swipe.pointerId === event.pointerId) this.onPointerUp(event);
+      });
 
-      // Fallback для Telegram/iOS, где pointerup иногда теряется внутри webview.
+      // Fallback для iOS/Telegram WebView: свайп вверх переводит на следующий вопрос,
+      // даже если pointerup не пришёл на саму карточку.
       card.addEventListener('touchstart', (event) => {
         const touch = event.changedTouches?.[0];
         if (!touch) return;
@@ -269,16 +281,42 @@ export const swipe = {
         if (!touch) return;
         const dx = touch.clientX - (state.touchFallbackStartX || touch.clientX);
         const dy = touch.clientY - (state.touchFallbackStartY || touch.clientY);
-        if (dy < -46 && Math.abs(dy) > Math.abs(dx) * 0.55) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) > 42) {
           if (event.cancelable) event.preventDefault();
           game.answer('skip');
         }
       }, { passive: false });
 
       card.addEventListener('touchmove', (event) => {
-        if (event.cancelable) event.preventDefault();
+        if (app.screens.game?.classList.contains('screen-active') && event.cancelable) event.preventDefault();
       }, { passive: false });
-    });
+    };
+
+    [ui.questionCard, ui.blitzCard].filter(Boolean).forEach(bindCard);
+
+    // Глобальный запасной обработчик: если WebView потерял touchend/pointerup на карточке,
+    // всё равно перелистываем вопрос по жесту вверх на экране игры.
+    if (!document.body.dataset.globalQuestionSwipeBound) {
+      document.body.dataset.globalQuestionSwipeBound = '1';
+      document.addEventListener('touchstart', (event) => {
+        if (!app.screens.game?.classList.contains('screen-active')) return;
+        const touch = event.changedTouches?.[0];
+        if (!touch) return;
+        state.globalTouchStartX = touch.clientX;
+        state.globalTouchStartY = touch.clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', (event) => {
+        if (!app.screens.game?.classList.contains('screen-active') || state.questionTransitionLocked) return;
+        const touch = event.changedTouches?.[0];
+        if (!touch) return;
+        const dx = touch.clientX - (state.globalTouchStartX || touch.clientX);
+        const dy = touch.clientY - (state.globalTouchStartY || touch.clientY);
+        if (Math.max(Math.abs(dx), Math.abs(dy)) > 46) {
+          if (event.cancelable) event.preventDefault();
+          game.answer('skip');
+        }
+      }, { passive: false });
+    }
   },
   preventDoubleTapZoom() {
     let lastTouchEnd = 0;
