@@ -34,7 +34,6 @@ export const game = {
   start(mode = 'solo') {
     state.gameMode = mode;
     let sourceQuestions = helpers.getCurrentCategoryQuestions(state.currentCategory.id);
-    if ((!sourceQuestions || !sourceQuestions.length) && state.currentCategory?.id === 'Избранное') sourceQuestions = state.favorites.map((item) => item.question);
     if ((!sourceQuestions || !sourceQuestions.length) && state.currentQuestions.length) sourceQuestions = state.currentQuestions;
     if (!sourceQuestions.length) {
       app.notify.info('В этой категории пока нет вопросов.');
@@ -108,14 +107,9 @@ export const game = {
   },
   finish(isBlitz = false) {
     this.clearBlitzTimer();
-    // Результаты больше не показываем: после последнего вопроса возвращаем на выбор категорий.
-    state.currentIndex = 0;
-    state.currentQuestions = [];
-    state.stats = { match: 0, mismatch: 0, skip: 0 };
-    state.questionStreak = 0;
+    // Результаты и проценты не показываем: только спокойный финальный экран.
     render.resetQuestionCard();
-    render.homeDashboard?.();
-    router.show('categories');
+    render.completion();
   }
 };
 
@@ -148,13 +142,7 @@ export const swipe = {
     else if (offsetX < 0) direction = 'left';
     card.dataset.swipe = direction;
     card.style.setProperty('--swipe-opacity', intensity.toFixed(2));
-    if (!ui.swipeHelp || context.mode !== 'game') return;
-    ui.swipeHelp.textContent = {
-      none: SWIPE_HELP,
-      left: 'Отпускай — отметим «Не совпало»',
-      right: 'Отпускай — отметим «Совпало»',
-      up: 'Отпускай — это «Пропуск»'
-    }[direction];
+
   },
   animateOut(type, callback) {
     const context = this.getActiveContext();
@@ -166,7 +154,6 @@ export const swipe = {
     };
     const config = map[type];
     if (!config || !card) return callback?.();
-    if (!state.settings.animations) return callback();
     card.style.transition = 'transform 320ms cubic-bezier(.2,.9,.2,1), opacity 260ms ease';
     card.style.opacity = '0';
     card.style.transform = `translate3d(${config.x}px, ${config.y}px, 0) rotate(${config.rotate}deg) scale(0.96)`;
@@ -175,7 +162,7 @@ export const swipe = {
       card.classList.remove('is-swiping');
       card.style.willChange = '';
       callback?.();
-    }, 280);
+    }, 300);
   },
   onPointerDown(event) {
     const context = this.getActiveContext();
@@ -292,7 +279,7 @@ export const swipe = {
       }, { passive: false });
     };
 
-    [ui.questionCard, ui.blitzCard].filter(Boolean).forEach(bindCard);
+    [ui.questionCard].filter(Boolean).forEach(bindCard);
 
     // Глобальный запасной обработчик: если WebView потерял touchend/pointerup на карточке,
     // всё равно перелистываем вопрос по жесту вверх на экране игры.

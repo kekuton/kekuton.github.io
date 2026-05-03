@@ -4,15 +4,8 @@ const tg = window.Telegram?.WebApp;
 
 const STORAGE_KEYS = {
   theme: 'couples_theme',
-  history: 'couples_history',
   adult: 'adult_ok',
-  customQuestions: 'custom_questions',
   questionsCache: 'couples_questions_v4',
-  settings: 'couples_settings_v2',
-  onboardingSeen: 'couples_onboarding_seen_v1',
-  favorites: 'couples_favorites_v1',
-  challenge: 'couples_challenge_v1',
-  achievements: 'couples_achievements_v1'
 };
 
 const DEFAULT_SETTINGS = {
@@ -39,121 +32,35 @@ const ROOT_SCREENS = ['categories', 'error'];
 const SWIPE_HELP = '';
 
 const screens = {
-  home: document.getElementById('homeScreen'),
-  onboarding: document.getElementById('onboardingScreen'),
   error: document.getElementById('errorScreen'),
   categories: document.getElementById('categoriesScreen'),
-  intro: document.getElementById('categoryIntroScreen'),
   game: document.getElementById('gameScreen'),
-  blitz: document.getElementById('blitzScreen'),
-  results: document.getElementById('resultsScreen'),
-  history: document.getElementById('historyScreen'),
-  customGame: document.getElementById('customGameScreen'),
-  settings: document.getElementById('settingsScreen'),
-  favorites: document.getElementById('favoritesScreen'),
-  achievements: document.getElementById('achievementsScreen')
+  completion: document.getElementById('completionScreen'),
 };
 
 const ui = {
   loadingScreen: document.getElementById('loadingScreen'),
   loadingText: document.getElementById('loadingText'),
   backBtn: document.getElementById('backBtn'),
-  themeBtn: document.getElementById('themeBtn'),
-  themeBtnIcon: document.getElementById('themeBtnIcon'),
-  settingsBtn: document.getElementById('settingsBtn'),
-  startBtn: document.getElementById('startBtn'),
-  historyBtn: document.getElementById('historyBtn'),
-  openSettingsBtn: document.getElementById('openSettingsBtn'),
-  dailyQuestionCategory: document.getElementById('dailyQuestionCategory'),
-  dailyQuestionText: document.getElementById('dailyQuestionText'),
-  dailyQuestionBtn: document.getElementById('dailyQuestionBtn'),
-  favoritesBtn: document.getElementById('favoritesBtn'),
-  openFavoritesBtn: document.getElementById('openFavoritesBtn'),
-  favoritesCountText: document.getElementById('favoritesCountText'),
-  challengeProgressText: document.getElementById('challengeProgressText'),
-  challengeHintText: document.getElementById('challengeHintText'),
-  achievementCountText: document.getElementById('achievementCountText'),
-  achievementHintText: document.getElementById('achievementHintText'),
-  achievementsBtn: document.getElementById('achievementsBtn'),
-  achievementsList: document.getElementById('achievementsList'),
-  achievementLegend: document.getElementById('achievementLegend'),
-  achievementUnlock: document.getElementById('achievementUnlock'),
-  achievementUnlockCard: document.getElementById('achievementUnlockCard'),
-  onboardingTitle: document.getElementById('onboardingTitle'),
-  onboardingText: document.getElementById('onboardingText'),
-  onboardingVisual: document.getElementById('onboardingVisual'),
-  onboardingProgress: document.getElementById('onboardingProgress'),
-  onboardingPoints: document.getElementById('onboardingPoints'),
-  onboardingNextBtn: document.getElementById('onboardingNextBtn'),
-  onboardingSkipBtn: document.getElementById('onboardingSkipBtn'),
   retryLoadBtn: document.getElementById('retryLoadBtn'),
   goHomeFromErrorBtn: document.getElementById('goHomeFromErrorBtn'),
   errorText: document.getElementById('errorText'),
   categoriesGrid: document.getElementById('categoriesGrid'),
-  introCard: document.getElementById('categoryIntroCard'),
 
   gameCategory: document.getElementById('gameCategory'),
   gameTitle: document.getElementById('gameTitle'),
   progressLabel: document.getElementById('progressLabel'),
-  progressFill: document.getElementById('progressFill'),
-  remainingQuestionsLabel: document.getElementById('remainingQuestionsLabel'),
-  streakLabel: document.getElementById('streakLabel'),
-  favoriteQuestionBtn: document.getElementById('favoriteQuestionBtn'),
   questionText: document.getElementById('questionText'),
   questionCard: document.getElementById('questionCard'),
-  questionCardCount: document.getElementById('questionCardCount'),
-  questionCardFavoriteLabel: document.getElementById('questionCardFavoriteLabel'),
-  questionNextBtn: document.getElementById('questionNextBtn'),
-  gameNavCategories: document.getElementById('gameNavCategories'),
-  gameNavFavorites: document.getElementById('gameNavFavorites'),
   swipeHelp: document.getElementById('swipeHelp'),
-  matchBtn: document.getElementById('matchBtn'),
-  mismatchBtn: document.getElementById('mismatchBtn'),
-  skipBtn: document.getElementById('skipBtn'),
-
-  blitzTimerDisplay: document.getElementById('blitzTimerDisplay'),
-  blitzCorrectScore: document.getElementById('blitzCorrectScore'),
-  blitzTotalScore: document.getElementById('blitzTotalScore'),
-  blitzQuestionText: document.getElementById('blitzQuestionText'),
-  blitzCard: document.querySelector('.blitz-card'),
-  blitzCorrectBtn: document.getElementById('blitzCorrectBtn'),
-  blitzIncorrectBtn: document.getElementById('blitzIncorrectBtn'),
-
-  resultsCategory: document.getElementById('resultsCategory'),
-  resultsScore: document.getElementById('resultsScore'),
-  resultsMessage: document.getElementById('resultsMessage'),
-  statMatch: document.getElementById('statMatch'),
-  statMismatch: document.getElementById('statMismatch'),
-  statSkip: document.getElementById('statSkip'),
-  statLabelMatch: document.getElementById('statLabelMatch'),
-  statLabelMismatch: document.getElementById('statLabelMismatch'),
-  restartBtn: document.getElementById('restartBtn'),
-  resultsVibe: document.getElementById('resultsVibe'),
-  resultsBreakdown: document.getElementById('resultsBreakdown'),
-  resultsAchievements: document.getElementById('resultsAchievements'),
-  changeCategoryBtn: document.getElementById('changeCategoryBtn'),
-  shareBtn: document.getElementById('shareBtn'),
-  historyList: document.getElementById('historyList'),
-  historySearchInput: document.getElementById('historySearchInput'),
-  favoritesList: document.getElementById('favoritesList'),
-  startFavoritesBtn: document.getElementById('startFavoritesBtn'),
   categoryCardTemplate: document.getElementById('categoryCardTemplate'),
-  historyItemTemplate: document.getElementById('historyItemTemplate'),
   emptyStateTemplate: document.getElementById('emptyStateTemplate'),
-  favoriteItemTemplate: document.getElementById('favoriteItemTemplate'),
 
   adultModal: document.getElementById('adultModal'),
   adultConfirmBtn: document.getElementById('adultConfirmBtn'),
   adultCancelBtn: document.getElementById('adultCancelBtn'),
-  customQuestionsList: document.getElementById('customQuestionsList'),
-  addCustomQuestionBtn: document.getElementById('addCustomQuestionBtn'),
-  saveCustomGameBtn: document.getElementById('saveCustomGameBtn'),
-
-  vibrationToggle: document.getElementById('vibrationToggle'),
-  animationsToggle: document.getElementById('animationsToggle'),
-  roundSizeSelect: document.getElementById('roundSizeSelect'),
-  clearHistoryBtn: document.getElementById('clearHistoryBtn'),
-  resetCustomBtn: document.getElementById('resetCustomBtn'),
+  completionCard: document.getElementById('completionCard'),
+  completionCategory: document.getElementById('completionCategory'),
   toastStack: document.getElementById('toastStack')
 };
 
@@ -191,18 +98,14 @@ const state = {
   stats: { match: 0, mismatch: 0, skip: 0 },
   gameMode: 'solo',
   pendingAdultCategory: null,
-  navStack: ['home'],
+  navStack: ['categories'],
   blitzTimer: null,
   blitzTimeLeft: 30,
   activeBgLayerIndex: 0,
   activeModal: null,
   loadError: null,
-  historyFilter: '',
   onboardingStep: 0,
   settings: { ...DEFAULT_SETTINGS },
-  favorites: storage.get(STORAGE_KEYS.favorites, []),
-  lastRoundAchievements: [],
-  shareAchievement: null,
   questionStreak: 0,
   questionTransitionLocked: false,
   touchFallbackStartX: 0,
@@ -265,9 +168,6 @@ const helpers = {
     for (let i = 0; i < key.length; i += 1) hash = (hash * 31 + key.charCodeAt(i)) % 2147483647;
     return pool[hash % pool.length];
   },
-  isFavorite(question, category) {
-    return state.favorites.some((item) => item.question === question && item.category === category);
-  },
   vibeByScore(score) {
     if (score >= 90) return 'Космический мэтч';
     if (score >= 75) return 'Тёплый и очень близкий вайб';
@@ -289,47 +189,8 @@ const helpers = {
     };
     return icons[iconId] || icons.spark;
   },
-  achievementRarityMeta(rarity = 'common') {
-    const rarities = {
-      common: { label: 'Обычная', className: 'rarity-common' },
-      rare: { label: 'Редкая', className: 'rarity-rare' },
-      epic: { label: 'Эпическая', className: 'rarity-epic' },
-      legendary: { label: 'Легендарная', className: 'rarity-legendary' }
-    };
-    return rarities[rarity] || rarities.common;
-  },
-  achievementCatalog() {
-    return [
-      { id: 'first_game', title: 'Первый раунд', description: 'Заверши свою первую игру до конца.', rarity: 'common', art: 'spark', check: (stats) => stats.games >= 1 },
-      { id: 'ten_games', title: 'На одной волне', description: 'Сыграй 10 полных раундов.', rarity: 'rare', art: 'rings', check: (stats) => stats.games >= 10 },
-      { id: 'hundred_questions', title: 'Сотня откровений', description: 'Пройди 100 вопросов во всех режимах.', rarity: 'epic', art: 'crown', check: (stats) => stats.questions >= 100 },
-      { id: 'five_day_streak', title: 'Серия 5 дней', description: 'Возвращайся в игру 5 дней подряд.', rarity: 'rare', art: 'flame', check: (stats) => stats.streak >= 5 },
-      { id: 'romantic_master', title: 'Идеальный мэтч', description: 'Набери 80%+ совместимости в категории.', rarity: 'legendary', art: 'gem', check: (stats, ctx) => ctx.score >= 80 }
-    ];
-  },
-  achievementArtSvg(art = 'spark') {
-    const icons = {
-      spark: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M32 8l4.2 11.8L48 24l-11.8 4.2L32 40l-4.2-11.8L16 24l11.8-4.2L32 8z"></path><path d="M49 40l2.2 6.1L57 48l-5.8 1.9L49 56l-2.2-6.1L41 48l5.8-1.9L49 40z"></path></svg>`,
-      rings: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="36" r="12"></circle><circle cx="40" cy="36" r="12"></circle><path d="M32 24l4-8"></path><path d="M36 16h8"></path></svg>`,
-      crown: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 46l4-22 16 12 16-12 4 22H12z"></path><path d="M18 46v8h28v-8"></path><circle cx="16" cy="20" r="3"></circle><circle cx="32" cy="12" r="3"></circle><circle cx="48" cy="20" r="3"></circle></svg>`,
-      flame: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M35 10c2 9-8 11-8 20 0 4 2.6 7 5 7 3.6 0 6-2.8 6-6 0-5-4-7-3-13 8 5 12 12 12 20 0 10-6.8 18-15 18S17 48 17 39c0-10 6-16 18-29z"></path></svg>`,
-      gem: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 24l8-10h16l8 10-16 26-16-26z"></path><path d="M24 14l8 10 8-10"></path><path d="M16 24h32"></path></svg>`
-    };
-    return icons[art] || icons.spark;
-  },
-  achievementById(id) {
-    return this.achievementCatalog().find((item) => item.id === id) || null;
-  },
   isAdultConfirmed() {
     return storage.getRaw(STORAGE_KEYS.adult) === 'yes';
-  },
-  formatHistoryDate(date = new Date()) {
-    return date.toLocaleString('ru-RU', {
-      day: '2-digit',
-      month: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
   },
   escapeHtml(value) {
     return String(value)
@@ -354,7 +215,7 @@ const templates = {
   },
   empty(message) {
     const node = this.clone(ui.emptyStateTemplate) || document.createElement('div');
-    node.className = node.className || 'history-empty';
+    node.className = node.className || 'empty-state';
     const target = node.querySelector('[data-role="message"]') || node;
     target.textContent = message;
     return node;
@@ -490,20 +351,6 @@ const fx = {
   }
 };
 
-const historyStore = {
-  load() {
-    return storage.get(STORAGE_KEYS.history, []);
-  },
-  save(entry) {
-    const history = this.load();
-    history.unshift(entry);
-    storage.set(STORAGE_KEYS.history, history.slice(0, 12));
-  },
-  clear() {
-    storage.set(STORAGE_KEYS.history, []);
-  }
-};
-
 const modals = {
   open(element) {
     if (!element) return;
@@ -604,12 +451,9 @@ const theme = {
 
 const data = {
   loadSettings() {
-    state.settings = { ...DEFAULT_SETTINGS, ...storage.get(STORAGE_KEYS.settings, {}) };
-    state.settings.roundSize = 25;
+    state.settings = { ...DEFAULT_SETTINGS, animations: true, vibration: true, roundSize: 25 };
   },
-  saveSettings() {
-    storage.set(STORAGE_KEYS.settings, state.settings);
-  },
+  saveSettings() {},
   async loadQuestions() {
     let loadedFromNetwork = false;
     state.loadError = null;
@@ -636,8 +480,6 @@ const data = {
       }
     }
     if (!state.questionsData || typeof state.questionsData !== 'object') state.questionsData = {};
-    const savedCustom = storage.get(STORAGE_KEYS.customQuestions, null);
-    if (Array.isArray(savedCustom) && savedCustom.length) state.questionsData['Своя игра'] = savedCustom;
     if (Object.keys(state.questionsData).length === 0) {
       state.loadError = state.loadError || 'Не найден ни свежий файл вопросов, ни кэш на устройстве.';
       return false;
@@ -647,56 +489,7 @@ const data = {
 };
 
 
-const meta = {
-  loadChallenge() {
-    return storage.get(STORAGE_KEYS.challenge, { daysCompleted: 0, streak: 0, lastDate: null, games: 0, questions: 0 });
-  },
-  saveChallenge(data) {
-    storage.set(STORAGE_KEYS.challenge, data);
-  },
-  loadAchievements() {
-    return storage.get(STORAGE_KEYS.achievements, []);
-  },
-  saveAchievements(items) {
-    storage.set(STORAGE_KEYS.achievements, items);
-  },
-  toggleFavorite() {
-    const question = state.currentQuestions[state.currentIndex];
-    const category = state.currentCategory?.id;
-    if (!question || !category) return false;
-    const idx = state.favorites.findIndex((item) => item.question === question && item.category === category);
-    if (idx >= 0) state.favorites.splice(idx, 1);
-    else state.favorites.unshift({ category, question, date: helpers.formatHistoryDate(new Date()) });
-    state.favorites = state.favorites.slice(0, 120);
-    storage.set(STORAGE_KEYS.favorites, state.favorites);
-    return idx < 0;
-  },
-  recordRound(context) {
-    const data = this.loadChallenge();
-    const today = helpers.todayKey();
-    if (data.lastDate !== today) {
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      const yKey = yesterday.toISOString().slice(0, 10);
-      data.streak = data.lastDate === yKey ? (data.streak || 0) + 1 : 1;
-      data.daysCompleted = Math.min(7, (data.daysCompleted || 0) + 1);
-      data.lastDate = today;
-    }
-    data.games = (data.games || 0) + 1;
-    data.questions = (data.questions || 0) + (context.totalQuestions || 0);
-    this.saveChallenge(data);
-    const unlocked = new Set(this.loadAchievements());
-    const newly = [];
-    helpers.achievementCatalog().forEach((achievement) => {
-      if (!unlocked.has(achievement.id) && achievement.check(data, context)) {
-        unlocked.add(achievement.id);
-        newly.push(achievement);
-      }
-    });
-    this.saveAchievements(Array.from(unlocked));
-    return { challenge: data, newly, unlocked: Array.from(unlocked).map((id) => helpers.achievementById(id)).filter(Boolean) };
-  }
-};
+const meta = {};
 
 async function initTelegram() {
   if (!tg) return;
@@ -727,7 +520,6 @@ Object.assign(app, {
   loading,
   background,
   fx,
-  historyStore,
   modals,
   router,
   theme,
