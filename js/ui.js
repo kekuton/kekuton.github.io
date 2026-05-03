@@ -257,10 +257,18 @@ export const render = {
     ui.questionCard.dataset.swipe = 'none';
     ui.questionCard.style.removeProperty('--swipe-opacity');
     ui.questionCard.style.transition = 'none';
-    ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
-    ui.questionCard.style.opacity = '1';
+    ui.questionCard.style.transform = isInitial || !state.settings.animations ? 'translate3d(0,0,0) rotate(0deg) scale(1)' : 'translate3d(0,22px,0) rotate(0deg) scale(0.98)';
+    ui.questionCard.style.opacity = isInitial || !state.settings.animations ? '1' : '0';
     void ui.questionCard.offsetHeight;
+    if (!isInitial && state.settings.animations) ui.questionCard.classList.add('card-enter');
     app.swipe.updateHint(0, 0);
+    requestAnimationFrame(() => {
+      ui.questionCard.style.transition = state.settings.animations
+        ? 'transform 320ms cubic-bezier(.2,.9,.2,1), opacity 260ms ease'
+        : 'none';
+      ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
+      ui.questionCard.style.opacity = '1';
+    });
   },
   blitzUI() {
     ui.blitzTimerDisplay.textContent = state.blitzTimeLeft;
