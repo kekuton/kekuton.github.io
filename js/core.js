@@ -2,7 +2,7 @@ export const app = {};
 
 const tg = window.Telegram?.WebApp;
 
-const VERSION = 'clean-polish-1';
+const VERSION = 'clean-flow-2';
 const STORAGE_KEYS = {
   adult: 'adult_ok',
   questionsCache: `couples_questions_${VERSION}`,
@@ -46,7 +46,6 @@ const ui = {
   progressLabel: document.getElementById('progressLabel'),
   questionText: document.getElementById('questionText'),
   questionCard: document.getElementById('questionCard'),
-  swipeHelp: document.getElementById('swipeHelp'),
   categoryCardTemplate: document.getElementById('categoryCardTemplate'),
   adultModal: document.getElementById('adultModal'),
   adultConfirmBtn: document.getElementById('adultConfirmBtn'),
@@ -188,10 +187,7 @@ const router = {
   },
 };
 
-const theme = { init() { document.body.dataset.theme = 'dark'; } };
-
 const data = {
-  loadSettings() {},
   async loadQuestions() {
     let loaded = false;
     state.loadError = null;
@@ -221,4 +217,4 @@ async function initTelegram() {
   try { tg.BackButton?.onClick(() => router.back()); } catch {}
 }
 
-Object.assign(app, { tg, VERSION, STORAGE_KEYS, ROUND_SIZE, CATEGORY_META, ROOT_SCREENS, screens, ui, bgLayers, storage, state, helpers, notify, loading, background, fx, modals, router, theme, data, initTelegram });
+Object.assign(app, { tg, VERSION, STORAGE_KEYS, ROUND_SIZE, CATEGORY_META, ROOT_SCREENS, screens, ui, bgLayers, storage, state, helpers, notify, loading, background, fx, modals, router, data, initTelegram });

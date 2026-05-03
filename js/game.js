@@ -76,126 +76,136 @@ export const game = {
 };
 
 export const swipe = {
-  getActiveContext() {
-    if (app.screens.game?.classList.contains('screen-active')) return { card: ui.questionCard };
-    return null;
+  activeCard() {
+    if (!app.screens.game?.classList.contains('screen-active')) return null;
+    return ui.questionCard || null;
+  },
+
+  clearCardRuntimeStyles() {
+    const card = ui.questionCard;
+    if (!card) return;
+    card.style.removeProperty('transition');
+    card.style.removeProperty('transform');
+    card.style.removeProperty('opacity');
+    card.style.removeProperty('will-change');
+    card.classList.remove('is-swiping');
   },
 
   animateOut(callback) {
     const card = ui.questionCard;
-    if (!card) return callback?.();
-    card.classList.remove('is-swiping');
-    card.style.willChange = 'transform, opacity';
-    card.style.setProperty('transition', 'transform 260ms cubic-bezier(.2,.82,.2,1), opacity 220ms ease', 'important');
-    card.style.setProperty('transform', 'translate3d(0,-150px,0) scale(.985)', 'important');
-    card.style.setProperty('opacity', '0', 'important');
-    window.setTimeout(() => {
-      card.style.willChange = '';
+    if (!card) {
       callback?.();
-    }, 260);
+      return;
+    }
+
+    card.classList.remove('is-swiping');
+    card.classList.remove('question-card-enter');
+    card.style.willChange = 'transform, opacity';
+    card.style.transition = 'transform 240ms cubic-bezier(.22,.72,.18,1), opacity 220ms ease';
+    card.style.transform = 'translate3d(0,-132px,0) scale(.985)';
+    card.style.opacity = '0';
+
+    window.setTimeout(() => {
+      callback?.();
+    }, 245);
+  },
+
+  resetSwipeState() {
+    state.swipe.active = false;
+    state.swipe.pointerId = null;
+    state.swipe.isAnimating = false;
+    state.swipe.startX = 0;
+    state.swipe.startY = 0;
+    state.swipe.currentX = 0;
+    state.swipe.currentY = 0;
   },
 
   onPointerDown(event) {
-    const context = this.getActiveContext();
-    const card = context?.card;
-    if (!card || event.currentTarget !== card) return;
+    const card = this.activeCard();
+    if (!card || event.currentTarget !== card || state.questionTransitionLocked) return;
     if (event.pointerType === 'mouse' && event.button !== 0) return;
+
+    this.resetSwipeState();
     state.swipe.active = true;
     state.swipe.pointerId = event.pointerId;
     state.swipe.startX = event.clientX;
     state.swipe.startY = event.clientY;
     state.swipe.currentX = event.clientX;
     state.swipe.currentY = event.clientY;
+
     card.setPointerCapture?.(event.pointerId);
     card.classList.add('is-swiping');
-    card.style.setProperty('transition', 'none', 'important');
+    card.classList.remove('question-card-enter');
+    card.style.transition = 'none';
+    card.style.willChange = 'transform';
   },
 
   onPointerMove(event) {
-    const context = this.getActiveContext();
-    const card = context?.card;
+    const card = this.activeCard();
     if (!card || !state.swipe.active || state.swipe.pointerId !== event.pointerId) return;
     if (event.cancelable) event.preventDefault();
+
     state.swipe.currentX = event.clientX;
     state.swipe.currentY = event.clientY;
+
     if (state.swipe.isAnimating) return;
     state.swipe.isAnimating = true;
+
     requestAnimationFrame(() => {
       const dx = state.swipe.currentX - state.swipe.startX;
       const dy = state.swipe.currentY - state.swipe.startY;
-      const x = Math.max(-22, Math.min(22, dx * 0.16));
-      const y = dy < 0 ? Math.max(-100, dy * 0.38) : Math.min(24, dy * 0.14);
-      const rotate = Math.max(-2.5, Math.min(2.5, dx / 80));
-      const scale = 1 - Math.min(Math.abs(y) / 3000, 0.018);
-      card.style.setProperty('transform', `translate3d(${x}px,${y}px,0) rotate(${rotate}deg) scale(${scale})`, 'important');
+      const x = Math.max(-18, Math.min(18, dx * 0.12));
+      const y = dy < 0 ? Math.max(-86, dy * 0.34) : Math.min(22, dy * 0.12);
+      const rotate = Math.max(-1.8, Math.min(1.8, dx / 120));
+      const scale = 1 - Math.min(Math.abs(y) / 3600, 0.016);
+
+      card.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${rotate}deg) scale(${scale})`;
       state.swipe.isAnimating = false;
     });
   },
 
   onPointerUp(event) {
-    const context = this.getActiveContext();
-    const card = context?.card;
+    const card = this.activeCard();
     if (!card || !state.swipe.active || state.swipe.pointerId !== event.pointerId) return;
-    state.swipe.active = false;
-    state.swipe.pointerId = null;
-    card.releasePointerCapture?.(event.pointerId);
-    card.classList.remove('is-swiping');
+
     const dx = state.swipe.currentX - state.swipe.startX;
     const dy = state.swipe.currentY - state.swipe.startY;
-    const isUpSwipe = dy < -58 && Math.abs(dy) > Math.abs(dx) * 0.72;
-    if (isUpSwipe) return game.answer();
+    const isUpSwipe = dy < -70 && Math.abs(dy) > Math.abs(dx) * 0.7;
+
+    state.swipe.active = false;
+    state.swipe.pointerId = null;
     state.swipe.isAnimating = false;
-    card.style.setProperty('transition', 'transform 220ms cubic-bezier(.2,.9,.2,1)', 'important');
-    card.style.setProperty('transform', 'translate3d(0,0,0) rotate(0deg) scale(1)', 'important');
+    card.releasePointerCapture?.(event.pointerId);
+    card.classList.remove('is-swiping');
+
+    if (isUpSwipe) {
+      game.answer();
+      return;
+    }
+
+    card.style.transition = 'transform 220ms cubic-bezier(.22,.9,.2,1)';
+    card.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
+    window.setTimeout(() => {
+      if (!state.swipe.active && !state.questionTransitionLocked) card.style.removeProperty('transition');
+    }, 230);
   },
 
   attachHandlers() {
     const card = ui.questionCard;
     if (!card || card.dataset.swipeBound === '1') return;
     card.dataset.swipeBound = '1';
+
     card.addEventListener('pointerdown', this.onPointerDown.bind(this));
     card.addEventListener('pointermove', this.onPointerMove.bind(this));
     card.addEventListener('pointerup', this.onPointerUp.bind(this));
     card.addEventListener('pointercancel', this.onPointerUp.bind(this));
-
-    card.addEventListener('touchstart', (event) => {
-      const touch = event.changedTouches?.[0];
-      if (!touch) return;
-      state.touchFallbackStartX = touch.clientX;
-      state.touchFallbackStartY = touch.clientY;
-    }, { passive: true });
-
-    card.addEventListener('touchend', (event) => {
-      if (!app.screens.game?.classList.contains('screen-active') || state.questionTransitionLocked) return;
-      const touch = event.changedTouches?.[0];
-      if (!touch) return;
-      const dx = touch.clientX - (state.touchFallbackStartX || touch.clientX);
-      const dy = touch.clientY - (state.touchFallbackStartY || touch.clientY);
-      if (dy < -62 && Math.abs(dy) > Math.abs(dx) * 0.72) {
-        if (event.cancelable) event.preventDefault();
-        game.answer();
-      }
-    }, { passive: false });
-
-    document.addEventListener('touchstart', (event) => {
-      if (!app.screens.game?.classList.contains('screen-active')) return;
-      const touch = event.changedTouches?.[0];
-      if (!touch) return;
-      state.globalTouchStartX = touch.clientX;
-      state.globalTouchStartY = touch.clientY;
-    }, { passive: true });
-
-    document.addEventListener('touchend', (event) => {
-      if (!app.screens.game?.classList.contains('screen-active') || state.questionTransitionLocked) return;
-      const touch = event.changedTouches?.[0];
-      if (!touch) return;
-      const dx = touch.clientX - (state.globalTouchStartX || touch.clientX);
-      const dy = touch.clientY - (state.globalTouchStartY || touch.clientY);
-      if (dy < -72 && Math.abs(dy) > Math.abs(dx) * 0.82) {
-        if (event.cancelable) event.preventDefault();
-        game.answer();
-      }
-    }, { passive: false });
+    card.addEventListener('lostpointercapture', () => {
+      if (!state.swipe.active || state.questionTransitionLocked) return;
+      this.resetSwipeState();
+      card.classList.remove('is-swiping');
+      card.style.transition = 'transform 180ms ease';
+      card.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
+    });
   },
 
   preventDoubleTapZoom() {

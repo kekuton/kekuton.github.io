@@ -2,7 +2,7 @@ import { app } from './core.js';
 import './ui.js';
 import './game.js';
 
-const { ui, state, router, theme, data, background, render, loading, swipe, initTelegram, modals, game, helpers, CATEGORY_META } = app;
+const { ui, state, router, data, background, render, loading, swipe, initTelegram, modals, game } = app;
 
 function updateActiveCategoryCard() {
   const cards = [...ui.categoriesGrid.querySelectorAll('.category-card')];
@@ -114,8 +114,6 @@ async function clearOldPwaCache() {
 async function init() {
   await clearOldPwaCache();
   loading.show('Подготавливаем приложение...');
-  data.loadSettings();
-  theme.init();
   background.reset();
   const questionsLoaded = await data.loadQuestions();
   render.categories();
