@@ -1,6 +1,6 @@
 import { app } from './core.js';
 
-const { state, ui, helpers, router, CATEGORY_META } = app;
+const { state, ui, helpers, router, CATEGORY_META, ROUND_SIZE } = app;
 
 function makeEmpty(message) {
   const node = document.createElement('div');
@@ -10,11 +10,6 @@ function makeEmpty(message) {
 }
 
 export const render = {
-  loadWarning(message) {
-    if (!ui.categoriesGrid) return;
-    ui.categoriesGrid.replaceChildren(makeEmpty(message));
-  },
-
   errorScreen(message) {
     if (ui.errorText) ui.errorText.textContent = message;
     router.show('error', { reset: true });
@@ -22,12 +17,10 @@ export const render = {
 
   categories() {
     if (!ui.categoriesGrid || !ui.categoryCardTemplate) return;
+    const playable = CATEGORY_META.filter((category) => helpers.getCurrentCategoryQuestions(category.id).length);
     const fragment = document.createDocumentFragment();
 
-    CATEGORY_META.forEach((category, index) => {
-      const questions = helpers.getCurrentCategoryQuestions(category.id);
-      if (!questions.length) return;
-
+    playable.forEach((category, index) => {
       const card = ui.categoryCardTemplate.content.firstElementChild.cloneNode(true);
       card.dataset.id = category.id;
       card.dataset.index = String(index + 1);
@@ -44,12 +37,6 @@ export const render = {
       const icon = card.querySelector('[data-role="icon"]');
       if (icon) icon.innerHTML = helpers.categoryIconSvg(category.icon);
 
-      const badge = card.querySelector('[data-role="badge"]');
-      if (badge) {
-        badge.textContent = `${questions.length} вопросов`;
-        badge.classList.remove('hidden');
-      }
-
       const title = card.querySelector('[data-role="title"]');
       if (title) title.textContent = category.id;
 
@@ -57,12 +44,13 @@ export const render = {
       if (desc) desc.textContent = category.desc;
 
       const counter = card.querySelector('[data-role="counter"]');
-      if (counter) counter.textContent = `${index + 1} / ${CATEGORY_META.length}`;
+      if (counter) counter.textContent = `${index + 1} / ${playable.length}`;
 
       fragment.appendChild(card);
     });
 
-    ui.categoriesGrid.replaceChildren(fragment);
+    if (!fragment.childNodes.length) ui.categoriesGrid.replaceChildren(makeEmpty('Категории пока не найдены.'));
+    else ui.categoriesGrid.replaceChildren(fragment);
     ui.categoriesGrid.querySelector('.category-card')?.classList.add('is-feed-active');
   },
 
@@ -72,35 +60,25 @@ export const render = {
 
   gameQuestion(isInitial = false) {
     const question = state.currentQuestions[state.currentIndex] || '';
-    const total = state.currentQuestions.length || 1;
-
+    const total = state.currentQuestions.length || ROUND_SIZE;
     if (ui.gameCategory && state.currentCategory) ui.gameCategory.textContent = state.currentCategory.id;
-    if (ui.gameTitle) ui.gameTitle.textContent = `Вопрос ${state.currentIndex + 1} из ${total}`;
+    if (ui.gameTitle) ui.gameTitle.textContent = 'Вопрос';
     if (ui.progressLabel) ui.progressLabel.textContent = `${state.currentIndex + 1} / ${total}`;
     if (ui.questionText) ui.questionText.textContent = question;
 
-    if (ui.questionCard) {
-      ui.questionCard.dataset.swipe = 'none';
-      ui.questionCard.style.removeProperty('--swipe-opacity');
-      ui.questionCard.style.transition = 'none';
-      ui.questionCard.style.opacity = '1';
-      ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
-      ui.questionCard.classList.remove('is-swiping', 'question-card-enter');
-
+    const card = ui.questionCard;
+    if (card) {
+      card.dataset.swipe = 'none';
+      card.style.removeProperty('--swipe-opacity');
+      card.style.setProperty('opacity', '1', 'important');
+      card.style.setProperty('transform', 'translate3d(0,0,0) rotate(0deg) scale(1)', 'important');
+      card.classList.remove('is-swiping', 'question-card-enter');
       if (!isInitial) {
-        ui.questionCard.style.opacity = '0';
-        ui.questionCard.style.transform = 'translate3d(0,28px,0) scale(.985)';
-        requestAnimationFrame(() => {
-          ui.questionCard.classList.add('question-card-enter');
-          ui.questionCard.style.transition = 'transform 260ms cubic-bezier(.2,.9,.2,1), opacity 220ms ease';
-          ui.questionCard.style.opacity = '1';
-          ui.questionCard.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
-        });
+        card.classList.add('question-card-enter');
       }
     }
 
     state.swipe.active = false;
-    state.swipe.dragging = false;
     state.swipe.pointerId = null;
     state.swipe.isAnimating = false;
   },
@@ -110,9 +88,9 @@ export const render = {
     if (!card) return;
     card.dataset.swipe = 'none';
     card.style.removeProperty('--swipe-opacity');
-    card.style.transition = '';
-    card.style.opacity = '1';
-    card.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
+    card.style.removeProperty('transition');
+    card.style.setProperty('opacity', '1', 'important');
+    card.style.setProperty('transform', 'translate3d(0,0,0) rotate(0deg) scale(1)', 'important');
     card.classList.remove('is-swiping', 'question-card-enter');
   },
 
@@ -120,8 +98,6 @@ export const render = {
     if (ui.completionCategory) ui.completionCategory.textContent = state.currentCategory?.id || 'категорию';
     router.show('completion');
   },
-
-  syncSettingsUI() {},
 };
 
 Object.assign(app, { render });

@@ -1,24 +1,21 @@
 import { app } from './core.js';
 import { render } from './ui.js';
 
-const { ui, state, helpers, router, modals, fx, CATEGORY_META, SWIPE_HELP, background } = app;
+const { ui, state, helpers, router, modals, fx, CATEGORY_META, background, storage, STORAGE_KEYS } = app;
 
+function saveProgress() {
+  if (!state.currentCategory) return;
+  storage.set(helpers.progressKey(state.currentCategory.id), {
+    index: state.currentIndex,
+    questions: state.currentQuestions,
+  });
+}
+
+function clearProgress(categoryId = state.currentCategory?.id) {
+  if (categoryId) storage.remove(helpers.progressKey(categoryId));
+}
 
 export const game = {
-  clearBlitzTimer() {
-    if (state.blitzTimer) {
-      clearInterval(state.blitzTimer);
-      state.blitzTimer = null;
-    }
-  },
-  resetRound(mode) {
-    state.gameMode = mode;
-    state.currentIndex = 0;
-    state.stats = { match: 0, mismatch: 0, skip: 0 };
-    state.questionStreak = 0;
-    render.resetQuestionCard();
-    render.updateModeUI();
-  },
   openCategory(categoryId) {
     state.currentCategory = CATEGORY_META.find((category) => category.id === categoryId) || null;
     if (!state.currentCategory) return;
@@ -29,160 +26,91 @@ export const game = {
       return;
     }
     background.apply(categoryId);
-    this.start('solo');
+    this.start();
   },
-  start(mode = 'solo') {
-    state.gameMode = mode;
-    let sourceQuestions = helpers.getCurrentCategoryQuestions(state.currentCategory.id);
-    if ((!sourceQuestions || !sourceQuestions.length) && state.currentQuestions.length) sourceQuestions = state.currentQuestions;
+
+  start() {
+    const sourceQuestions = helpers.getCurrentCategoryQuestions(state.currentCategory.id);
     if (!sourceQuestions.length) {
       app.notify.info('В этой категории пока нет вопросов.');
-      router.show('categories');
+      router.show('categories', { reset: true });
       return;
     }
-    const isScenario = state.currentCategory?.isScenario;
-    const limit = helpers.getRoundSize(sourceQuestions.length);
-    state.currentQuestions = isScenario ? sourceQuestions.slice(0, limit) : helpers.shuffle(sourceQuestions).slice(0, limit);
-    this.resetRound(mode);
+
+    const saved = storage.get(helpers.progressKey(state.currentCategory.id), null);
+    if (saved?.questions?.length && Number.isInteger(saved.index) && saved.index > 0 && saved.index < saved.questions.length) {
+      state.currentQuestions = saved.questions.slice(0, helpers.getRoundSize(saved.questions.length));
+      state.currentIndex = saved.index;
+    } else {
+      const limit = helpers.getRoundSize(sourceQuestions.length);
+      state.currentQuestions = state.currentCategory?.isScenario ? sourceQuestions.slice(0, limit) : helpers.shuffle(sourceQuestions).slice(0, limit);
+      state.currentIndex = 0;
+      saveProgress();
+    }
+
+    state.questionTransitionLocked = false;
     router.show('game');
     render.updateModeUI();
     render.gameQuestion(true);
   },
-  startBlitz() {
-    state.gameMode = 'solo';
-    render.updateModeUI();
-    this.clearBlitzTimer();
-    state.currentQuestions = helpers.shuffle(helpers.getCurrentCategoryQuestions('Блиц'));
-    state.currentIndex = 0;
-    state.stats = { match: 0, mismatch: 0, skip: 0 };
-    state.questionStreak = 0;
-    state.blitzTimeLeft = 30;
-    render.blitzUI();
-    render.blitzQuestion();
-    router.show('blitz');
-    state.blitzTimer = setInterval(() => {
-      state.blitzTimeLeft -= 1;
-      ui.blitzTimerDisplay.textContent = state.blitzTimeLeft;
-      if (state.blitzTimeLeft <= 3 && state.blitzTimeLeft > 0) fx.vibrate('light');
-      if (state.blitzTimeLeft <= 0) this.finish(true);
-    }, 1000);
-  },
-  answer(type) {
-    if (!['match', 'mismatch', 'skip'].includes(type)) return;
+
+  answer() {
     if (state.questionTransitionLocked) return;
     state.questionTransitionLocked = true;
-
-    const finishTransition = () => {
-      state.stats[type] += 1;
-      if (type === 'match') state.questionStreak += 1;
-      else if (type === 'mismatch') state.questionStreak = 0;
-
+    fx.vibrate('light');
+    swipe.animateOut(() => {
       state.currentIndex += 1;
-
       if (state.currentIndex >= state.currentQuestions.length) {
-        this.finish();
+        clearProgress();
+        render.resetQuestionCard();
+        render.completion();
         state.questionTransitionLocked = false;
         return;
       }
-
+      saveProgress();
       render.resetQuestionCard();
-      render.gameQuestion();
-      window.setTimeout(() => {
-        state.questionTransitionLocked = false;
-      }, 80);
-    };
-
-    // На экране вопросов сейчас используется только свайп вверх.
-    // Эффекты кнопок удалены из интерфейса, поэтому не привязываемся к старым кнопкам.
-    try { fx.vibrate(type === 'match' ? 'success' : type === 'mismatch' ? 'error' : 'light'); } catch (_) {}
-    swipe.animateOut(type, finishTransition);
+      render.gameQuestion(false);
+      window.setTimeout(() => { state.questionTransitionLocked = false; }, 120);
+    });
   },
-  answerBlitz(isCorrect) {
-    fx.vibrate('light');
-    if (isCorrect) state.stats.match += 1;
-    else state.stats.mismatch += 1;
-    state.currentIndex += 1;
-    render.blitzUI();
-    render.blitzQuestion();
-  },
-  finish(isBlitz = false) {
-    this.clearBlitzTimer();
-    // Результаты и проценты не показываем: только спокойный финальный экран.
-    render.resetQuestionCard();
-    render.completion();
-  }
 };
 
 export const swipe = {
   getActiveContext() {
-    if (app.screens.blitz?.classList.contains('screen-active')) {
-      return {
-        mode: 'blitz',
-        card: ui.blitzCard,
-        allowUp: false
-      };
-    }
-    if (app.screens.game?.classList.contains('screen-active')) {
-      return {
-        mode: 'game',
-        card: ui.questionCard,
-        allowUp: true
-      };
-    }
+    if (app.screens.game?.classList.contains('screen-active')) return { card: ui.questionCard };
     return null;
   },
-  updateHint(offsetX, offsetY = 0) {
-    const context = this.getActiveContext();
-    const card = context?.card;
-    if (!card) return;
-    const intensity = Math.min(Math.max(Math.abs(offsetX), Math.abs(offsetY)) / 120, 1);
-    let direction = 'none';
-    if (context.allowUp && offsetY < -70 && Math.abs(offsetX) < 100) direction = 'up';
-    else if (offsetX > 0) direction = 'right';
-    else if (offsetX < 0) direction = 'left';
-    card.dataset.swipe = direction;
-    card.style.setProperty('--swipe-opacity', intensity.toFixed(2));
 
-  },
-  animateOut(type, callback) {
-    const context = this.getActiveContext();
-    const card = context?.card || ui.questionCard;
-    const map = {
-      match: { x: 420, y: -20, rotate: 16 },
-      mismatch: { x: -420, y: -20, rotate: -16 },
-      skip: { x: 0, y: -360, rotate: 0 }
-    };
-    const config = map[type];
-    if (!config || !card) return callback?.();
-    card.style.transition = 'transform 320ms cubic-bezier(.2,.9,.2,1), opacity 260ms ease';
-    card.style.opacity = '0';
-    card.style.transform = `translate3d(${config.x}px, ${config.y}px, 0) rotate(${config.rotate}deg) scale(0.96)`;
-    setTimeout(() => {
-      state.swipe.isAnimating = false;
-      card.classList.remove('is-swiping');
+  animateOut(callback) {
+    const card = ui.questionCard;
+    if (!card) return callback?.();
+    card.classList.remove('is-swiping');
+    card.style.willChange = 'transform, opacity';
+    card.style.setProperty('transition', 'transform 260ms cubic-bezier(.2,.82,.2,1), opacity 220ms ease', 'important');
+    card.style.setProperty('transform', 'translate3d(0,-150px,0) scale(.985)', 'important');
+    card.style.setProperty('opacity', '0', 'important');
+    window.setTimeout(() => {
       card.style.willChange = '';
       callback?.();
-    }, 300);
+    }, 260);
   },
+
   onPointerDown(event) {
     const context = this.getActiveContext();
     const card = context?.card;
     if (!card || event.currentTarget !== card) return;
     if (event.pointerType === 'mouse' && event.button !== 0) return;
     state.swipe.active = true;
-    state.swipe.dragging = true;
     state.swipe.pointerId = event.pointerId;
     state.swipe.startX = event.clientX;
     state.swipe.startY = event.clientY;
     state.swipe.currentX = event.clientX;
     state.swipe.currentY = event.clientY;
-    state.swipe.didMove = false;
     card.setPointerCapture?.(event.pointerId);
-    state.swipe.isAnimating = false;
     card.classList.add('is-swiping');
-    card.style.transition = 'none';
-    card.style.willChange = 'transform, opacity';
+    card.style.setProperty('transition', 'none', 'important');
   },
+
   onPointerMove(event) {
     const context = this.getActiveContext();
     const card = context?.card;
@@ -190,121 +118,86 @@ export const swipe = {
     if (event.cancelable) event.preventDefault();
     state.swipe.currentX = event.clientX;
     state.swipe.currentY = event.clientY;
-    if (Math.abs(state.swipe.currentX - state.swipe.startX) > 4 || Math.abs(state.swipe.currentY - state.swipe.startY) > 4) {
-      state.swipe.didMove = true;
-    }
-    if (!state.swipe.isAnimating) {
-      requestAnimationFrame(() => {
-        const deltaX = state.swipe.currentX - state.swipe.startX;
-        const deltaY = state.swipe.currentY - state.swipe.startY;
-        const rotate = context.allowUp && Math.abs(deltaY) > Math.abs(deltaX) ? deltaX / 34 : deltaX / 18;
-        const visualY = context.allowUp ? deltaY * 0.72 : 0;
-        const distance = Math.max(Math.abs(deltaX), Math.abs(deltaY));
-        const stretch = 1 - Math.min(distance / 1800, 0.035);
-        card.style.transform = `translate3d(${deltaX}px, ${visualY}px, 0) rotate(${rotate}deg) scale(${stretch})`;
-        this.updateHint(deltaX, deltaY);
-        state.swipe.isAnimating = false;
-      });
-      state.swipe.isAnimating = true;
-    }
+    if (state.swipe.isAnimating) return;
+    state.swipe.isAnimating = true;
+    requestAnimationFrame(() => {
+      const dx = state.swipe.currentX - state.swipe.startX;
+      const dy = state.swipe.currentY - state.swipe.startY;
+      const x = Math.max(-22, Math.min(22, dx * 0.16));
+      const y = dy < 0 ? Math.max(-100, dy * 0.38) : Math.min(24, dy * 0.14);
+      const rotate = Math.max(-2.5, Math.min(2.5, dx / 80));
+      const scale = 1 - Math.min(Math.abs(y) / 3000, 0.018);
+      card.style.setProperty('transform', `translate3d(${x}px,${y}px,0) rotate(${rotate}deg) scale(${scale})`, 'important');
+      state.swipe.isAnimating = false;
+    });
   },
+
   onPointerUp(event) {
     const context = this.getActiveContext();
     const card = context?.card;
     if (!card || !state.swipe.active || state.swipe.pointerId !== event.pointerId) return;
     state.swipe.active = false;
-    state.swipe.dragging = false;
-    const deltaX = state.swipe.currentX - state.swipe.startX;
-    const deltaY = state.swipe.currentY - state.swipe.startY;
-    const velocity = Math.abs(deltaX) / Math.max(1, Math.abs(deltaY) + 1);
-    const threshold = window.innerWidth < 480 ? 70 : 90;
-    card.classList.remove('is-swiping');
-    card.releasePointerCapture?.(event.pointerId);
     state.swipe.pointerId = null;
-    if (context.mode === 'blitz') {
-      if (deltaX > threshold || (deltaX > 45 && velocity > 2.4)) return game.answerBlitz(true);
-      if (deltaX < -threshold || (deltaX < -45 && velocity > 2.4)) return game.answerBlitz(false);
-    } else {
-      // На экране вопросов нужен только жест вверх. Порог намеренно мягкий,
-      // чтобы в Telegram Mini App переход срабатывал стабильно на каждом свайпе.
-      // После удаления кнопок любой уверенный свайп по карточке переводит на следующий вопрос.
-      const distance = Math.max(Math.abs(deltaX), Math.abs(deltaY));
-      const isIntentionalSwipe = distance > 42;
-      if (context.allowUp && isIntentionalSwipe) return game.answer('skip');
-    }
+    card.releasePointerCapture?.(event.pointerId);
     card.classList.remove('is-swiping');
+    const dx = state.swipe.currentX - state.swipe.startX;
+    const dy = state.swipe.currentY - state.swipe.startY;
+    const isUpSwipe = dy < -58 && Math.abs(dy) > Math.abs(dx) * 0.72;
+    if (isUpSwipe) return game.answer();
     state.swipe.isAnimating = false;
-    card.style.transition = 'transform 220ms cubic-bezier(.2,.9,.2,1)';
-    card.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
-    card.style.willChange = '';
-    this.updateHint(0, 0);
+    card.style.setProperty('transition', 'transform 220ms cubic-bezier(.2,.9,.2,1)', 'important');
+    card.style.setProperty('transform', 'translate3d(0,0,0) rotate(0deg) scale(1)', 'important');
   },
+
   attachHandlers() {
-    const bindCard = (card) => {
-      if (!card || card.dataset.swipeBound === '1') return;
-      card.dataset.swipeBound = '1';
+    const card = ui.questionCard;
+    if (!card || card.dataset.swipeBound === '1') return;
+    card.dataset.swipeBound = '1';
+    card.addEventListener('pointerdown', this.onPointerDown.bind(this));
+    card.addEventListener('pointermove', this.onPointerMove.bind(this));
+    card.addEventListener('pointerup', this.onPointerUp.bind(this));
+    card.addEventListener('pointercancel', this.onPointerUp.bind(this));
 
-      card.addEventListener('pointerdown', this.onPointerDown.bind(this));
-      card.addEventListener('pointermove', this.onPointerMove.bind(this));
-      card.addEventListener('pointerup', this.onPointerUp.bind(this));
-      card.addEventListener('pointercancel', this.onPointerUp.bind(this));
-      card.addEventListener('lostpointercapture', (event) => {
-        if (state.swipe.active && state.swipe.pointerId === event.pointerId) this.onPointerUp(event);
-      });
+    card.addEventListener('touchstart', (event) => {
+      const touch = event.changedTouches?.[0];
+      if (!touch) return;
+      state.touchFallbackStartX = touch.clientX;
+      state.touchFallbackStartY = touch.clientY;
+    }, { passive: true });
 
-      // Fallback для iOS/Telegram WebView: свайп вверх переводит на следующий вопрос,
-      // даже если pointerup не пришёл на саму карточку.
-      card.addEventListener('touchstart', (event) => {
-        const touch = event.changedTouches?.[0];
-        if (!touch) return;
-        state.touchFallbackStartX = touch.clientX;
-        state.touchFallbackStartY = touch.clientY;
-      }, { passive: true });
+    card.addEventListener('touchend', (event) => {
+      if (!app.screens.game?.classList.contains('screen-active') || state.questionTransitionLocked) return;
+      const touch = event.changedTouches?.[0];
+      if (!touch) return;
+      const dx = touch.clientX - (state.touchFallbackStartX || touch.clientX);
+      const dy = touch.clientY - (state.touchFallbackStartY || touch.clientY);
+      if (dy < -62 && Math.abs(dy) > Math.abs(dx) * 0.72) {
+        if (event.cancelable) event.preventDefault();
+        game.answer();
+      }
+    }, { passive: false });
 
-      card.addEventListener('touchend', (event) => {
-        const context = this.getActiveContext();
-        if (!context || context.mode !== 'game' || state.questionTransitionLocked) return;
-        const touch = event.changedTouches?.[0];
-        if (!touch) return;
-        const dx = touch.clientX - (state.touchFallbackStartX || touch.clientX);
-        const dy = touch.clientY - (state.touchFallbackStartY || touch.clientY);
-        if (Math.max(Math.abs(dx), Math.abs(dy)) > 42) {
-          if (event.cancelable) event.preventDefault();
-          game.answer('skip');
-        }
-      }, { passive: false });
+    document.addEventListener('touchstart', (event) => {
+      if (!app.screens.game?.classList.contains('screen-active')) return;
+      const touch = event.changedTouches?.[0];
+      if (!touch) return;
+      state.globalTouchStartX = touch.clientX;
+      state.globalTouchStartY = touch.clientY;
+    }, { passive: true });
 
-      card.addEventListener('touchmove', (event) => {
-        if (app.screens.game?.classList.contains('screen-active') && event.cancelable) event.preventDefault();
-      }, { passive: false });
-    };
-
-    [ui.questionCard].filter(Boolean).forEach(bindCard);
-
-    // Глобальный запасной обработчик: если WebView потерял touchend/pointerup на карточке,
-    // всё равно перелистываем вопрос по жесту вверх на экране игры.
-    if (!document.body.dataset.globalQuestionSwipeBound) {
-      document.body.dataset.globalQuestionSwipeBound = '1';
-      document.addEventListener('touchstart', (event) => {
-        if (!app.screens.game?.classList.contains('screen-active')) return;
-        const touch = event.changedTouches?.[0];
-        if (!touch) return;
-        state.globalTouchStartX = touch.clientX;
-        state.globalTouchStartY = touch.clientY;
-      }, { passive: true });
-      document.addEventListener('touchend', (event) => {
-        if (!app.screens.game?.classList.contains('screen-active') || state.questionTransitionLocked) return;
-        const touch = event.changedTouches?.[0];
-        if (!touch) return;
-        const dx = touch.clientX - (state.globalTouchStartX || touch.clientX);
-        const dy = touch.clientY - (state.globalTouchStartY || touch.clientY);
-        if (Math.max(Math.abs(dx), Math.abs(dy)) > 46) {
-          if (event.cancelable) event.preventDefault();
-          game.answer('skip');
-        }
-      }, { passive: false });
-    }
+    document.addEventListener('touchend', (event) => {
+      if (!app.screens.game?.classList.contains('screen-active') || state.questionTransitionLocked) return;
+      const touch = event.changedTouches?.[0];
+      if (!touch) return;
+      const dx = touch.clientX - (state.globalTouchStartX || touch.clientX);
+      const dy = touch.clientY - (state.globalTouchStartY || touch.clientY);
+      if (dy < -72 && Math.abs(dy) > Math.abs(dx) * 0.82) {
+        if (event.cancelable) event.preventDefault();
+        game.answer();
+      }
+    }, { passive: false });
   },
+
   preventDoubleTapZoom() {
     let lastTouchEnd = 0;
     document.addEventListener('touchend', (event) => {
@@ -312,7 +205,7 @@ export const swipe = {
       if (now - lastTouchEnd <= 300) event.preventDefault();
       lastTouchEnd = now;
     }, { passive: false });
-  }
+  },
 };
 
 Object.assign(app, { game, swipe });

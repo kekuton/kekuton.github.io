@@ -63,6 +63,7 @@ function bindEvents() {
   });
 
   ui.backBtn?.addEventListener('click', () => router.back());
+  ui.gameBackBtn?.addEventListener('click', () => router.show('categories', { reset: true }));
 
   ui.retryLoadBtn?.addEventListener('click', async () => {
     loading.show('Повторяем загрузку...');
