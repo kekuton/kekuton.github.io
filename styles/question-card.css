@@ -8,8 +8,9 @@ body[data-screen='game'] .topbar { display: none !important; }
   overflow: hidden;
   background:
     radial-gradient(circle at 24% 0%, var(--screen-glow, rgba(168, 85, 247, .24)), transparent 38%),
-    radial-gradient(circle at 82% 100%, rgba(236, 72, 153, .16), transparent 42%),
-    linear-gradient(180deg, #070611, #090713 58%, #05050a);
+    radial-gradient(circle at 82% 100%, color-mix(in srgb, var(--screen-glow, rgba(236,72,153,.18)) 78%, transparent), transparent 42%),
+    linear-gradient(180deg, var(--screen-bg-start, #070611), var(--screen-bg-mid, #090713) 58%, var(--screen-bg-end, #05050a));
+  transition: background .38s ease;
 }
 
 .game-head {

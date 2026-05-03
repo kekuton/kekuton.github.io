@@ -4,21 +4,41 @@
   align-items: center;
   justify-content: center;
   background:
-    radial-gradient(circle at 24% 0%, rgba(168, 85, 247, .26), transparent 38%),
-    radial-gradient(circle at 80% 100%, rgba(236, 72, 153, .18), transparent 38%),
-    #070611;
+    radial-gradient(circle at 24% 0%, var(--screen-glow, rgba(168, 85, 247, .26)), transparent 38%),
+    radial-gradient(circle at 80% 100%, color-mix(in srgb, var(--screen-glow, rgba(236,72,153,.18)) 75%, transparent), transparent 38%),
+    linear-gradient(180deg, var(--screen-bg-start, #070611), var(--screen-bg-mid, #090713) 58%, var(--screen-bg-end, #05050a));
 }
 
 .completion-card {
+  position: relative;
   width: min(440px, 100%);
-  padding: 32px 24px;
-  border-radius: 34px;
+  padding: 34px 24px 30px;
+  border-radius: 36px;
   text-align: center;
-  background: rgba(255, 255, 255, .10);
-  border: 1px solid var(--line);
-  box-shadow: 0 30px 90px rgba(0, 0, 0, .45);
-  backdrop-filter: blur(20px);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, .075)),
+    rgba(10, 8, 18, .48);
+  border: 1px solid rgba(255, 255, 255, .18);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .12);
+  backdrop-filter: blur(22px);
   cursor: pointer;
+  overflow: hidden;
+  animation: completionIn .34s cubic-bezier(.2,.85,.2,1) both;
+}
+
+.completion-card::before {
+  content: '✓';
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 18px;
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, .92);
+  color: #171020;
+  font-size: 31px;
+  font-weight: 950;
+  box-shadow: 0 18px 46px rgba(0,0,0,.28);
 }
 
 .completion-kicker {
@@ -53,10 +73,24 @@
 
 .completion-card p {
   margin: 18px 0 0;
-  color: var(--muted);
-  font-size: 15px;
+  color: rgba(255, 255, 255, .88);
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.completion-card small {
+  display: block;
+  margin-top: 10px;
+  color: rgba(255, 255, 255, .62);
+  font-size: 14px;
   font-weight: 750;
   line-height: 1.35;
+}
+
+@keyframes completionIn {
+  from { opacity: 0; transform: translate3d(0, 20px, 0) scale(.98); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
 }
 
 .modal {

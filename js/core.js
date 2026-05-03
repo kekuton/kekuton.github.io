@@ -2,7 +2,7 @@ export const app = {};
 
 const tg = window.Telegram?.WebApp;
 
-const VERSION = 'clean-flow-2';
+const VERSION = 'theme-completion-1';
 const STORAGE_KEYS = {
   adult: 'adult_ok',
   questionsCache: `couples_questions_${VERSION}`,
@@ -12,15 +12,15 @@ const STORAGE_KEYS = {
 const ROUND_SIZE = 25;
 
 const CATEGORY_META = [
-  { id: 'Вечер для двоих', icon: '💜', desc: 'Тёплый вечер', color: 'linear-gradient(180deg,#c084fc,#7c3aed)', glow: 'rgba(192,132,252,.28)', isScenario: true, cover: 'images/bg_evening_card.jpg' },
-  { id: 'После ссоры', icon: '🕊️', desc: 'Спокойный разговор', color: 'linear-gradient(180deg,#7dd3fc,#2563eb)', glow: 'rgba(125,211,252,.25)', cover: 'images/bg_after_fight_card.jpg' },
-  { id: 'Перед сном', icon: '🌙', desc: 'Нежно перед сном', color: 'linear-gradient(180deg,#a78bfa,#4338ca)', glow: 'rgba(167,139,250,.28)', cover: 'images/bg_evening_card.jpg' },
-  { id: '18+', icon: '✦', desc: 'Откровенно', color: 'linear-gradient(180deg,#991b1b,#3b0710)', glow: 'rgba(185,28,28,.26)', cover: 'images/bg_intimate_card.jpg' },
-  { id: 'На расстоянии', icon: '💌', desc: 'Когда вы далеко', color: 'linear-gradient(180deg,#38bdf8,#6366f1)', glow: 'rgba(56,189,248,.24)', cover: 'images/bg_distance_card.jpg' },
-  { id: 'Будущее', icon: '✨', desc: 'Планы и мечты', color: 'linear-gradient(180deg,#38bdf8,#1d4ed8)', glow: 'rgba(59,130,246,.24)', cover: 'images/bg_future_card.jpg' },
-  { id: 'Финансы', icon: '◈', desc: 'Деньги и цели', color: 'linear-gradient(180deg,#22c55e,#166534)', glow: 'rgba(34,197,94,.22)', cover: 'images/bg_finance_card.jpg' },
-  { id: 'Психология', icon: '☯', desc: 'Эмоции и границы', color: 'linear-gradient(180deg,#22c55e,#14b8a6)', glow: 'rgba(20,184,166,.22)', cover: 'images/bg_psychology_card.jpg' },
-  { id: 'Воспоминания', icon: '☾', desc: 'Лучшие моменты', color: 'linear-gradient(180deg,#60a5fa,#8b5cf6)', glow: 'rgba(139,92,246,.25)', cover: 'images/bg_memory_card.png' },
+  { id: 'Вечер для двоих', icon: '💜', desc: 'Тёплый вечер', color: 'linear-gradient(180deg,#c084fc,#7c3aed)', glow: 'rgba(192,132,252,.30)', bgStart: '#22113f', bgMid: '#160a2c', bgEnd: '#070611', isScenario: true, cover: 'images/bg_evening_card.jpg' },
+  { id: 'После ссоры', icon: '🕊️', desc: 'Спокойный разговор', color: 'linear-gradient(180deg,#7dd3fc,#2563eb)', glow: 'rgba(125,211,252,.28)', bgStart: '#0e3448', bgMid: '#0b1d36', bgEnd: '#050811', cover: 'images/bg_after_fight_card.jpg' },
+  { id: 'Перед сном', icon: '🌙', desc: 'Перед сном', color: 'linear-gradient(180deg,#a78bfa,#4338ca)', glow: 'rgba(167,139,250,.30)', bgStart: '#25164a', bgMid: '#15113a', bgEnd: '#070611', cover: 'images/bg_evening_card.jpg' },
+  { id: '18+', icon: '✦', desc: 'Откровенно', color: 'linear-gradient(180deg,#991b1b,#3b0710)', glow: 'rgba(185,28,28,.30)', bgStart: '#3a0710', bgMid: '#1b0710', bgEnd: '#070307', cover: 'images/bg_intimate_card.jpg' },
+  { id: 'На расстоянии', icon: '💌', desc: 'Когда далеко', color: 'linear-gradient(180deg,#38bdf8,#6366f1)', glow: 'rgba(56,189,248,.26)', bgStart: '#0d2f50', bgMid: '#111941', bgEnd: '#060713', cover: 'images/bg_distance_card.jpg' },
+  { id: 'Будущее', icon: '✨', desc: 'Планы и мечты', color: 'linear-gradient(180deg,#38bdf8,#1d4ed8)', glow: 'rgba(59,130,246,.28)', bgStart: '#0b315f', bgMid: '#0a1f45', bgEnd: '#050811', cover: 'images/bg_future_card.jpg' },
+  { id: 'Финансы', icon: '◈', desc: 'Деньги и цели', color: 'linear-gradient(180deg,#22c55e,#166534)', glow: 'rgba(34,197,94,.26)', bgStart: '#0a3d25', bgMid: '#092817', bgEnd: '#040a08', cover: 'images/bg_finance_card.jpg' },
+  { id: 'Психология', icon: '☯', desc: 'Эмоции', color: 'linear-gradient(180deg,#22c55e,#14b8a6)', glow: 'rgba(20,184,166,.25)', bgStart: '#0b3d3a', bgMid: '#0a2a2c', bgEnd: '#050b0d', cover: 'images/bg_psychology_card.jpg' },
+  { id: 'Воспоминания', icon: '☾', desc: 'Моменты', color: 'linear-gradient(180deg,#60a5fa,#8b5cf6)', glow: 'rgba(139,92,246,.28)', bgStart: '#152f58', bgMid: '#211440', bgEnd: '#070611', cover: 'images/bg_memory_card.png' },
 ];
 
 const ROOT_SCREENS = ['categories', 'error'];
@@ -52,6 +52,7 @@ const ui = {
   adultCancelBtn: document.getElementById('adultCancelBtn'),
   completionCard: document.getElementById('completionCard'),
   completionCategory: document.getElementById('completionCategory'),
+  completionSummary: document.getElementById('completionSummary'),
   toastStack: document.getElementById('toastStack'),
 };
 
@@ -103,6 +104,14 @@ const helpers = {
   isAdultConfirmed() { return storage.getRaw(STORAGE_KEYS.adult) === 'yes'; },
   categoryIconSvg(icon = '✦') { return `<span aria-hidden="true">${icon}</span>`; },
   progressKey(categoryId) { return `${STORAGE_KEYS.progressPrefix}${categoryId}`; },
+  plural(number, one, few, many) {
+    const n = Math.abs(number) % 100;
+    const n1 = n % 10;
+    if (n > 10 && n < 20) return many;
+    if (n1 > 1 && n1 < 5) return few;
+    if (n1 === 1) return one;
+    return many;
+  },
 };
 
 const notify = {
@@ -126,6 +135,9 @@ const loading = {
 const background = {
   reset() {
     document.body.style.removeProperty('--screen-glow');
+    document.body.style.removeProperty('--screen-bg-start');
+    document.body.style.removeProperty('--screen-bg-mid');
+    document.body.style.removeProperty('--screen-bg-end');
     bgLayers.forEach((layer, index) => {
       if (!layer) return;
       layer.style.backgroundImage = '';
@@ -135,6 +147,9 @@ const background = {
   apply(categoryId = '') {
     const category = CATEGORY_META.find((item) => item.id === categoryId);
     document.body.style.setProperty('--screen-glow', category?.glow || 'rgba(168,85,247,.24)');
+    document.body.style.setProperty('--screen-bg-start', category?.bgStart || '#070611');
+    document.body.style.setProperty('--screen-bg-mid', category?.bgMid || '#090713');
+    document.body.style.setProperty('--screen-bg-end', category?.bgEnd || '#05050a');
     const currentLayer = bgLayers[state.activeBgLayerIndex];
     const nextLayer = bgLayers[(state.activeBgLayerIndex + 1) % bgLayers.length];
     if (!category?.cover || !currentLayer || !nextLayer) return this.reset();

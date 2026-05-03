@@ -95,7 +95,9 @@ export const render = {
   },
 
   completion() {
+    const total = state.currentQuestions.length || ROUND_SIZE;
     if (ui.completionCategory) ui.completionCategory.textContent = state.currentCategory?.id || 'категорию';
+    if (ui.completionSummary) ui.completionSummary.textContent = `Вы прошли ${total} ${helpers.plural(total, 'вопрос', 'вопроса', 'вопросов')}.`;
     router.show('completion');
   },
 };
