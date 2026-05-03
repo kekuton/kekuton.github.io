@@ -253,6 +253,7 @@ export const render = {
     state.swipe.dragging = false;
     state.swipe.pointerId = null;
     state.swipe.isAnimating = false;
+    state.swipe.didMove = false;
     ui.questionCard.classList.remove('card-fly-left', 'card-fly-right', 'card-fly-up', 'card-return', 'is-swiping', 'card-enter');
     ui.questionCard.dataset.swipe = 'none';
     ui.questionCard.style.removeProperty('--swipe-opacity');

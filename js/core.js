@@ -204,6 +204,9 @@ const state = {
   lastRoundAchievements: [],
   shareAchievement: null,
   questionStreak: 0,
+  questionTransitionLocked: false,
+  touchFallbackStartX: 0,
+  touchFallbackStartY: 0,
   swipe: {
     active: false,
     startX: 0,

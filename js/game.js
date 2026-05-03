@@ -70,20 +70,30 @@ export const game = {
   },
   answer(type) {
     if (!['match', 'mismatch', 'skip'].includes(type)) return;
+    if (state.questionTransitionLocked) return;
+    state.questionTransitionLocked = true;
     fx.pulseAnswerButton(type);
     fx.launchReactionBurst(type, type === 'match' ? ui.matchBtn : type === 'mismatch' ? ui.mismatchBtn : ui.skipBtn);
     if (type === 'match') fx.vibrate('success');
     else if (type === 'mismatch') fx.vibrate('error');
     else fx.vibrate('warning');
-    swipe.animateOut(type, () => {
+
+    const goNext = () => {
       state.stats[type] += 1;
       if (type === 'match') state.questionStreak += 1;
       else if (type === 'mismatch') state.questionStreak = 0;
       state.currentIndex += 1;
       render.resetQuestionCard();
-      if (state.currentIndex >= state.currentQuestions.length) this.finish();
-      else render.gameQuestion();
-    });
+      if (state.currentIndex >= state.currentQuestions.length) {
+        state.questionTransitionLocked = false;
+        this.finish();
+      } else {
+        render.gameQuestion();
+        window.setTimeout(() => { state.questionTransitionLocked = false; }, 180);
+      }
+    };
+
+    swipe.animateOut(type, goNext);
   },
   answerBlitz(isCorrect) {
     fx.vibrate('light');
@@ -176,6 +186,7 @@ export const swipe = {
     state.swipe.startY = event.clientY;
     state.swipe.currentX = event.clientX;
     state.swipe.currentY = event.clientY;
+    state.swipe.didMove = false;
     card.setPointerCapture?.(event.pointerId);
     state.swipe.isAnimating = false;
     card.classList.add('is-swiping');
@@ -189,6 +200,9 @@ export const swipe = {
     if (event.cancelable) event.preventDefault();
     state.swipe.currentX = event.clientX;
     state.swipe.currentY = event.clientY;
+    if (Math.abs(state.swipe.currentX - state.swipe.startX) > 4 || Math.abs(state.swipe.currentY - state.swipe.startY) > 4) {
+      state.swipe.didMove = true;
+    }
     if (!state.swipe.isAnimating) {
       requestAnimationFrame(() => {
         const deltaX = state.swipe.currentX - state.swipe.startX;
@@ -221,7 +235,10 @@ export const swipe = {
       if (deltaX > threshold || (deltaX > 45 && velocity > 2.4)) return game.answerBlitz(true);
       if (deltaX < -threshold || (deltaX < -45 && velocity > 2.4)) return game.answerBlitz(false);
     } else {
-      if (context.allowUp && deltaY < -90 && Math.abs(deltaY) > Math.abs(deltaX) * 0.8) return game.answer('skip');
+      // На экране вопросов нужен только жест вверх. Порог намеренно мягкий,
+      // чтобы в Telegram Mini App переход срабатывал стабильно на каждом свайпе.
+      const isUpSwipe = context.allowUp && deltaY < -42 && Math.abs(deltaY) > Math.abs(deltaX) * 0.45;
+      if (isUpSwipe) return game.answer('skip');
     }
     card.classList.remove('is-swiping');
     state.swipe.isAnimating = false;
@@ -236,6 +253,28 @@ export const swipe = {
       card.addEventListener('pointermove', this.onPointerMove.bind(this));
       card.addEventListener('pointerup', this.onPointerUp.bind(this));
       card.addEventListener('pointercancel', this.onPointerUp.bind(this));
+
+      // Fallback для Telegram/iOS, где pointerup иногда теряется внутри webview.
+      card.addEventListener('touchstart', (event) => {
+        const touch = event.changedTouches?.[0];
+        if (!touch) return;
+        state.touchFallbackStartX = touch.clientX;
+        state.touchFallbackStartY = touch.clientY;
+      }, { passive: true });
+
+      card.addEventListener('touchend', (event) => {
+        const context = this.getActiveContext();
+        if (!context || context.mode !== 'game' || state.questionTransitionLocked) return;
+        const touch = event.changedTouches?.[0];
+        if (!touch) return;
+        const dx = touch.clientX - (state.touchFallbackStartX || touch.clientX);
+        const dy = touch.clientY - (state.touchFallbackStartY || touch.clientY);
+        if (dy < -46 && Math.abs(dy) > Math.abs(dx) * 0.55) {
+          if (event.cancelable) event.preventDefault();
+          game.answer('skip');
+        }
+      }, { passive: false });
+
       card.addEventListener('touchmove', (event) => {
         if (event.cancelable) event.preventDefault();
       }, { passive: false });
