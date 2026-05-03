@@ -2,7 +2,7 @@ export const app = {};
 
 const tg = window.Telegram?.WebApp;
 
-const VERSION = 'theme-completion-1';
+const VERSION = 'final-phrases-1';
 const STORAGE_KEYS = {
   adult: 'adult_ok',
   questionsCache: `couples_questions_${VERSION}`,
@@ -53,6 +53,7 @@ const ui = {
   completionCard: document.getElementById('completionCard'),
   completionCategory: document.getElementById('completionCategory'),
   completionSummary: document.getElementById('completionSummary'),
+  completionPhrase: document.getElementById('completionPhrase'),
   toastStack: document.getElementById('toastStack'),
 };
 

@@ -180,3 +180,13 @@
   height: 46px;
   color: #fca5a5;
 }
+
+.completion-phrase {
+  margin: 8px auto 18px;
+  max-width: 30ch;
+  color: rgba(255,255,255,.86);
+  font-size: clamp(16px, 4vw, 20px);
+  line-height: 1.35;
+  font-weight: 750;
+  text-align: center;
+}

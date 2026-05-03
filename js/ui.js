@@ -96,8 +96,22 @@ export const render = {
 
   completion() {
     const total = state.currentQuestions.length || ROUND_SIZE;
-    if (ui.completionCategory) ui.completionCategory.textContent = state.currentCategory?.id || 'категорию';
+    const categoryId = state.currentCategory?.id || 'категорию';
+    const finalPhrases = {
+      'После ссоры': 'Спасибо, что выбрали разговор вместо молчания.',
+      'Перед сном': 'Пусть вечер закончится теплее.',
+      '18+': 'Иногда честность начинается с желания.',
+      'Будущее': 'Планы становятся ближе, когда о них говорят.',
+      'Вечер для двоих': 'Хороший вечер — это когда вы услышали друг друга.',
+      'На расстоянии': 'Даже далеко можно оставаться ближе.',
+      'Финансы': 'Спокойные разговоры о деньгах делают планы честнее.',
+      'Психология': 'Понимание начинается там, где есть внимание.',
+      'Воспоминания': 'Тёплые моменты становятся сильнее, когда о них вспоминают вместе.',
+    };
+
+    if (ui.completionCategory) ui.completionCategory.textContent = categoryId;
     if (ui.completionSummary) ui.completionSummary.textContent = `Вы прошли ${total} ${helpers.plural(total, 'вопрос', 'вопроса', 'вопросов')}.`;
+    if (ui.completionPhrase) ui.completionPhrase.textContent = finalPhrases[categoryId] || 'Спасибо, что прошли эту тему вместе.';
     router.show('completion');
   },
 };
