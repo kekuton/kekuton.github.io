@@ -8,7 +8,7 @@ const { ui, state, router, theme, data, background, render, loading, swipe, init
 function finishOnboarding() {
   storage.setRaw(STORAGE_KEYS.onboardingSeen, 'yes');
   state.onboardingStep = 0;
-  router.show('home', { reset: true });
+  router.show('categories', { reset: true });
 }
 
 function bindEvents() {
@@ -72,7 +72,7 @@ function bindEvents() {
   });
 
   ui.startBtn?.addEventListener('click', () => router.show('categories'));
-  ui.historyBtn?.addEventListener('click', () => router.show('history'));
+  ui.historyBtn?.addEventListener('click', () => router.show('categories'));
   ui.backBtn?.addEventListener('click', () => router.back());
 
   ui.dailyQuestionBtn?.addEventListener('click', () => {
@@ -109,10 +109,10 @@ function bindEvents() {
     const ok = await data.loadQuestions();
     render.categories();
     loading.hide();
-    if (ok) router.show('home', { reset: true });
+    if (ok) router.show('categories', { reset: true });
     else render.errorScreen(state.loadError || 'Не удалось загрузить вопросы.');
   });
-  ui.goHomeFromErrorBtn?.addEventListener('click', () => router.show('home', { reset: true }));
+  ui.goHomeFromErrorBtn?.addEventListener('click', () => router.show('categories', { reset: true }));
 
   ui.matchBtn?.addEventListener('click', () => game.answer('match'));
   ui.mismatchBtn?.addEventListener('click', () => game.answer('mismatch'));
@@ -259,9 +259,7 @@ async function init() {
     return;
   }
 
-  const onboardingSeen = storage.getRaw(STORAGE_KEYS.onboardingSeen) === 'yes';
-  if (!onboardingSeen) router.show('onboarding', { reset: true });
-  else router.show('home', { reset: true });
+  router.show('categories', { reset: true });
   loading.hide();
 }
 

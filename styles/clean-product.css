@@ -336,7 +336,7 @@ body[data-screen='game'] #gameScreen .swipe-help {
   text-align: center !important;
 }
 body[data-screen='game'] #gameScreen .swipe-help::before { content: '⌃' !important; display: block !important; font-size: 20px !important; line-height: 1 !important; margin-bottom: 2px !important; color: rgba(255,255,255,.80) !important; }
-body[data-screen='game'] #gameScreen .swipe-help::after { content: 'Свайп вверх — следующий вопрос' !important; font-size: 13px !important; }
+body[data-screen='game'] #gameScreen .swipe-help::after { content: none !important; font-size: 13px !important; }
 
 @media (max-height: 720px) {
   #categoriesScreen .categories-grid { grid-auto-rows: calc(100svh - 94px) !important; }
@@ -348,4 +348,334 @@ body[data-screen='game'] #gameScreen .swipe-help::after { content: 'Свайп �
   #categoriesScreen .category-copy h3 { font-size: clamp(36px, 10vw, 54px) !important; }
   #categoriesScreen .category-copy p { font-size: clamp(15px, 4.6vw, 20px) !important; }
   body[data-screen='game'] #questionCard .question-text { bottom: 32px !important; font-size: clamp(27px, 7.6vw, 40px) !important; }
+}
+
+
+/* Final polish: new softer font, no card appear animation, no swipe hints */
+html, body, button, input, textarea, select {
+  font-family: "Nunito Sans", ui-rounded, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+}
+
+#categoriesScreen .categories-grid::after,
+body[data-screen='game'] #gameScreen .swipe-help,
+body[data-screen='game'] #gameScreen .swipe-help::before,
+body[data-screen='game'] #gameScreen .swipe-help::after {
+  content: none !important;
+  display: none !important;
+}
+
+.question-card.card-enter,
+.screen.screen-active,
+#categoriesScreen .category-card,
+#categoriesScreen .category-poster,
+#categoriesScreen .category-copy {
+  animation: none !important;
+}
+
+body[data-screen='game'] #questionCard {
+  opacity: 1 !important;
+}
+
+/* Remove category hover animation/effects */
+#categoriesScreen .category-card,
+#categoriesScreen .category-card::before,
+#categoriesScreen .category-poster,
+#categoriesScreen .category-copy {
+  transition: none !important;
+  animation: none !important;
+}
+
+#categoriesScreen .category-card::before,
+#categoriesScreen .category-card:hover::before,
+#categoriesScreen .category-card:active::before {
+  content: none !important;
+  display: none !important;
+  transform: none !important;
+}
+
+#categoriesScreen .category-card:hover,
+#categoriesScreen .category-card:active {
+  box-shadow: 0 28px 70px rgba(0,0,0,.44), inset 0 1px 0 rgba(255,255,255,.10) !important;
+  filter: none !important;
+}
+
+#categoriesScreen .category-card:not(.is-feed-active):hover,
+#categoriesScreen .category-card:not(.is-feed-active):active {
+  transform: translateZ(0) scale(.965) !important;
+  opacity: .76 !important;
+}
+
+#categoriesScreen .category-card.is-feed-active:hover,
+#categoriesScreen .category-card.is-feed-active:active {
+  transform: translateZ(0) scale(1) !important;
+  opacity: 1 !important;
+  filter: saturate(1.06) contrast(1.02) !important;
+  box-shadow: 0 34px 82px rgba(0,0,0,.52), 0 0 0 1px rgba(255,255,255,.08), inset 0 1px 0 rgba(255,255,255,.13) !important;
+}
+
+#categoriesScreen .category-card:hover .category-poster,
+#categoriesScreen .category-card:active .category-poster,
+#categoriesScreen .category-card:hover .category-copy,
+#categoriesScreen .category-card:active .category-copy {
+  transition: none !important;
+}
+
+/* Restore question cards: readable premium card, no broken huge text */
+body[data-screen='game'] #gameScreen.screen-active {
+  padding: max(18px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom)) !important;
+}
+
+body[data-screen='game'] #gameScreen .question-stage {
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+body[data-screen='game'] #questionCard {
+  position: relative !important;
+  height: min(74svh, 640px) !important;
+  min-height: 480px !important;
+  max-height: 640px !important;
+  border-radius: 32px !important;
+  overflow: hidden !important;
+  background:
+    linear-gradient(180deg, rgba(6,5,13,.08) 0%, rgba(6,5,13,.18) 42%, rgba(8,6,16,.78) 74%, rgba(7,6,13,.98) 100%),
+    var(--question-cover) center / cover no-repeat,
+    #100b18 !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  box-shadow:
+    0 28px 76px rgba(0,0,0,.52),
+    inset 0 1px 0 rgba(255,255,255,.12) !important;
+  opacity: 1 !important;
+}
+
+body[data-screen='game'] #questionCard::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  height: auto !important;
+  opacity: 1 !important;
+  background:
+    radial-gradient(circle at 82% 10%, rgba(255,255,255,.12), transparent 24%),
+    linear-gradient(180deg, rgba(10,8,18,.02) 0%, rgba(10,8,18,.10) 42%, rgba(10,8,18,.72) 72%, rgba(7,6,13,.97) 100%) !important;
+  pointer-events: none !important;
+}
+
+body[data-screen='game'] #questionCard .question-text {
+  position: absolute !important;
+  left: 20px !important;
+  right: 20px !important;
+  bottom: 22px !important;
+  z-index: 4 !important;
+  margin: 0 !important;
+  padding: 20px 18px !important;
+  border-radius: 24px !important;
+  color: #fff !important;
+  text-align: center !important;
+  font-size: clamp(22px, 6.2vw, 32px) !important;
+  line-height: 1.22 !important;
+  letter-spacing: -.025em !important;
+  font-weight: 850 !important;
+  text-shadow: 0 12px 30px rgba(0,0,0,.42) !important;
+  background: rgba(13, 10, 24, .58) !important;
+  border: 1px solid rgba(255,255,255,.13) !important;
+  box-shadow: 0 18px 46px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.10) !important;
+  backdrop-filter: blur(16px) saturate(130%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(130%) !important;
+}
+
+body[data-screen='game'] #questionCard .question-text::before,
+body[data-screen='game'] #questionCard .question-text::after,
+body[data-screen='game'] #gameScreen .progress-bar,
+body[data-screen='game'] #gameScreen .progress-badge,
+body[data-screen='game'] #gameScreen .swipe-help,
+body[data-screen='game'] #gameScreen .answer-actions,
+body[data-screen='game'] #gameScreen .question-primary-next,
+body[data-screen='game'] #gameScreen .game-bottom-nav,
+body[data-screen='game'] #favoriteQuestionBtn,
+body[data-screen='game'] #gameScreen button {
+  content: none !important;
+  display: none !important;
+}
+
+@media (max-height: 720px) {
+  body[data-screen='game'] #questionCard {
+    height: min(72svh, 570px) !important;
+    min-height: 410px !important;
+    border-radius: 28px !important;
+  }
+  body[data-screen='game'] #questionCard .question-text {
+    left: 16px !important;
+    right: 16px !important;
+    bottom: 16px !important;
+    padding: 16px 14px !important;
+    border-radius: 20px !important;
+    font-size: clamp(20px, 5.8vw, 28px) !important;
+    line-height: 1.18 !important;
+  }
+}
+
+/* Category hover stays static: no hover/active movement or animation */
+@media (hover: hover) and (pointer: fine) {
+  #categoriesScreen .category-card:hover,
+  #categoriesScreen .category-card:active,
+  #categoriesScreen .category-card:not(.is-feed-active):hover,
+  #categoriesScreen .category-card:not(.is-feed-active):active,
+  #categoriesScreen .category-card.is-feed-active:hover,
+  #categoriesScreen .category-card.is-feed-active:active {
+    transition: none !important;
+    animation: none !important;
+    filter: inherit !important;
+  }
+  #categoriesScreen .category-card.is-feed-active:hover,
+  #categoriesScreen .category-card.is-feed-active:active {
+    transform: translateZ(0) scale(1) !important;
+  }
+}
+
+/* FINAL REQUEST: square white question card, clean text, normal swipe animation */
+body[data-screen='game'] #gameScreen.screen-active {
+  padding: max(16px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom)) !important;
+}
+
+body[data-screen='game'] #gameScreen .game-head,
+body[data-screen='game'] #gameScreen .progress-bar,
+body[data-screen='game'] #gameScreen .progress-badge,
+body[data-screen='game'] #gameScreen .swipe-help,
+body[data-screen='game'] #gameScreen .answer-actions,
+body[data-screen='game'] #gameScreen .question-primary-next,
+body[data-screen='game'] #gameScreen .game-bottom-nav,
+body[data-screen='game'] #gameScreen button,
+body[data-screen='game'] #questionCard .question-glow-icon,
+body[data-screen='game'] #questionCard .swipe-badge {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+body[data-screen='game'] #gameScreen .question-stage {
+  min-height: calc(100svh - 150px) !important;
+  width: 100% !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 0 !important;
+}
+
+body[data-screen='game'] #gameScreen .stack-card {
+  width: min(92vw, 560px) !important;
+  height: min(92vw, 560px) !important;
+  aspect-ratio: 1 / 1 !important;
+  border-radius: 34px !important;
+  background: rgba(255,255,255,.22) !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+  box-shadow: 0 24px 60px rgba(41, 24, 55, .20) !important;
+}
+
+body[data-screen='game'] #questionCard {
+  position: relative !important;
+  width: min(92vw, 560px) !important;
+  height: min(92vw, 560px) !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: 560px !important;
+  max-height: 560px !important;
+  aspect-ratio: 1 / 1 !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: clamp(26px, 7vw, 52px) !important;
+  border-radius: 34px !important;
+  overflow: hidden !important;
+  background: #f7f8fc !important;
+  border: 1px solid rgba(255,255,255,.78) !important;
+  box-shadow:
+    0 28px 70px rgba(59, 35, 77, .28),
+    0 6px 18px rgba(59, 35, 77, .10),
+    inset 0 -2px 0 rgba(149, 116, 179, .10),
+    inset 0 1px 0 rgba(255,255,255,.95) !important;
+  opacity: 1 !important;
+  touch-action: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  transition: transform 220ms cubic-bezier(.18,.9,.22,1), opacity 180ms ease !important;
+}
+
+body[data-screen='game'] #questionCard::before,
+body[data-screen='game'] #questionCard::after {
+  content: none !important;
+  display: none !important;
+}
+
+body[data-screen='game'] #questionCard .question-text {
+  position: static !important;
+  z-index: 2 !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #10182d !important;
+  text-align: center !important;
+  font-size: clamp(30px, 8.2vw, 52px) !important;
+  line-height: 1.08 !important;
+  letter-spacing: -.045em !important;
+  font-weight: 950 !important;
+  text-wrap: balance !important;
+  text-shadow: none !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+body[data-screen='game'] #questionCard .question-text::before,
+body[data-screen='game'] #questionCard .question-text::after {
+  content: none !important;
+  display: none !important;
+}
+
+body[data-screen='game'] #questionCard.is-swiping {
+  transition: none !important;
+  box-shadow:
+    0 34px 82px rgba(59, 35, 77, .34),
+    0 8px 22px rgba(59, 35, 77, .12),
+    inset 0 1px 0 rgba(255,255,255,.95) !important;
+}
+
+body[data-screen='game'] #questionCard.question-card-in {
+  animation: cleanQuestionIn 260ms cubic-bezier(.2,.9,.2,1) both;
+}
+
+@keyframes cleanQuestionIn {
+  0% { opacity: 0; transform: translate3d(0, 18px, 0) scale(.985); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@media (max-height: 720px) {
+  body[data-screen='game'] #questionCard,
+  body[data-screen='game'] #gameScreen .stack-card {
+    width: min(86vw, 480px) !important;
+    height: min(86vw, 480px) !important;
+    border-radius: 30px !important;
+  }
+
+  body[data-screen='game'] #questionCard {
+    padding: clamp(22px, 6vw, 42px) !important;
+  }
+
+  body[data-screen='game'] #questionCard .question-text {
+    font-size: clamp(28px, 7.4vw, 44px) !important;
+  }
+}
+
+@media (max-width: 380px) {
+  body[data-screen='game'] #questionCard,
+  body[data-screen='game'] #gameScreen .stack-card {
+    width: min(91vw, 420px) !important;
+    height: min(91vw, 420px) !important;
+    border-radius: 28px !important;
+  }
+
+  body[data-screen='game'] #questionCard .question-text {
+    font-size: clamp(26px, 7.2vw, 38px) !important;
+  }
 }
