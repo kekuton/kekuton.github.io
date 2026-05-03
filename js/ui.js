@@ -67,7 +67,6 @@ export const render = {
     const filtered = query
       ? history.filter((item) => `${item.category} ${item.mode || ''}`.toLowerCase().includes(query))
       : history;
-    if (!ui.historyList) return;
     if (!filtered.length) {
       const message = history.length
         ? 'По этому запросу ничего не найдено.'
@@ -149,7 +148,6 @@ export const render = {
       const categoryIndex = CATEGORY_META.indexOf(category) + 1;
       card.dataset.id = category.id;
       card.dataset.index = String(categoryIndex);
-      card.style.setProperty('--category-theme', category.color || 'linear-gradient(180deg,#c084fc,#7c3aed)');
       card.setAttribute('aria-label', `${category.id}. ${category.desc}. Нажмите, чтобы открыть категорию.`);
       card.style.background = 'transparent';
       card.style.backgroundColor = 'transparent';
@@ -177,7 +175,6 @@ export const render = {
   },
   customGameEditor() {
     const customQuestions = storage.get(STORAGE_KEYS.customQuestions, ['', '']);
-    if (!ui.customQuestionsList) return;
     ui.customQuestionsList.innerHTML = '';
     customQuestions.forEach((question) => this.addCustomQuestionInput(question));
   },
@@ -187,7 +184,7 @@ export const render = {
     input.className = 'custom-question-input';
     input.placeholder = 'Например: Какой мой любимый цвет?';
     input.value = value;
-    ui.customQuestionsList?.appendChild(input);
+    ui.customQuestionsList.appendChild(input);
   },
   intro(categoryId) {
     const total = helpers.getCurrentCategoryQuestions(categoryId).length;
@@ -211,7 +208,6 @@ export const render = {
     document.getElementById('backToCategoriesBtn')?.addEventListener('click', () => router.back());
   },
   onboarding() {
-    if (!ui.onboardingTitle || !ui.onboardingText || !ui.onboardingVisual || !ui.onboardingPoints || !ui.onboardingProgress) return;
     const step = ONBOARDING_STEPS[state.onboardingStep] || ONBOARDING_STEPS[0];
     ui.onboardingTitle.textContent = step.title;
     ui.onboardingText.textContent = step.text;
@@ -228,16 +224,13 @@ export const render = {
   gameQuestion(isInitial = false) {
     const question = state.currentQuestions[state.currentIndex];
     const total = state.currentQuestions.length;
-    if (ui.gameCategory) ui.gameCategory.textContent = state.currentCategory.id;
-    if (ui.gameTitle) ui.gameTitle.textContent = `Вопрос ${state.currentIndex + 1} из ${total}`;
+    ui.gameCategory.textContent = state.currentCategory.id;
+    ui.gameTitle.textContent = 'Вопрос';
     this.updateModeUI();
     ui.questionText.textContent = question;
     ui.questionText.removeAttribute('data-progress');
     const cover = state.currentCategory?.cover || 'images/bg_future_card.jpg';
-    if (ui.questionCard) {
-      ui.questionCard.style.setProperty('--question-cover', `url("${cover}")`);
-      ui.questionCard.style.setProperty('--question-theme', state.currentCategory?.color || 'linear-gradient(180deg,#c084fc,#7c3aed)');
-    }
+    if (ui.questionCard) ui.questionCard.style.setProperty('--question-cover', `url("${cover}")`);
     if (ui.progressLabel) ui.progressLabel.textContent = `${state.currentIndex + 1} / ${total}`;
     if (ui.questionCardCount) ui.questionCardCount.textContent = `${state.currentIndex + 1} / ${total}`;
     if (ui.progressFill) ui.progressFill.style.width = `${((state.currentIndex + 1) / total) * 100}%`;

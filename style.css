@@ -1,7 +1,102 @@
 @import url('./styles/core.css');
 @import url('./styles/topbar.css');
+@import url('./styles/settings.css');
+@import url('./styles/typography-fix.css');
+
+@import url('./styles/ui-fix.css');
+
 @import url('./styles/components.css');
 @import url('./styles/states.css');
+
+@import url('./styles/polish.css');
 @import url('./styles/category-feed.css');
+
 @import url('./styles/question-reels.css');
-@import url('./styles/clean-product.css');
+
+
+/* FINAL GAME SCREEN CLEANUP: no progress, no bottom buttons, no left labels */
+body[data-screen="game"] #gameScreen .progress-bar,
+body[data-screen="game"] #gameScreen .progress-meta-row,
+body[data-screen="game"] #gameScreen .progress-badge,
+body[data-screen="game"] #gameScreen #progressLabel,
+body[data-screen="game"] #gameScreen #remainingQuestionsLabel,
+body[data-screen="game"] #gameScreen #streakLabel {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+body[data-screen="game"] #gameScreen .question-card-topline,
+body[data-screen="game"] #gameScreen .question-card-count,
+body[data-screen="game"] #gameScreen .question-card-fav,
+body[data-screen="game"] #gameScreen #favoriteQuestionBtn,
+body[data-screen="game"] #gameScreen .question-primary-next,
+body[data-screen="game"] #gameScreen .game-bottom-nav,
+body[data-screen="game"] #gameScreen .question-bottom-nav,
+body[data-screen="game"] #gameScreen .bottom-nav,
+body[data-screen="game"] #gameScreen .tabs,
+body[data-screen="game"] #gameScreen .tabbar,
+body[data-screen="game"] #gameScreen .answer-actions,
+body[data-screen="game"] #gameScreen button,
+body[data-screen="game"] #gameScreen a[role="button"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+body[data-screen="game"] #questionCard .question-text::before,
+body[data-screen="game"] #questionCard .question-text::after,
+body[data-screen="game"] #questionCard::after {
+  content: none !important;
+  display: none !important;
+}
+
+body[data-screen="game"] #questionCard .question-glow-icon {
+  display: none !important;
+}
+
+body[data-screen="game"] #gameScreen.screen-active {
+  gap: 14px !important;
+}
+
+body[data-screen="game"] #gameScreen .game-head {
+  margin-bottom: 2px !important;
+}
+
+body[data-screen="game"] #gameScreen .question-stage {
+  flex: 1 1 auto !important;
+}
+
+body[data-screen="game"] #questionCard .question-text {
+  left: 24px !important;
+  right: 24px !important;
+  bottom: 52px !important;
+  max-width: calc(100% - 48px) !important;
+}
+
+/* Results/confetti removed */
+#resultsScreen, .confetti-wrap, .confetti-piece { display: none !important; }
+
+/* Simplified header: settings, favorites and theme/mode switch removed */
+#favoritesBtn,
+#settingsBtn,
+#themeBtn,
+#openSettingsBtn,
+#openFavoritesBtn,
+#settingsScreen,
+#favoritesScreen,
+#favoriteQuestionBtn,
+.question-card-fav,
+.question-card-count,
+.favorite-item {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.topbar-actions {
+  display: none !important;
+}
+
+/* safety: category cards open by tapping the whole card */
+.category-label,.category-start{display:none!important;}

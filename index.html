@@ -6,13 +6,13 @@
   <meta name="theme-color" content="#8b5cf6" />
   <meta name="description" content="Игра для пары с красивыми категориями вопросов." />
   <meta property="og:title" content="Вопросы для двоих" />
-  <meta property="og:description" content="Красивый Telegram Mini App для пары: категории вопросов и свайп-вопросы." />
+  <meta property="og:description" content="Красивый Telegram Mini App для пары: категории вопросов, совместимость, блиц и история." />
   <meta property="og:type" content="website" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Вопросы для двоих</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="style.css?v=clean-product-1" />
+  <link rel="stylesheet" href="style.css?v=final-clean-2" />
 </head>
 <body>
   <div class="bg-stack" aria-hidden="true">
@@ -38,6 +38,50 @@
     </header>
 
     <main class="screen-wrap">
+      <section class="screen screen-active" id="homeScreen">
+        <div class="hero-card">
+          <span class="eyebrow">Игра для пары</span>
+          <h1>Поговорим по‑настоящему?</h1>
+          <p>Проходите красивые категории вопросов, отмечайте совпадения и смотрите вашу совместимость.</p>
+          <div class="hero-actions">
+            <button class="primary-btn" id="startBtn">Начать игру</button>
+            <button class="secondary-btn" id="historyBtn">История</button>
+          </div>
+        </div>
+
+        <div class="feature-row">
+          <article class="feature-chip">
+            <span class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.7-4.35-9.1-8A5.46 5.46 0 0 1 12 6.7 5.46 5.46 0 0 1 21.1 13C18.7 16.65 12 21 12 21z"></path></svg></span>
+            <div>
+              <strong>Совместимость</strong>
+              <small>Процент по вашим ответам</small>
+            </div>
+          </article>
+          <article class="feature-chip">
+            <span class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"></path></svg></span>
+            <div>
+              <strong>Блиц-режим</strong>
+              <small>Проверка знаний на время</small>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      
+      <section class="screen" id="onboardingScreen">
+        <div class="hero-card onboarding-card">
+          <span class="eyebrow">Добро пожаловать</span>
+          <div class="onboarding-progress" id="onboardingProgress"></div>
+          <div class="onboarding-visual" id="onboardingVisual"></div>
+          <h2 id="onboardingTitle">Пара шагов перед началом</h2>
+          <p id="onboardingText">Покажем, как устроена игра и что в ней можно делать.</p>
+          <div class="onboarding-points" id="onboardingPoints"></div>
+          <div class="hero-actions stacked">
+            <button class="primary-btn" id="onboardingNextBtn">Дальше</button>
+            <button class="secondary-btn" id="onboardingSkipBtn">Пропустить</button>
+          </div>
+        </div>
+      </section>
 
       <section class="screen" id="errorScreen">
         <div class="results-card error-card">
@@ -67,6 +111,26 @@
         <div class="categories-grid" id="categoriesGrid"></div>
       </section>
 
+      <section class="screen" id="categoryIntroScreen">
+        <div class="intro-card" id="categoryIntroCard"></div>
+      </section>
+
+      <section class="screen" id="customGameScreen">
+        <div class="section-head compact">
+          <span class="eyebrow">Эксклюзив</span>
+          <h2>Своя игра</h2>
+          <p>Добавь свои личные вопросы для партнёра.</p>
+        </div>
+        
+        <div class="custom-questions-list" id="customQuestionsList">
+        </div>
+
+        <div class="hero-actions stacked">
+          <button class="secondary-btn" id="addCustomQuestionBtn" style="width: 100%;">+ Добавить вопрос</button>
+          <button class="primary-btn" id="saveCustomGameBtn" style="width: 100%;">Сохранить и играть</button>
+        </div>
+      </section>
+
       <section class="screen" id="gameScreen">
         <div class="game-head">
           <div>
@@ -89,6 +153,57 @@
         </div>
         <div class="swipe-help" id="swipeHelp">Свайпни вверх для следующего вопроса</div>
 </section>
+
+      <section class="screen" id="blitzScreen">
+        <div class="game-head">
+          <div>
+            <span class="eyebrow">Блиц-опрос</span>
+            <h2>На время!</h2>
+          </div>
+          <div class="timer-badge" id="blitzTimerDisplay">30</div>
+        </div>
+
+        <div class="stats-grid" style="margin-top: 0; margin-bottom: 18px;">
+          <div class="stat-box">
+            <small>Правильно</small>
+            <strong id="blitzCorrectScore">0</strong>
+          </div>
+          <div class="stat-box">
+            <small>Всего</small>
+            <strong id="blitzTotalScore">0</strong>
+          </div>
+        </div>
+
+        <article class="question-card blitz-card">
+          <p class="question-text" id="blitzQuestionText"></p>
+        </article>
+
+      </section>
+
+      <section class="screen" id="historyScreen">
+        <div class="section-head compact">
+          <span class="eyebrow">История</span>
+          <h2>История игр</h2>
+        </div>
+        <div class="history-toolbar">
+          <input class="history-search-input" id="historySearchInput" type="search" placeholder="Поиск по категории" autocomplete="off" />
+        </div>
+        <div class="history-list" id="historyList"></div>
+      </section>
+
+      <section class="screen" id="achievementsScreen">
+        <div class="section-head compact">
+          <span class="eyebrow">Награды</span>
+          <h2>Все достижения</h2>
+          <p>Открытые и закрытые награды с редкостью, прогрессом и иллюстрациями.</p>
+        </div>
+        <div class="achievement-legend" id="achievementLegend"></div>
+        <div class="achievement-screen-grid" id="achievementsList"></div>
+      </section>
+
+      <div class="achievement-unlock hidden" id="achievementUnlock" aria-live="polite">
+        <div class="achievement-unlock-card" id="achievementUnlockCard"></div>
+      </div>
     </main>
   </div>
 
@@ -136,6 +251,6 @@
   <div class="history-empty" data-role="message"></div>
 </template>
 
-<script type="module" src="js/app.js?v=clean-product-1"></script>
+<script type="module" src="js/app.js?v=final-clean-2"></script>
 </body>
 </html>

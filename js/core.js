@@ -22,21 +22,22 @@ const DEFAULT_SETTINGS = {
 };
 
 const CATEGORY_META = [
-  { id: 'Вечер для двоих', icon: 'heart', desc: 'Готовый тёплый сценарий на вечер', color: 'linear-gradient(180deg,#c084fc,#7c3aed)', badge: 'Сценарий', isScenario: true, cover: 'images/bg_evening_card.jpg' },
-  { id: 'После ссоры', icon: 'peace', desc: 'Спокойные вопросы для примирения', color: 'linear-gradient(180deg,#7dd3fc,#2563eb)', badge: 'Мягко', cover: 'images/bg_after_fight_card.jpg' },
-  { id: '18+', icon: 'spark', desc: 'Откровенные вопросы', color: 'linear-gradient(180deg,#7f1d1d,#3b0710)', badge: '18+', cover: 'images/bg_intimate_card.jpg' },
+  { id: 'Вечер для двоих', icon: 'heart', desc: 'Готовый тёплый сценарий на вечер', color: 'linear-gradient(180deg,#fb7185,#8b5cf6)', badge: 'Сценарий', isScenario: true, cover: 'images/bg_evening_card.jpg' },
+  { id: 'После ссоры', icon: 'peace', desc: 'Спокойные вопросы для примирения', color: 'linear-gradient(180deg,#38bdf8,#22c55e)', badge: 'Мягко', cover: 'images/bg_after_fight_card.jpg' },
+  { id: '18+', icon: 'spark', desc: 'Откровенные вопросы', color: 'linear-gradient(180deg,#f59e0b,#fb7185)', badge: '18+', cover: 'images/bg_intimate_card.jpg' },
   { id: 'На расстоянии', icon: 'distance', desc: 'Для пар в разлуке', color: 'linear-gradient(180deg,#38bdf8,#6366f1)', cover: 'images/bg_distance_card.jpg' },
-  { id: 'Будущее', icon: 'future', desc: 'Планы, мечты и семья', color: 'linear-gradient(180deg,#38bdf8,#1d4ed8)', cover: 'images/bg_future_card.jpg' },
-  { id: 'Финансы', icon: 'finance', desc: 'Деньги, цели и бюджет', color: 'linear-gradient(180deg,#22c55e,#166534)', cover: 'images/bg_finance_card.jpg' },
+  { id: 'Будущее', icon: 'future', desc: 'Планы, мечты и семья', color: 'linear-gradient(180deg,#c084fc,#ec4899)', cover: 'images/bg_future_card.jpg' },
+  { id: 'Финансы', icon: 'finance', desc: 'Деньги, цели и бюджет', color: 'linear-gradient(180deg,#f59e0b,#f97316)', cover: 'images/bg_finance_card.jpg' },
   { id: 'Психология', icon: 'mind', desc: 'Эмоции и границы', color: 'linear-gradient(180deg,#22c55e,#14b8a6)', cover: 'images/bg_psychology_card.jpg' },
   { id: 'Воспоминания', icon: 'memory', desc: 'Лучшие моменты вместе', color: 'linear-gradient(180deg,#60a5fa,#8b5cf6)', cover: 'images/bg_memory_card.png' },
-  { id: 'Блиц', icon: 'bolt', desc: 'Проверка знаний (30 сек)', color: 'linear-gradient(180deg,#fb923c,#ea580c)', cover: 'images/bg_blitz_card.png' }
+  { id: 'Блиц', icon: 'bolt', desc: 'Проверка знаний (30 сек)', color: 'linear-gradient(180deg,#eab308,#ef4444)', cover: 'images/bg_blitz_card.png' },
+  { id: 'Своя игра', icon: 'edit', desc: 'Создай свои вопросы', color: 'linear-gradient(180deg,#10b981,#3b82f6)', cover: 'images/bg_custom_card.png' }
 ];
 
 const CATEGORY_BACKGROUNDS = {};
 
-const ROOT_SCREENS = ['categories', 'error'];
-const SWIPE_HELP = 'Свайп вверх — следующий вопрос';
+const ROOT_SCREENS = ['home', 'categories', 'onboarding', 'error'];
+const SWIPE_HELP = 'Свайп: влево — не совпало, вправо — совпало, вверх — пропуск';
 
 const screens = {
   home: document.getElementById('homeScreen'),
@@ -530,7 +531,6 @@ const router = {
   },
   show(name, options = {}) {
     const { reset = false, replace = false } = options;
-    document.body.dataset.screen = name;
     Object.entries(screens).forEach(([screenName, screenEl]) => {
       screenEl?.classList.toggle('screen-active', screenName === name);
     });
@@ -552,12 +552,11 @@ const router = {
     }
     if (this.current() === 'blitz') app.game?.clearBlitzTimer();
     if (state.navStack.length <= 1) {
-      this.show('categories', { reset: true });
+      this.show('home', { reset: true });
       return;
     }
     state.navStack.pop();
     const prev = this.current();
-    document.body.dataset.screen = prev;
     Object.entries(screens).forEach(([screenName, screenEl]) => {
       screenEl?.classList.toggle('screen-active', screenName === prev);
     });
