@@ -1,80 +1,39 @@
 @media (max-width: 380px) {
-  .categories-grid {
-    padding: 0 14px;
-    grid-auto-rows: calc(var(--app-height) - 114px - var(--safe-top) - var(--safe-bottom));
-  }
-
+  .categories-grid { padding: 0 14px; }
   .category-card { border-radius: 30px; }
-
-  .category-copy {
-    left: 18px;
-    right: 18px;
-    bottom: 20px;
-  }
-
-  .category-copy h3 { font-size: clamp(30px, 9.4vw, 44px); }
+  .category-copy { left: 18px; right: 18px; bottom: 20px; }
+  .category-copy h3 { font-size: clamp(31px, 9.4vw, 46px); }
   .category-copy p { font-size: 13.5px; }
 
-  .question-card {
-    border-radius: 30px;
-    padding: 24px;
-  }
-
+  .question-card { border-radius: 30px; padding: 24px; }
   .question-text { font-size: clamp(26px, 8vw, 40px); }
-
-  #gameScreen {
-    padding-left: 14px;
-    padding-right: 14px;
-  }
-
-  .game-head {
-    grid-template-columns: 42px 1fr 42px;
-  }
-
-  .game-back-btn,
-  .progress-badge {
-    width: 42px;
-    height: 42px;
-    border-radius: 15px;
-  }
+  #gameScreen { padding-left: 14px; padding-right: 14px; }
+  .game-head { grid-template-columns: 42px 1fr 42px; }
+  .game-back-btn, .progress-badge { width: 42px; height: 42px; border-radius: 15px; }
 }
 
-@media (max-height: 690px) {
+@media (max-height: 720px) {
   #categoriesScreen { padding-top: calc(58px + var(--safe-top)); }
-
   .section-head { padding-bottom: 8px; }
-  .section-head h2 { font-size: 25px; }
-  .section-head p { display: none; }
-
-  .categories-grid {
-    grid-auto-rows: calc(var(--app-height) - 88px - var(--safe-top) - var(--safe-bottom));
-    gap: 14px;
-  }
-
-  .category-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 18px;
-    margin-bottom: 12px;
-  }
-
-  .category-copy h3 { font-size: clamp(28px, 8.8vw, 42px); }
+  .section-head h2 { font-size: clamp(22px, 6.2vw, 30px); }
+  .categories-grid { height: calc(var(--app-height) - 106px - var(--safe-top) - var(--safe-bottom)); gap: 14px; }
+  .category-icon { width: 50px; height: 50px; border-radius: 18px; margin-bottom: 12px; }
+  .category-copy h3 { font-size: clamp(28px, 8.8vw, 44px); }
   .category-copy p { font-size: 13px; -webkit-line-clamp: 1; }
-
   .game-head { gap: 8px; }
-
-  .question-card {
-    width: min(100%, 430px);
-    padding: 24px;
-  }
-
+  .question-card { width: min(100%, 430px); padding: 24px; }
   .question-text { font-size: clamp(25px, 7.4vw, 38px); }
 }
 
-
 @media (max-height: 620px) {
+  .brand-pill { padding: 8px 12px; font-size: 13px; }
+  #categoriesScreen { padding-top: calc(52px + var(--safe-top)); }
+  .section-head { display: none; }
+  .categories-grid { height: calc(var(--app-height) - 64px - var(--safe-top) - var(--safe-bottom)); padding-top: 4px; }
   .category-icon { display: none; }
   .category-copy { bottom: max(18px, calc(16px + var(--safe-bottom) * .25)); }
-  .category-copy h3 { font-size: clamp(26px, 8.2vw, 38px); line-height: 1; }
+  .category-copy h3 { font-size: clamp(28px, 8.5vw, 42px); line-height: .98; }
   .category-copy p { margin-top: 8px; font-size: 12.5px; -webkit-line-clamp: 1; }
+  #gameScreen { padding-top: calc(8px + var(--safe-top)); gap: 8px; }
+  .question-card { width: min(86vw, calc(var(--app-height) - 118px)); }
 }
