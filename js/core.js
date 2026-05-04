@@ -2,7 +2,7 @@ export const app = {};
 
 const tg = window.Telegram?.WebApp;
 
-const VERSION = 'random-order-swipe-down-1';
+const VERSION = 'adult-easter-compress-1';
 const STORAGE_KEYS = {
   adult: 'adult_ok',
   questionsCache: `couples_questions_${VERSION}`,
@@ -21,7 +21,7 @@ const CATEGORY_META = [
   { id: 'Будущее', icon: '✨', desc: 'Планы и мечты', color: 'linear-gradient(180deg,#38bdf8,#1d4ed8)', glow: 'rgba(59,130,246,.28)', bgStart: '#0b315f', bgMid: '#0a1f45', bgEnd: '#050811', cover: 'images/bg_future_card.jpg' },
   { id: 'Финансы', icon: '◈', desc: 'Деньги и цели', color: 'linear-gradient(180deg,#22c55e,#166534)', glow: 'rgba(34,197,94,.26)', bgStart: '#0a3d25', bgMid: '#092817', bgEnd: '#040a08', cover: 'images/bg_finance_card.jpg' },
   { id: 'Психология', icon: '☯', desc: 'Эмоции', color: 'linear-gradient(180deg,#22c55e,#14b8a6)', glow: 'rgba(20,184,166,.25)', bgStart: '#0b3d3a', bgMid: '#0a2a2c', bgEnd: '#050b0d', cover: 'images/bg_psychology_card.jpg' },
-  { id: 'Воспоминания', icon: '☾', desc: 'Моменты', color: 'linear-gradient(180deg,#60a5fa,#8b5cf6)', glow: 'rgba(139,92,246,.28)', bgStart: '#152f58', bgMid: '#211440', bgEnd: '#070611', cover: 'images/bg_memory_card.png' },
+  { id: 'Воспоминания', icon: '☾', desc: 'Моменты', color: 'linear-gradient(180deg,#60a5fa,#8b5cf6)', glow: 'rgba(139,92,246,.28)', bgStart: '#152f58', bgMid: '#211440', bgEnd: '#070611', cover: 'images/bg_memory_card.jpg' },
   { id: 'Только для своих', icon: '◆', desc: 'Скрытая тема', color: 'linear-gradient(180deg,#f97316,#7f1d1d)', glow: 'rgba(249,115,22,.30)', bgStart: '#3b1607', bgMid: '#251006', bgEnd: '#070307', cover: 'images/bg_intimate_card.jpg', hidden: true },
 ];
 
@@ -52,6 +52,8 @@ const ui = {
   adultModal: document.getElementById('adultModal'),
   adultConfirmBtn: document.getElementById('adultConfirmBtn'),
   adultCancelBtn: document.getElementById('adultCancelBtn'),
+  easterModal: document.getElementById('easterModal'),
+  easterUnlockCard: document.getElementById('easterUnlockCard'),
   completionCard: document.getElementById('completionCard'),
   completionCategory: document.getElementById('completionCategory'),
   completionSummary: document.getElementById('completionSummary'),

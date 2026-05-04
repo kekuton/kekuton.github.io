@@ -65,6 +65,7 @@ export const game = {
       if (state.currentIndex >= state.currentQuestions.length) {
         clearProgress();
         render.resetQuestionCard();
+        fx.vibrate('success');
         render.completion();
         state.questionTransitionLocked = false;
         return;

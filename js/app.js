@@ -51,7 +51,10 @@ function bindEvents() {
       return;
     }
     const card = event.target.closest('.category-card');
-    if (card?.dataset.id) game.openCategory(card.dataset.id);
+    if (card?.dataset.id) {
+      fx.vibrate('light');
+      game.openCategory(card.dataset.id);
+    }
   });
 
   ui.categoriesGrid?.addEventListener('keydown', (event) => {
@@ -59,6 +62,7 @@ function bindEvents() {
     const card = event.target.closest('.category-card');
     if (!card?.dataset.id) return;
     event.preventDefault();
+    fx.vibrate('light');
     game.openCategory(card.dataset.id);
   });
 
@@ -78,6 +82,7 @@ function bindEvents() {
 
   ui.adultConfirmBtn?.addEventListener('click', () => {
     app.storage.setRaw(app.STORAGE_KEYS.adult, 'yes');
+    fx.vibrate('success');
     modals.close(ui.adultModal);
     const pending = state.pendingAdultCategory;
     state.pendingAdultCategory = null;
@@ -104,12 +109,26 @@ function bindEvents() {
       storage.setRaw(STORAGE_KEYS.easterUnlocked, 'yes');
       render.categories();
       fx.vibrate('success');
-      app.notify.info('Открыта скрытая категория');
-      window.setTimeout(() => {
-        const secretCard = ui.categoriesGrid?.querySelector('[data-id="Только для своих"]');
-        secretCard?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 80);
+      modals.open(ui.easterModal);
+      router.syncBackButton(router.current());
     }
+  });
+
+
+  function revealSecretCategory() {
+    modals.close(ui.easterModal);
+    router.syncBackButton(router.current());
+    window.setTimeout(() => {
+      const secretCard = ui.categoriesGrid?.querySelector('[data-id="Только для своих"]');
+      secretCard?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      secretCard?.classList.add('secret-pulse');
+      window.setTimeout(() => secretCard?.classList.remove('secret-pulse'), 900);
+    }, 80);
+  }
+
+  ui.easterUnlockCard?.addEventListener('click', revealSecretCategory);
+  ui.easterModal?.addEventListener('click', (event) => {
+    if (event.target === ui.easterModal) revealSecretCategory();
   });
 
   ui.completionCard?.addEventListener('click', () => router.show('categories', { reset: true }));
