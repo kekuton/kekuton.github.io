@@ -43,7 +43,9 @@ export const game = {
       state.currentIndex = saved.index;
     } else {
       const limit = helpers.getRoundSize(sourceQuestions.length);
-      state.currentQuestions = state.currentCategory?.isScenario ? sourceQuestions.slice(0, limit) : helpers.shuffle(sourceQuestions).slice(0, limit);
+      // Каждый новый раунд получает свой случайный порядок без повторов.
+      // Если пользователь вышел и вернулся, сохранённый порядок продолжится.
+      state.currentQuestions = helpers.shuffle(sourceQuestions).slice(0, limit);
       state.currentIndex = 0;
       saveProgress();
     }
@@ -72,6 +74,14 @@ export const game = {
       render.gameQuestion(false);
       window.setTimeout(() => { state.questionTransitionLocked = false; }, 120);
     });
+  },
+
+  exitToCategories() {
+    if (state.questionTransitionLocked) return;
+    swipe.resetSwipeState();
+    swipe.clearCardRuntimeStyles();
+    fx.vibrate('light');
+    router.show('categories', { reset: true });
   },
 };
 
@@ -155,7 +165,7 @@ export const swipe = {
       const dx = state.swipe.currentX - state.swipe.startX;
       const dy = state.swipe.currentY - state.swipe.startY;
       const x = Math.max(-18, Math.min(18, dx * 0.12));
-      const y = dy < 0 ? Math.max(-86, dy * 0.34) : Math.min(22, dy * 0.12);
+      const y = dy < 0 ? Math.max(-86, dy * 0.34) : Math.min(54, dy * 0.24);
       const rotate = Math.max(-1.8, Math.min(1.8, dx / 120));
       const scale = 1 - Math.min(Math.abs(y) / 3600, 0.016);
 
@@ -171,6 +181,7 @@ export const swipe = {
     const dx = state.swipe.currentX - state.swipe.startX;
     const dy = state.swipe.currentY - state.swipe.startY;
     const isUpSwipe = dy < -70 && Math.abs(dy) > Math.abs(dx) * 0.7;
+    const isDownSwipe = dy > 82 && Math.abs(dy) > Math.abs(dx) * 0.75;
 
     state.swipe.active = false;
     state.swipe.pointerId = null;
@@ -180,6 +191,14 @@ export const swipe = {
 
     if (isUpSwipe) {
       game.answer();
+      return;
+    }
+
+    if (isDownSwipe) {
+      card.style.transition = 'transform 180ms cubic-bezier(.22,.9,.2,1), opacity 160ms ease';
+      card.style.transform = 'translate3d(0,48px,0) scale(.99)';
+      card.style.opacity = '0';
+      window.setTimeout(() => game.exitToCategories(), 165);
       return;
     }
 
