@@ -2,7 +2,7 @@ export const app = {};
 
 const tg = window.Telegram?.WebApp;
 
-const VERSION = 'fullscreen-fit-1';
+const VERSION = 'fullscreen-1';
 const STORAGE_KEYS = {
   adult: 'adult_ok',
   questionsCache: `couples_questions_${VERSION}`,
