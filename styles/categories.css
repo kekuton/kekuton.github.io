@@ -163,3 +163,21 @@
   font-size: 13px;
   font-weight: 950;
 }
+
+
+/* Hard removal: category cards must not show emoji/icon blocks. */
+.category-card .category-icon,
+.category-card .category-emoji,
+.category-card .category-symbol,
+.category-card .category-visual,
+.category-card .category-mark,
+.category-card [data-role="icon"],
+.category-card [data-icon],
+.category-card .emoji {
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}

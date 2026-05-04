@@ -2,7 +2,7 @@ export const app = {};
 
 const tg = window.Telegram?.WebApp;
 
-const VERSION = 'no-category-icons-1';
+const VERSION = 'remove-icons-hard-2';
 const STORAGE_KEYS = {
   adult: 'adult_ok',
   questionsCache: `couples_questions_${VERSION}`,
@@ -127,7 +127,6 @@ const helpers = {
     };
     return intros[categoryId] || 'ответьте честно и спокойно';
   },
-  categoryIconSvg(icon = '✦') { return `<span aria-hidden="true">${icon}</span>`; },
   progressKey(categoryId) { return `${STORAGE_KEYS.progressPrefix}${categoryId}`; },
   plural(number, one, few, many) {
     const n = Math.abs(number) % 100;
