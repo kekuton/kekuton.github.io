@@ -1,7 +1,7 @@
 @media (max-width: 380px) {
   .categories-grid {
     padding: 0 14px;
-    grid-auto-rows: calc(100svh - 114px - var(--safe-top) - var(--safe-bottom));
+    grid-auto-rows: calc(var(--app-height) - 114px - var(--safe-top) - var(--safe-bottom));
   }
 
   .category-card { border-radius: 30px; }
@@ -47,7 +47,7 @@
   .section-head p { display: none; }
 
   .categories-grid {
-    grid-auto-rows: calc(100svh - 88px - var(--safe-top) - var(--safe-bottom));
+    grid-auto-rows: calc(var(--app-height) - 88px - var(--safe-top) - var(--safe-bottom));
     gap: 14px;
   }
 

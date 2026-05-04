@@ -1,7 +1,7 @@
 body[data-screen='game'] .topbar { display: none !important; }
 
 #gameScreen {
-  height: 100svh;
+  height: var(--app-height);
   padding: calc(16px + var(--safe-top)) 18px calc(18px + var(--safe-bottom));
   flex-direction: column;
   gap: 16px;

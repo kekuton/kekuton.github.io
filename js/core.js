@@ -2,7 +2,7 @@ export const app = {};
 
 const tg = window.Telegram?.WebApp;
 
-const VERSION = 'next-polish-1';
+const VERSION = 'fullscreen-1';
 const STORAGE_KEYS = {
   adult: 'adult_ok',
   questionsCache: `couples_questions_${VERSION}`,
@@ -250,11 +250,31 @@ const data = {
   },
 };
 
+function syncViewportHeight() {
+  const height = tg?.viewportHeight || tg?.stableViewportHeight || window.innerHeight;
+  if (height) document.documentElement.style.setProperty('--app-height', `${height}px`);
+}
+
 async function initTelegram() {
-  if (!tg) return;
-  try { tg.ready(); tg.expand(); } catch {}
+  syncViewportHeight();
+
+  if (!tg) {
+    window.addEventListener('resize', syncViewportHeight, { passive: true });
+    window.addEventListener('orientationchange', () => setTimeout(syncViewportHeight, 120), { passive: true });
+    return;
+  }
+
+  try { tg.ready(); } catch {}
+  try { tg.expand(); } catch {}
+  try { if (typeof tg.requestFullscreen === 'function') tg.requestFullscreen(); } catch {}
   try { if (typeof tg.disableVerticalSwipes === 'function') tg.disableVerticalSwipes(); } catch {}
+  try { tg.setHeaderColor?.('#070611'); tg.setBackgroundColor?.('#070611'); } catch {}
   try { tg.BackButton?.onClick(() => router.back()); } catch {}
+
+  syncViewportHeight();
+  try { tg.onEvent?.('viewportChanged', syncViewportHeight); } catch {}
+  window.addEventListener('resize', syncViewportHeight, { passive: true });
+  window.addEventListener('orientationchange', () => setTimeout(syncViewportHeight, 120), { passive: true });
 }
 
 Object.assign(app, { tg, VERSION, STORAGE_KEYS, ROUND_SIZE, CATEGORY_META, ROOT_SCREENS, screens, ui, bgLayers, storage, state, helpers, notify, loading, background, fx, modals, router, data, initTelegram });

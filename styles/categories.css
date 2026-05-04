@@ -1,5 +1,5 @@
 #categoriesScreen {
-  height: 100svh;
+  height: var(--app-height);
   flex-direction: column;
   padding: calc(66px + var(--safe-top)) 0 calc(10px + var(--safe-bottom));
   overflow: hidden;
@@ -30,7 +30,7 @@
   overflow-x: hidden;
   padding: 0 18px;
   display: grid;
-  grid-auto-rows: calc(100svh - 120px - var(--safe-top) - var(--safe-bottom));
+  grid-auto-rows: calc(var(--app-height) - 120px - var(--safe-top) - var(--safe-bottom));
   gap: 18px;
   scroll-snap-type: y mandatory;
   scrollbar-width: none;

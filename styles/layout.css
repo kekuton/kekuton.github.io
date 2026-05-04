@@ -71,7 +71,7 @@
 }
 
 .app-shell {
-  height: 100svh;
+  height: var(--app-height);
   display: flex;
   flex-direction: column;
   overflow: hidden;

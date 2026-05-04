@@ -41,3 +41,8 @@ python3 -m http.server 8080
 ```text
 http://127.0.0.1:8080
 ```
+
+
+## Telegram Mini App fullscreen
+
+При запуске в Telegram приложение вызывает `WebApp.expand()` и, если клиент поддерживает, `WebApp.requestFullscreen()`. Высота интерфейса синхронизируется с Telegram `viewportHeight`, поэтому карточки занимают весь экран и не режутся системными панелями.
