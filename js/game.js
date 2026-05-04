@@ -113,7 +113,7 @@ export const swipe = {
     card.classList.remove('question-card-enter');
     card.style.willChange = 'transform, opacity';
     card.style.transition = 'transform 240ms cubic-bezier(.22,.72,.18,1), opacity 220ms ease';
-    card.style.transform = 'translate3d(0,-132px,0) scale(.985)';
+    card.style.transform = 'translate3d(148px,0,0) scale(.985)';
     card.style.opacity = '0';
 
     window.setTimeout(() => {
@@ -165,10 +165,10 @@ export const swipe = {
     requestAnimationFrame(() => {
       const dx = state.swipe.currentX - state.swipe.startX;
       const dy = state.swipe.currentY - state.swipe.startY;
-      const x = Math.max(-18, Math.min(18, dx * 0.12));
-      const y = dy < 0 ? Math.max(-86, dy * 0.34) : Math.min(54, dy * 0.24);
-      const rotate = Math.max(-1.8, Math.min(1.8, dx / 120));
-      const scale = 1 - Math.min(Math.abs(y) / 3600, 0.016);
+      const x = dx > 0 ? Math.min(96, dx * 0.46) : Math.max(-36, dx * 0.18);
+      const y = Math.max(-18, Math.min(58, dy * 0.18));
+      const rotate = Math.max(-2.4, Math.min(4.2, dx / 96));
+      const scale = 1 - Math.min(Math.abs(x) / 4200, 0.018);
 
       card.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${rotate}deg) scale(${scale})`;
       state.swipe.isAnimating = false;
@@ -181,7 +181,7 @@ export const swipe = {
 
     const dx = state.swipe.currentX - state.swipe.startX;
     const dy = state.swipe.currentY - state.swipe.startY;
-    const isUpSwipe = dy < -70 && Math.abs(dy) > Math.abs(dx) * 0.7;
+    const isRightSwipe = dx > 78 && Math.abs(dx) > Math.abs(dy) * 0.72;
     const isDownSwipe = dy > 82 && Math.abs(dy) > Math.abs(dx) * 0.75;
 
     state.swipe.active = false;
@@ -190,7 +190,7 @@ export const swipe = {
     card.releasePointerCapture?.(event.pointerId);
     card.classList.remove('is-swiping');
 
-    if (isUpSwipe) {
+    if (isRightSwipe) {
       game.answer();
       return;
     }
