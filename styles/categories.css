@@ -1,18 +1,18 @@
 #categoriesScreen {
   height: var(--app-height);
   flex-direction: column;
-  padding: calc(66px + var(--safe-top)) 0 calc(10px + var(--safe-bottom));
+  padding: calc(58px + var(--safe-top)) 0 calc(8px + var(--safe-bottom));
   overflow: hidden;
 }
 
 .section-head {
-  padding: 0 20px 12px;
+  padding: 0 var(--screen-x) 8px;
 }
 
 .section-head h2 {
   margin: 0;
   color: #fff;
-  font-size: clamp(26px, 7vw, 38px);
+  font-size: clamp(25px, 6.7vw, 36px);
   line-height: .98;
   letter-spacing: -.055em;
 }
@@ -28,10 +28,10 @@
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0 18px;
+  padding: 0 var(--screen-x);
   display: grid;
-  grid-auto-rows: calc(var(--app-height) - 120px - var(--safe-top) - var(--safe-bottom));
-  gap: 18px;
+  grid-auto-rows: minmax(0, calc(var(--app-safe-height) - 86px));
+  gap: 14px;
   scroll-snap-type: y mandatory;
   scrollbar-width: none;
 }
@@ -40,9 +40,9 @@
 
 .category-card {
   position: relative;
-  min-height: 440px;
+  min-height: 0;
   scroll-snap-align: center;
-  border-radius: 34px;
+  border-radius: clamp(28px, 8vw, 38px);
   overflow: hidden;
   isolation: isolate;
   background: #120d20;
@@ -77,9 +77,9 @@
 
 .category-card-top {
   position: absolute;
-  top: 18px;
-  left: 18px;
-  right: 18px;
+  top: clamp(14px, 4vw, 20px);
+  left: clamp(14px, 4vw, 20px);
+  right: clamp(14px, 4vw, 20px);
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -102,19 +102,19 @@
 
 .category-copy {
   position: absolute;
-  left: 22px;
-  right: 22px;
-  bottom: 24px;
+  left: clamp(18px, 5vw, 26px);
+  right: clamp(18px, 5vw, 26px);
+  bottom: clamp(20px, 5.5vw, 30px);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 
 .category-icon {
-  width: 58px;
-  height: 58px;
-  margin-bottom: 15px;
-  border-radius: 21px;
+  width: clamp(50px, 14vw, 62px);
+  height: clamp(50px, 14vw, 62px);
+  margin-bottom: clamp(12px, 3.8vw, 18px);
+  border-radius: clamp(18px, 5vw, 22px);
   display: grid;
   place-items: center;
   color: #fff;
@@ -130,7 +130,7 @@
 .category-copy h3 {
   margin: 0;
   max-width: 92%;
-  font-size: clamp(38px, 11vw, 62px);
+  font-size: clamp(40px, 11.6vw, 66px);
   line-height: .88;
   letter-spacing: -.075em;
   font-weight: 950;
@@ -138,10 +138,10 @@
 }
 
 .category-copy p {
-  margin: 13px 0 0;
+  margin: clamp(9px, 2.8vw, 14px) 0 0;
   max-width: 24ch;
   color: rgba(255, 255, 255, .78);
-  font-size: 16px;
+  font-size: clamp(14px, 4vw, 17px);
   font-weight: 750;
   line-height: 1.22;
   display: -webkit-box;

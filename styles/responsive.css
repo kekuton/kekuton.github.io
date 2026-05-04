@@ -70,3 +70,60 @@
 
   .question-text { font-size: clamp(25px, 7.4vw, 38px); }
 }
+
+/* Fullscreen Telegram Mini App fitting */
+@media (min-height: 760px) {
+  #categoriesScreen {
+    padding-top: calc(62px + var(--safe-top));
+  }
+
+  .categories-grid {
+    grid-auto-rows: minmax(0, calc(var(--app-safe-height) - 92px));
+  }
+
+  .category-copy {
+    bottom: clamp(26px, 6vh, 42px);
+  }
+
+  .question-card {
+    width: min(88vw, 540px, calc(var(--app-safe-height) - 150px));
+  }
+}
+
+@media (max-height: 620px) {
+  .brand-pill {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  #categoriesScreen {
+    padding-top: calc(52px + var(--safe-top));
+  }
+
+  .section-head {
+    display: none;
+  }
+
+  .categories-grid {
+    grid-auto-rows: minmax(0, calc(var(--app-safe-height) - 60px));
+    padding-top: 4px;
+  }
+
+  .category-copy h3 {
+    font-size: clamp(32px, 10vw, 48px);
+  }
+
+  .category-icon,
+  .category-copy p {
+    display: none;
+  }
+
+  #gameScreen {
+    padding-top: calc(8px + var(--safe-top));
+    gap: 8px;
+  }
+
+  .question-card {
+    width: min(86vw, calc(var(--app-safe-height) - 118px));
+  }
+}
