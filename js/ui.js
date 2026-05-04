@@ -17,7 +17,7 @@ export const render = {
 
   categories() {
     if (!ui.categoriesGrid || !ui.categoryCardTemplate) return;
-    const playable = CATEGORY_META.filter((category) => helpers.getCurrentCategoryQuestions(category.id).length);
+    const playable = CATEGORY_META.filter((category) => (!category.hidden || state.easterUnlocked) && helpers.getCurrentCategoryQuestions(category.id).length);
     const fragment = document.createDocumentFragment();
 
     playable.forEach((category, index) => {
@@ -107,6 +107,7 @@ export const render = {
       'Финансы': 'Спокойные разговоры о деньгах делают планы честнее.',
       'Психология': 'Понимание начинается там, где есть внимание.',
       'Воспоминания': 'Тёплые моменты становятся сильнее, когда о них вспоминают вместе.',
+      'Только для своих': 'Некоторые разговоры существуют только между вами.',
     };
 
     if (ui.completionCategory) ui.completionCategory.textContent = categoryId;

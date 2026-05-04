@@ -2,7 +2,7 @@ import { app } from './core.js';
 import './ui.js';
 import './game.js';
 
-const { ui, state, router, data, background, render, loading, swipe, initTelegram, modals, game } = app;
+const { ui, state, router, data, background, render, loading, swipe, initTelegram, modals, game, storage, STORAGE_KEYS, fx } = app;
 
 function updateActiveCategoryCard() {
   const cards = [...ui.categoriesGrid.querySelectorAll('.category-card')];
@@ -90,6 +90,28 @@ function bindEvents() {
     router.syncBackButton(router.current());
   });
 
+
+  let titleTapCount = 0;
+  let titleTapTimer = 0;
+  document.querySelector('.brand-pill')?.addEventListener('click', () => {
+    window.clearTimeout(titleTapTimer);
+    titleTapCount += 1;
+    titleTapTimer = window.setTimeout(() => { titleTapCount = 0; }, 1200);
+
+    if (titleTapCount >= 5) {
+      titleTapCount = 0;
+      state.easterUnlocked = true;
+      storage.setRaw(STORAGE_KEYS.easterUnlocked, 'yes');
+      render.categories();
+      fx.vibrate('success');
+      app.notify.info('Открыта скрытая категория');
+      window.setTimeout(() => {
+        const secretCard = ui.categoriesGrid?.querySelector('[data-id="Только для своих"]');
+        secretCard?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 80);
+    }
+  });
+
   ui.completionCard?.addEventListener('click', () => router.show('categories', { reset: true }));
   app.screens.completion?.addEventListener('click', () => router.show('categories', { reset: true }));
 
@@ -112,8 +134,9 @@ async function clearOldPwaCache() {
 }
 
 async function init() {
+  const splashStartedAt = Date.now();
   await clearOldPwaCache();
-  loading.show('Подготавливаем приложение...');
+  loading.show('разговоры, которые сближают');
   background.reset();
   const questionsLoaded = await data.loadQuestions();
   render.categories();
@@ -128,7 +151,8 @@ async function init() {
   }
 
   router.show('categories', { reset: true });
-  loading.hide();
+  const splashDelay = Math.max(0, 900 - (Date.now() - splashStartedAt));
+  window.setTimeout(() => loading.hide(), splashDelay);
 }
 
 document.addEventListener('DOMContentLoaded', init);

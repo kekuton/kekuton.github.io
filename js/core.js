@@ -2,11 +2,12 @@ export const app = {};
 
 const tg = window.Telegram?.WebApp;
 
-const VERSION = 'final-phrases-1';
+const VERSION = 'easter-splash-1';
 const STORAGE_KEYS = {
   adult: 'adult_ok',
   questionsCache: `couples_questions_${VERSION}`,
   progressPrefix: 'couples_progress_',
+  easterUnlocked: 'couples_easter_unlocked',
 };
 
 const ROUND_SIZE = 25;
@@ -21,6 +22,7 @@ const CATEGORY_META = [
   { id: 'Финансы', icon: '◈', desc: 'Деньги и цели', color: 'linear-gradient(180deg,#22c55e,#166534)', glow: 'rgba(34,197,94,.26)', bgStart: '#0a3d25', bgMid: '#092817', bgEnd: '#040a08', cover: 'images/bg_finance_card.jpg' },
   { id: 'Психология', icon: '☯', desc: 'Эмоции', color: 'linear-gradient(180deg,#22c55e,#14b8a6)', glow: 'rgba(20,184,166,.25)', bgStart: '#0b3d3a', bgMid: '#0a2a2c', bgEnd: '#050b0d', cover: 'images/bg_psychology_card.jpg' },
   { id: 'Воспоминания', icon: '☾', desc: 'Моменты', color: 'linear-gradient(180deg,#60a5fa,#8b5cf6)', glow: 'rgba(139,92,246,.28)', bgStart: '#152f58', bgMid: '#211440', bgEnd: '#070611', cover: 'images/bg_memory_card.png' },
+  { id: 'Только для своих', icon: '◆', desc: 'Скрытая тема', color: 'linear-gradient(180deg,#f97316,#7f1d1d)', glow: 'rgba(249,115,22,.30)', bgStart: '#3b1607', bgMid: '#251006', bgEnd: '#070307', cover: 'images/bg_intimate_card.jpg', hidden: true },
 ];
 
 const ROOT_SCREENS = ['categories', 'error'];
@@ -85,6 +87,7 @@ const state = {
   globalTouchStartX: 0,
   globalTouchStartY: 0,
   activeBgLayerIndex: 0,
+  easterUnlocked: storage.getRaw(STORAGE_KEYS.easterUnlocked) === 'yes',
   swipe: { active: false, startX: 0, startY: 0, currentX: 0, currentY: 0, pointerId: null, isAnimating: false },
 };
 
