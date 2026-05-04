@@ -117,22 +117,6 @@
   align-items: flex-start;
 }
 
-.category-icon {
-  width: 58px;
-  height: 58px;
-  margin-bottom: 14px;
-  border-radius: 21px;
-  display: grid;
-  place-items: center;
-  color: #fff;
-  background: var(--category-theme);
-  box-shadow: 0 14px 40px rgba(0, 0, 0, .36), inset 0 1px 0 rgba(255, 255, 255, .22);
-}
-
-.category-icon svg {
-  width: 30px;
-  height: 30px;
-}
 
 .category-copy h3 {
   margin: 0;

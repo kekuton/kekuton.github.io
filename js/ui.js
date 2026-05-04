@@ -34,8 +34,6 @@ export const render = {
         poster.classList.remove('hidden');
       }
 
-      const icon = card.querySelector('[data-role="icon"]');
-      if (icon) icon.innerHTML = helpers.categoryIconSvg(category.icon);
 
       const title = card.querySelector('[data-role="title"]');
       if (title) title.textContent = category.id;

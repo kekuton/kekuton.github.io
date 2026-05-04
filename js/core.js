@@ -2,7 +2,7 @@ export const app = {};
 
 const tg = window.Telegram?.WebApp;
 
-const VERSION = 'fullscreen-1';
+const VERSION = 'no-category-icons-1';
 const STORAGE_KEYS = {
   adult: 'adult_ok',
   questionsCache: `couples_questions_${VERSION}`,
@@ -13,16 +13,16 @@ const STORAGE_KEYS = {
 const ROUND_SIZE = 25;
 
 const CATEGORY_META = [
-  { id: 'Вечер для двоих', icon: '💜', desc: 'Тёплый вечер', color: 'linear-gradient(180deg,#c084fc,#7c3aed)', glow: 'rgba(192,132,252,.30)', bgStart: '#22113f', bgMid: '#160a2c', bgEnd: '#070611', isScenario: true, cover: 'images/bg_evening_card.jpg' },
-  { id: 'После ссоры', icon: '🕊️', desc: 'Спокойный разговор', color: 'linear-gradient(180deg,#7dd3fc,#2563eb)', glow: 'rgba(125,211,252,.28)', bgStart: '#0e3448', bgMid: '#0b1d36', bgEnd: '#050811', cover: 'images/bg_after_fight_card.jpg' },
-  { id: 'Перед сном', icon: '🌙', desc: 'Перед сном', color: 'linear-gradient(180deg,#a78bfa,#4338ca)', glow: 'rgba(167,139,250,.30)', bgStart: '#25164a', bgMid: '#15113a', bgEnd: '#070611', cover: 'images/bg_evening_card.jpg' },
-  { id: '18+', icon: '✦', desc: 'Откровенно', color: 'linear-gradient(180deg,#991b1b,#3b0710)', glow: 'rgba(185,28,28,.30)', bgStart: '#3a0710', bgMid: '#1b0710', bgEnd: '#070307', cover: 'images/bg_intimate_card.jpg' },
-  { id: 'На расстоянии', icon: '💌', desc: 'Когда далеко', color: 'linear-gradient(180deg,#38bdf8,#6366f1)', glow: 'rgba(56,189,248,.26)', bgStart: '#0d2f50', bgMid: '#111941', bgEnd: '#060713', cover: 'images/bg_distance_card.jpg' },
-  { id: 'Будущее', icon: '✨', desc: 'Планы и мечты', color: 'linear-gradient(180deg,#38bdf8,#1d4ed8)', glow: 'rgba(59,130,246,.28)', bgStart: '#0b315f', bgMid: '#0a1f45', bgEnd: '#050811', cover: 'images/bg_future_card.jpg' },
-  { id: 'Финансы', icon: '◈', desc: 'Деньги и цели', color: 'linear-gradient(180deg,#22c55e,#166534)', glow: 'rgba(34,197,94,.26)', bgStart: '#0a3d25', bgMid: '#092817', bgEnd: '#040a08', cover: 'images/bg_finance_card.jpg' },
-  { id: 'Психология', icon: '☯', desc: 'Эмоции', color: 'linear-gradient(180deg,#22c55e,#14b8a6)', glow: 'rgba(20,184,166,.25)', bgStart: '#0b3d3a', bgMid: '#0a2a2c', bgEnd: '#050b0d', cover: 'images/bg_psychology_card.jpg' },
-  { id: 'Воспоминания', icon: '☾', desc: 'Моменты', color: 'linear-gradient(180deg,#60a5fa,#8b5cf6)', glow: 'rgba(139,92,246,.28)', bgStart: '#152f58', bgMid: '#211440', bgEnd: '#070611', cover: 'images/bg_memory_card.jpg' },
-  { id: 'Только для своих', icon: '◆', desc: 'Скрытая тема', color: 'linear-gradient(180deg,#f97316,#7f1d1d)', glow: 'rgba(249,115,22,.30)', bgStart: '#3b1607', bgMid: '#251006', bgEnd: '#070307', cover: 'images/bg_intimate_card.jpg', hidden: true },
+  { id: 'Вечер для двоих', desc: 'Тёплый вечер', color: 'linear-gradient(180deg,#c084fc,#7c3aed)', glow: 'rgba(192,132,252,.30)', bgStart: '#22113f', bgMid: '#160a2c', bgEnd: '#070611', isScenario: true, cover: 'images/bg_evening_card.jpg' },
+  { id: 'После ссоры', desc: 'Спокойный разговор', color: 'linear-gradient(180deg,#7dd3fc,#2563eb)', glow: 'rgba(125,211,252,.28)', bgStart: '#0e3448', bgMid: '#0b1d36', bgEnd: '#050811', cover: 'images/bg_after_fight_card.jpg' },
+  { id: 'Перед сном', desc: 'Перед сном', color: 'linear-gradient(180deg,#a78bfa,#4338ca)', glow: 'rgba(167,139,250,.30)', bgStart: '#25164a', bgMid: '#15113a', bgEnd: '#070611', cover: 'images/bg_evening_card.jpg' },
+  { id: '18+', desc: 'Откровенно', color: 'linear-gradient(180deg,#991b1b,#3b0710)', glow: 'rgba(185,28,28,.30)', bgStart: '#3a0710', bgMid: '#1b0710', bgEnd: '#070307', cover: 'images/bg_intimate_card.jpg' },
+  { id: 'На расстоянии', desc: 'Когда далеко', color: 'linear-gradient(180deg,#38bdf8,#6366f1)', glow: 'rgba(56,189,248,.26)', bgStart: '#0d2f50', bgMid: '#111941', bgEnd: '#060713', cover: 'images/bg_distance_card.jpg' },
+  { id: 'Будущее', desc: 'Планы и мечты', color: 'linear-gradient(180deg,#38bdf8,#1d4ed8)', glow: 'rgba(59,130,246,.28)', bgStart: '#0b315f', bgMid: '#0a1f45', bgEnd: '#050811', cover: 'images/bg_future_card.jpg' },
+  { id: 'Финансы', desc: 'Деньги и цели', color: 'linear-gradient(180deg,#22c55e,#166534)', glow: 'rgba(34,197,94,.26)', bgStart: '#0a3d25', bgMid: '#092817', bgEnd: '#040a08', cover: 'images/bg_finance_card.jpg' },
+  { id: 'Психология', desc: 'Эмоции', color: 'linear-gradient(180deg,#22c55e,#14b8a6)', glow: 'rgba(20,184,166,.25)', bgStart: '#0b3d3a', bgMid: '#0a2a2c', bgEnd: '#050b0d', cover: 'images/bg_psychology_card.jpg' },
+  { id: 'Воспоминания', desc: 'Моменты', color: 'linear-gradient(180deg,#60a5fa,#8b5cf6)', glow: 'rgba(139,92,246,.28)', bgStart: '#152f58', bgMid: '#211440', bgEnd: '#070611', cover: 'images/bg_memory_card.jpg' },
+  { id: 'Только для своих', desc: 'Скрытая тема', color: 'linear-gradient(180deg,#f97316,#7f1d1d)', glow: 'rgba(249,115,22,.30)', bgStart: '#3b1607', bgMid: '#251006', bgEnd: '#070307', cover: 'images/bg_intimate_card.jpg', hidden: true },
 ];
 
 const ROOT_SCREENS = ['categories', 'error'];
