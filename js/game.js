@@ -26,7 +26,7 @@ export const game = {
       return;
     }
     background.apply(categoryId);
-    this.start();
+    app.render.intro();
   },
 
   start() {

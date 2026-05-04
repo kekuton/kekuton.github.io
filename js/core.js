@@ -2,7 +2,7 @@ export const app = {};
 
 const tg = window.Telegram?.WebApp;
 
-const VERSION = 'adult-easter-compress-1';
+const VERSION = 'next-polish-1';
 const STORAGE_KEYS = {
   adult: 'adult_ok',
   questionsCache: `couples_questions_${VERSION}`,
@@ -31,6 +31,7 @@ const screens = {
   error: document.getElementById('errorScreen'),
   categories: document.getElementById('categoriesScreen'),
   game: document.getElementById('gameScreen'),
+  intro: document.getElementById('introScreen'),
   completion: document.getElementById('completionScreen'),
 };
 
@@ -43,6 +44,9 @@ const ui = {
   goHomeFromErrorBtn: document.getElementById('goHomeFromErrorBtn'),
   errorText: document.getElementById('errorText'),
   categoriesGrid: document.getElementById('categoriesGrid'),
+  introCard: document.getElementById('introCard'),
+  introCategory: document.getElementById('introCategory'),
+  introText: document.getElementById('introText'),
   gameCategory: document.getElementById('gameCategory'),
   gameTitle: document.getElementById('gameTitle'),
   progressLabel: document.getElementById('progressLabel'),
@@ -108,6 +112,21 @@ const helpers = {
   },
   getRoundSize(total = ROUND_SIZE) { return Math.min(ROUND_SIZE, Math.max(0, total)); },
   isAdultConfirmed() { return storage.getRaw(STORAGE_KEYS.adult) === 'yes'; },
+  getIntroText(categoryId) {
+    const intros = {
+      'Вечер для двоих': 'настройтесь на тёплый разговор',
+      'После ссоры': 'поговорите спокойно и без защиты',
+      'Перед сном': 'закончите день чуть теплее',
+      '18+': 'откровенно, только если обоим комфортно',
+      'На расстоянии': 'станьте ближе, даже если вы далеко',
+      'Будущее': 'поговорите о планах без давления',
+      'Финансы': 'обсудите деньги спокойно и честно',
+      'Психология': 'лучше поймите чувства друг друга',
+      'Воспоминания': 'вспомните моменты, которые вас связали',
+      'Только для своих': 'тема только между вами',
+    };
+    return intros[categoryId] || 'ответьте честно и спокойно';
+  },
   categoryIconSvg(icon = '✦') { return `<span aria-hidden="true">${icon}</span>`; },
   progressKey(categoryId) { return `${STORAGE_KEYS.progressPrefix}${categoryId}`; },
   plural(number, one, few, many) {

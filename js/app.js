@@ -69,16 +69,26 @@ function bindEvents() {
   ui.backBtn?.addEventListener('click', () => router.back());
   ui.gameBackBtn?.addEventListener('click', () => router.show('categories', { reset: true }));
 
-  ui.retryLoadBtn?.addEventListener('click', async () => {
+  async function retryQuestionsLoad() {
     loading.show('Повторяем загрузку...');
     const ok = await data.loadQuestions();
     render.categories();
     loading.hide();
     if (ok) router.show('categories', { reset: true });
     else render.errorScreen(state.loadError || 'Не удалось загрузить вопросы.');
+  }
+
+  ui.retryLoadBtn?.addEventListener('click', (event) => {
+    event.stopPropagation();
+    retryQuestionsLoad();
   });
 
-  ui.goHomeFromErrorBtn?.addEventListener('click', () => router.show('categories', { reset: true }));
+  app.screens.error?.addEventListener('click', () => retryQuestionsLoad());
+
+  ui.goHomeFromErrorBtn?.addEventListener('click', (event) => {
+    event.stopPropagation();
+    router.show('categories', { reset: true });
+  });
 
   ui.adultConfirmBtn?.addEventListener('click', () => {
     app.storage.setRaw(app.STORAGE_KEYS.adult, 'yes');
@@ -130,6 +140,16 @@ function bindEvents() {
   ui.easterModal?.addEventListener('click', (event) => {
     if (event.target === ui.easterModal) revealSecretCategory();
   });
+
+
+  function startIntroCategory() {
+    if (!state.currentCategory) return router.show('categories', { reset: true });
+    fx.vibrate('light');
+    game.start();
+  }
+
+  ui.introCard?.addEventListener('click', (event) => { event.stopPropagation(); startIntroCategory(); });
+  app.screens.intro?.addEventListener('click', startIntroCategory);
 
   ui.completionCard?.addEventListener('click', () => router.show('categories', { reset: true }));
   app.screens.completion?.addEventListener('click', () => router.show('categories', { reset: true }));

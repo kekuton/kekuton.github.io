@@ -46,12 +46,26 @@ export const render = {
       const counter = card.querySelector('[data-role="counter"]');
       if (counter) counter.textContent = `${index + 1} / ${playable.length}`;
 
+      const continueLabel = card.querySelector('[data-role="continue"]');
+      const saved = app.storage.get(helpers.progressKey(category.id), null);
+      if (continueLabel && saved?.questions?.length && Number.isInteger(saved.index) && saved.index > 0 && saved.index < saved.questions.length) {
+        continueLabel.textContent = `Продолжить ${saved.index + 1} / ${saved.questions.length}`;
+        continueLabel.classList.remove('hidden');
+      }
+
       fragment.appendChild(card);
     });
 
     if (!fragment.childNodes.length) ui.categoriesGrid.replaceChildren(makeEmpty('Категории пока не найдены.'));
     else ui.categoriesGrid.replaceChildren(fragment);
     ui.categoriesGrid.querySelector('.category-card')?.classList.add('is-feed-active');
+  },
+
+  intro() {
+    const categoryId = state.currentCategory?.id || 'Категория';
+    if (ui.introCategory) ui.introCategory.textContent = categoryId;
+    if (ui.introText) ui.introText.textContent = helpers.getIntroText(categoryId);
+    router.show('intro');
   },
 
   updateModeUI() {
@@ -98,21 +112,66 @@ export const render = {
     const total = state.currentQuestions.length || ROUND_SIZE;
     const categoryId = state.currentCategory?.id || 'категорию';
     const finalPhrases = {
-      'После ссоры': 'Спасибо, что выбрали разговор вместо молчания.',
-      'Перед сном': 'Пусть вечер закончится теплее.',
-      '18+': 'Иногда честность начинается с желания.',
-      'Будущее': 'Планы становятся ближе, когда о них говорят.',
-      'Вечер для двоих': 'Хороший вечер — это когда вы услышали друг друга.',
-      'На расстоянии': 'Даже далеко можно оставаться ближе.',
-      'Финансы': 'Спокойные разговоры о деньгах делают планы честнее.',
-      'Психология': 'Понимание начинается там, где есть внимание.',
-      'Воспоминания': 'Тёплые моменты становятся сильнее, когда о них вспоминают вместе.',
-      'Только для своих': 'Некоторые разговоры существуют только между вами.',
+      'После ссоры': [
+        'Спасибо, что выбрали разговор вместо молчания.',
+        'Иногда шаг навстречу важнее правоты.',
+        'Мягкий разговор может вернуть тепло быстрее слов “забудь”.',
+        'Вы уже сделали главное — не закрылись друг от друга.',
+      ],
+      'Перед сном': [
+        'Пусть вечер закончится теплее.',
+        'Хорошие слова перед сном остаются с нами до утра.',
+        'Пусть ночь будет спокойнее после этого разговора.',
+        'Иногда близость начинается с пары честных вопросов.',
+      ],
+      '18+': [
+        'Иногда честность начинается с желания.',
+        'Откровенность работает лучше, когда в ней есть доверие.',
+        'Желание звучит смелее, когда рядом безопасно.',
+        'Главное — слышать друг друга даже в самых откровенных темах.',
+      ],
+      'Будущее': [
+        'Планы становятся ближе, когда о них говорят.',
+        'Будущее легче строить, когда вы смотрите в одну сторону.',
+        'Мечты становятся реальнее после спокойного разговора.',
+        'Вы уже сделали маленький шаг к общим планам.',
+      ],
+      'Вечер для двоих': [
+        'Хороший вечер — это когда вы услышали друг друга.',
+        'Пусть этот разговор останется между вами тёплым воспоминанием.',
+        'Иногда один вечер может сблизить сильнее недели.',
+      ],
+      'На расстоянии': [
+        'Даже далеко можно оставаться ближе.',
+        'Расстояние меньше, когда есть честный разговор.',
+        'Близость держится не на километрах, а на внимании.',
+      ],
+      'Финансы': [
+        'Спокойные разговоры о деньгах делают планы честнее.',
+        'Деньги обсуждать проще, когда вы на одной стороне.',
+        'Общие цели начинаются с честных вопросов.',
+      ],
+      'Психология': [
+        'Понимание начинается там, где есть внимание.',
+        'Чувства становятся яснее, когда их не прячут.',
+        'Иногда самый важный ответ — просто быть услышанным.',
+      ],
+      'Воспоминания': [
+        'Тёплые моменты становятся сильнее, когда о них вспоминают вместе.',
+        'Ваши воспоминания — это тихий фундамент близости.',
+        'Иногда прошлое напоминает, почему вы выбрали друг друга.',
+      ],
+      'Только для своих': [
+        'Некоторые разговоры существуют только между вами.',
+        'У каждой пары есть темы, которые понимают только двое.',
+        'Пусть это останется вашей маленькой тайной.',
+      ],
     };
 
     if (ui.completionCategory) ui.completionCategory.textContent = categoryId;
     if (ui.completionSummary) ui.completionSummary.textContent = `Вы прошли ${total} ${helpers.plural(total, 'вопрос', 'вопроса', 'вопросов')}.`;
-    if (ui.completionPhrase) ui.completionPhrase.textContent = finalPhrases[categoryId] || 'Спасибо, что прошли эту тему вместе.';
+    const phraseList = finalPhrases[categoryId] || ['Спасибо, что прошли эту тему вместе.'];
+    if (ui.completionPhrase) ui.completionPhrase.textContent = phraseList[Math.floor(Math.random() * phraseList.length)];
     router.show('completion');
   },
 };
