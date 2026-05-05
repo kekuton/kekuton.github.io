@@ -59,11 +59,11 @@ export const game = {
     render.gameQuestion(true);
   },
 
-  answer() {
+  answer(direction = 'left') {
     if (state.questionTransitionLocked) return;
     state.questionTransitionLocked = true;
     fx.vibrate('light');
-    swipe.animateOut(() => {
+    swipe.animateOut(direction, () => {
       state.currentIndex += 1;
       if (state.currentIndex >= state.currentQuestions.length) {
         clearProgress();
@@ -105,18 +105,25 @@ export const swipe = {
     card.classList.remove('is-swiping');
   },
 
-  animateOut(callback) {
+  animateOut(direction = 'left', callback) {
     const card = ui.questionCard;
+    if (typeof direction === 'function') {
+      callback = direction;
+      direction = 'left';
+    }
+
     if (!card) {
       callback?.();
       return;
     }
 
+    const outX = direction === 'right' ? 156 : -156;
+
     card.classList.remove('is-swiping');
     card.classList.remove('question-card-enter');
     card.style.willChange = 'transform, opacity';
     card.style.transition = 'transform 240ms cubic-bezier(.22,.72,.18,1), opacity 220ms ease';
-    card.style.transform = 'translate3d(-156px,0,0) scale(.985)';
+    card.style.transform = `translate3d(${outX}px,0,0) scale(.985)`;
     card.style.opacity = '0';
 
     window.setTimeout(() => {
@@ -168,9 +175,9 @@ export const swipe = {
     requestAnimationFrame(() => {
       const dx = state.swipe.currentX - state.swipe.startX;
       const dy = state.swipe.currentY - state.swipe.startY;
-      const x = dx < 0 ? Math.max(-108, dx * 0.5) : Math.min(34, dx * 0.16);
+      const x = Math.max(-108, Math.min(108, dx * 0.5));
       const y = Math.max(-28, Math.min(46, dy * 0.14));
-      const rotate = Math.max(-4.2, Math.min(2.4, dx / 96));
+      const rotate = Math.max(-4.2, Math.min(4.2, dx / 96));
       const scale = 1 - Math.min(Math.abs(x) / 4200, 0.018);
 
       card.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${rotate}deg) scale(${scale})`;
@@ -184,7 +191,7 @@ export const swipe = {
 
     const dx = state.swipe.currentX - state.swipe.startX;
     const dy = state.swipe.currentY - state.swipe.startY;
-    const isLeftSwipe = dx < -72 && Math.abs(dx) > Math.abs(dy) * 0.70;
+    const isHorizontalSwipe = Math.abs(dx) > 72 && Math.abs(dx) > Math.abs(dy) * 0.70;
     const isDownSwipe = dy > 82 && Math.abs(dy) > Math.abs(dx) * 0.75;
 
     state.swipe.active = false;
@@ -193,8 +200,8 @@ export const swipe = {
     card.releasePointerCapture?.(event.pointerId);
     card.classList.remove('is-swiping');
 
-    if (isLeftSwipe) {
-      game.answer();
+    if (isHorizontalSwipe) {
+      game.answer(dx > 0 ? 'right' : 'left');
       return;
     }
 
@@ -245,9 +252,9 @@ export const swipe = {
       if (state.questionTransitionLocked || state.swipe.active) return;
       const dx = touchLastX - touchStartX;
       const dy = touchLastY - touchStartY;
-      const isLeftSwipe = dx < -72 && Math.abs(dx) > Math.abs(dy) * 0.70;
+      const isHorizontalSwipe = Math.abs(dx) > 72 && Math.abs(dx) > Math.abs(dy) * 0.70;
       const isDownSwipe = dy > 82 && Math.abs(dy) > Math.abs(dx) * 0.75;
-      if (isLeftSwipe) game.answer();
+      if (isHorizontalSwipe) game.answer(dx > 0 ? 'right' : 'left');
       else if (isDownSwipe) game.exitToCategories();
     }, { passive: true });
 

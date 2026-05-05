@@ -1,6 +1,6 @@
-@import url('./styles/base.css?v=swipe-left-contain-1');
-@import url('./styles/layout.css?v=swipe-left-contain-1');
-@import url('./styles/categories.css?v=swipe-left-contain-1');
-@import url('./styles/question-card.css?v=swipe-left-contain-1');
-@import url('./styles/modal-completion.css?v=swipe-left-contain-1');
-@import url('./styles/responsive.css?v=swipe-left-contain-1');
+@import url('./styles/base.css?v=both-swipe-1');
+@import url('./styles/layout.css?v=both-swipe-1');
+@import url('./styles/categories.css?v=both-swipe-1');
+@import url('./styles/question-card.css?v=both-swipe-1');
+@import url('./styles/modal-completion.css?v=both-swipe-1');
+@import url('./styles/responsive.css?v=both-swipe-1');
