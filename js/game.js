@@ -116,7 +116,7 @@ export const swipe = {
     card.classList.remove('question-card-enter');
     card.style.willChange = 'transform, opacity';
     card.style.transition = 'transform 240ms cubic-bezier(.22,.72,.18,1), opacity 220ms ease';
-    card.style.transform = 'translate3d(148px,0,0) scale(.985)';
+    card.style.transform = 'translate3d(-156px,0,0) scale(.985)';
     card.style.opacity = '0';
 
     window.setTimeout(() => {
@@ -168,9 +168,9 @@ export const swipe = {
     requestAnimationFrame(() => {
       const dx = state.swipe.currentX - state.swipe.startX;
       const dy = state.swipe.currentY - state.swipe.startY;
-      const x = dx > 0 ? Math.min(96, dx * 0.46) : Math.max(-36, dx * 0.18);
-      const y = Math.max(-18, Math.min(58, dy * 0.18));
-      const rotate = Math.max(-2.4, Math.min(4.2, dx / 96));
+      const x = dx < 0 ? Math.max(-108, dx * 0.5) : Math.min(34, dx * 0.16);
+      const y = Math.max(-28, Math.min(46, dy * 0.14));
+      const rotate = Math.max(-4.2, Math.min(2.4, dx / 96));
       const scale = 1 - Math.min(Math.abs(x) / 4200, 0.018);
 
       card.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${rotate}deg) scale(${scale})`;
@@ -184,7 +184,7 @@ export const swipe = {
 
     const dx = state.swipe.currentX - state.swipe.startX;
     const dy = state.swipe.currentY - state.swipe.startY;
-    const isRightSwipe = dx > 78 && Math.abs(dx) > Math.abs(dy) * 0.72;
+    const isLeftSwipe = dx < -72 && Math.abs(dx) > Math.abs(dy) * 0.70;
     const isDownSwipe = dy > 82 && Math.abs(dy) > Math.abs(dx) * 0.75;
 
     state.swipe.active = false;
@@ -193,7 +193,7 @@ export const swipe = {
     card.releasePointerCapture?.(event.pointerId);
     card.classList.remove('is-swiping');
 
-    if (isRightSwipe) {
+    if (isLeftSwipe) {
       game.answer();
       return;
     }
@@ -222,6 +222,35 @@ export const swipe = {
     card.addEventListener('pointermove', this.onPointerMove.bind(this));
     card.addEventListener('pointerup', this.onPointerUp.bind(this));
     card.addEventListener('pointercancel', this.onPointerUp.bind(this));
+
+    // Fallback for Telegram/iOS WebView: sometimes pointerup is lost after a fast swipe.
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchLastX = 0;
+    let touchLastY = 0;
+    card.addEventListener('touchstart', (event) => {
+      if (state.questionTransitionLocked) return;
+      const touch = event.touches?.[0];
+      if (!touch) return;
+      touchStartX = touchLastX = touch.clientX;
+      touchStartY = touchLastY = touch.clientY;
+    }, { passive: true });
+    card.addEventListener('touchmove', (event) => {
+      const touch = event.touches?.[0];
+      if (!touch) return;
+      touchLastX = touch.clientX;
+      touchLastY = touch.clientY;
+    }, { passive: true });
+    card.addEventListener('touchend', () => {
+      if (state.questionTransitionLocked || state.swipe.active) return;
+      const dx = touchLastX - touchStartX;
+      const dy = touchLastY - touchStartY;
+      const isLeftSwipe = dx < -72 && Math.abs(dx) > Math.abs(dy) * 0.70;
+      const isDownSwipe = dy > 82 && Math.abs(dy) > Math.abs(dx) * 0.75;
+      if (isLeftSwipe) game.answer();
+      else if (isDownSwipe) game.exitToCategories();
+    }, { passive: true });
+
     card.addEventListener('lostpointercapture', () => {
       if (!state.swipe.active || state.questionTransitionLocked) return;
       this.resetSwipeState();
