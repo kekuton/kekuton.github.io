@@ -19,9 +19,12 @@ export const game = {
   openCategory(categoryId) {
     state.currentCategory = CATEGORY_META.find((category) => category.id === categoryId) || null;
     if (!state.currentCategory) return;
-    if (categoryId === '18+' && !helpers.isAdultConfirmed()) {
+    if (helpers.isPaidCategory(categoryId) && !helpers.hasCategoryAccess(categoryId)) {
       state.pendingAdultCategory = categoryId;
+      if (ui.adultCodeInput) ui.adultCodeInput.value = '';
+      if (ui.adultCodeError) ui.adultCodeError.textContent = '';
       modals.open(ui.adultModal);
+      window.setTimeout(() => ui.adultCodeInput?.focus?.(), 180);
       router.syncBackButton(router.current());
       return;
     }

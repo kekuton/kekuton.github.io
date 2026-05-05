@@ -90,13 +90,41 @@ function bindEvents() {
     router.show('categories', { reset: true });
   });
 
-  ui.adultConfirmBtn?.addEventListener('click', () => {
-    app.storage.setRaw(app.STORAGE_KEYS.adult, 'yes');
-    fx.vibrate('success');
-    modals.close(ui.adultModal);
-    const pending = state.pendingAdultCategory;
-    state.pendingAdultCategory = null;
-    if (pending) game.openCategory(pending);
+  function openPaymentLink() {
+    const pending = state.pendingAdultCategory || '18+';
+    const cfg = app.getAccessCategory?.(pending);
+    const url = cfg?.paymentUrl;
+    if (!url || url.includes('000000000000')) {
+      if (ui.adultCodeError) ui.adultCodeError.textContent = 'Добавь свою ссылку ЮMoney в js/access.js';
+      return;
+    }
+    try {
+      window.Telegram?.WebApp?.openLink?.(url) || window.open(url, '_blank', 'noopener,noreferrer');
+    } catch {
+      window.location.href = url;
+    }
+  }
+
+  function submitAccessCode() {
+    const pending = state.pendingAdultCategory || '18+';
+    const code = ui.adultCodeInput?.value || '';
+    if (app.helpers.unlockCategory(pending, code)) {
+      fx.vibrate('success');
+      if (ui.adultCodeError) ui.adultCodeError.textContent = '';
+      modals.close(ui.adultModal);
+      state.pendingAdultCategory = null;
+      game.openCategory(pending);
+      return;
+    }
+    fx.vibrate('warning');
+    if (ui.adultCodeError) ui.adultCodeError.textContent = 'Код не подошёл. Проверь символы и попробуй ещё раз.';
+    ui.adultCodeInput?.focus?.();
+  }
+
+  ui.adultBuyBtn?.addEventListener('click', openPaymentLink);
+  ui.adultCodeSubmitBtn?.addEventListener('click', submitAccessCode);
+  ui.adultCodeInput?.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') submitAccessCode();
   });
 
   ui.adultCancelBtn?.addEventListener('click', () => {

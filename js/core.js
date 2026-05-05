@@ -1,10 +1,13 @@
+import { ACCESS_CONFIG, normalizeAccessCode, getAccessCategory } from './access.js';
+
 export const app = {};
 
 const tg = window.Telegram?.WebApp;
 
-const VERSION = 'fullscreen-polish-1';
+const VERSION = 'paywall-code-1';
 const STORAGE_KEYS = {
   adult: 'adult_ok',
+  paidAccessPrefix: 'paid_access_',
   questionsCache: `couples_questions_${VERSION}`,
   progressPrefix: 'couples_progress_',
   easterUnlocked: 'couples_easter_unlocked',
@@ -54,7 +57,10 @@ const ui = {
   questionCard: document.getElementById('questionCard'),
   categoryCardTemplate: document.getElementById('categoryCardTemplate'),
   adultModal: document.getElementById('adultModal'),
-  adultConfirmBtn: document.getElementById('adultConfirmBtn'),
+  adultBuyBtn: document.getElementById('adultBuyBtn'),
+  adultCodeInput: document.getElementById('adultCodeInput'),
+  adultCodeSubmitBtn: document.getElementById('adultCodeSubmitBtn'),
+  adultCodeError: document.getElementById('adultCodeError'),
   adultCancelBtn: document.getElementById('adultCancelBtn'),
   easterModal: document.getElementById('easterModal'),
   easterUnlockCard: document.getElementById('easterUnlockCard'),
@@ -112,6 +118,21 @@ const helpers = {
   },
   getRoundSize(total = ROUND_SIZE) { return Math.min(ROUND_SIZE, Math.max(0, total)); },
   isAdultConfirmed() { return storage.getRaw(STORAGE_KEYS.adult) === 'yes'; },
+  isPaidCategory(categoryId) { return Boolean(getAccessCategory(categoryId)); },
+  hasCategoryAccess(categoryId) {
+    const cfg = getAccessCategory(categoryId);
+    if (!cfg) return true;
+    return storage.getRaw(cfg.storageKey) === 'yes';
+  },
+  unlockCategory(categoryId, code) {
+    const cfg = getAccessCategory(categoryId);
+    if (!cfg) return true;
+    const normalized = normalizeAccessCode(code);
+    const valid = cfg.codes.map(normalizeAccessCode).includes(normalized);
+    if (!valid) return false;
+    storage.setRaw(cfg.storageKey, 'yes');
+    return true;
+  },
   getIntroText(categoryId) {
     const intros = {
       'Вечер для двоих': 'настройтесь на тёплый разговор',
@@ -276,4 +297,4 @@ async function initTelegram() {
   window.addEventListener('orientationchange', () => setTimeout(syncViewportHeight, 120), { passive: true });
 }
 
-Object.assign(app, { tg, VERSION, STORAGE_KEYS, ROUND_SIZE, CATEGORY_META, ROOT_SCREENS, screens, ui, bgLayers, storage, state, helpers, notify, loading, background, fx, modals, router, data, initTelegram });
+Object.assign(app, { tg, VERSION, STORAGE_KEYS, ACCESS_CONFIG, normalizeAccessCode, getAccessCategory, ROUND_SIZE, CATEGORY_META, ROOT_SCREENS, screens, ui, bgLayers, storage, state, helpers, notify, loading, background, fx, modals, router, data, initTelegram });
