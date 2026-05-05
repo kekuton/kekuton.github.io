@@ -13,11 +13,10 @@
 }
 
 @media (max-height: 720px) {
-  #categoriesScreen { padding-top: calc(58px + var(--safe-top)); }
+  #categoriesScreen { padding-top: calc(64px + var(--safe-top)); }
   .section-head { padding-bottom: 8px; }
-  .section-head h2 { font-size: clamp(22px, 6.2vw, 30px); }
-  .categories-grid { height: calc(var(--app-height) - 106px - var(--safe-top) - var(--safe-bottom)); gap: 14px; }
-  .category-copy h3 { font-size: clamp(28px, 8.8vw, 44px); }
+  .categories-grid { height: calc(var(--app-height) - 96px - var(--safe-top) - var(--safe-bottom)); gap: 14px; }
+  .category-copy h3 { font-size: clamp(31px, 9vw, 48px); }
   .category-copy p { font-size: 13px; -webkit-line-clamp: 1; }
   .game-head { gap: 8px; }
   .question-card { width: min(100%, 430px); padding: 24px; }
@@ -26,11 +25,12 @@
 
 @media (max-height: 620px) {
   .brand-pill { padding: 8px 12px; font-size: 13px; }
-  #categoriesScreen { padding-top: calc(52px + var(--safe-top)); }
-  .section-head { display: none; }
-  .categories-grid { height: calc(var(--app-height) - 64px - var(--safe-top) - var(--safe-bottom)); padding-top: 4px; }
-  .category-copy { bottom: max(18px, calc(16px + var(--safe-bottom) * .25)); }
-  .category-copy h3 { font-size: clamp(28px, 8.5vw, 42px); line-height: .98; }
+  #categoriesScreen { padding-top: calc(56px + var(--safe-top)); }
+  .section-head { padding: 0 18px 6px; }
+  .section-head .eyebrow { font-size: 11px; }
+  .categories-grid { height: calc(var(--app-height) - 78px - var(--safe-top) - var(--safe-bottom)); padding-top: 0; gap: 12px; }
+  .category-copy { bottom: max(16px, calc(14px + var(--safe-bottom) * .25)); }
+  .category-copy h3 { font-size: clamp(29px, 8.6vw, 42px); line-height: .98; }
   .category-copy p { margin-top: 8px; font-size: 12.5px; -webkit-line-clamp: 1; }
   #gameScreen { padding-top: calc(8px + var(--safe-top)); gap: 8px; }
   .question-card { width: min(86vw, calc(var(--app-height) - 118px)); }

@@ -1,28 +1,29 @@
 #categoriesScreen {
   height: var(--app-height);
   flex-direction: column;
-  padding: calc(66px + var(--safe-top)) 0 calc(12px + var(--safe-bottom));
+  padding: calc(70px + var(--safe-top)) 0 calc(14px + var(--safe-bottom));
   overflow: hidden;
 }
 
 .section-head {
   flex: 0 0 auto;
-  padding: 0 20px 12px;
+  padding: 0 22px 10px;
 }
 
-.section-head h2 {
+.section-head .eyebrow {
   margin: 0;
-  color: #fff;
-  font-size: clamp(25px, 6.7vw, 36px);
-  line-height: 1;
-  letter-spacing: -.05em;
-  text-wrap: balance;
+  font-size: 12px;
+  letter-spacing: .16em;
+  color: rgba(216, 180, 254, .92);
 }
 
-.section-head p { display: none; }
+.section-head h2,
+.section-head p {
+  display: none !important;
+}
 
 .categories-grid {
-  height: calc(var(--app-height) - 126px - var(--safe-top) - var(--safe-bottom));
+  height: calc(var(--app-height) - 108px - var(--safe-top) - var(--safe-bottom));
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
@@ -50,7 +51,7 @@
   isolation: isolate;
   background: #120d20;
   border: 1px solid rgba(255, 255, 255, .14);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, .42);
+  box-shadow: 0 28px 76px rgba(0, 0, 0, .40);
   cursor: pointer;
   outline: 0;
   transform: none !important;
@@ -63,8 +64,12 @@
   inset: 0;
   z-index: -1;
   background:
-    linear-gradient(180deg, rgba(0, 0, 0, .05) 0%, rgba(0, 0, 0, .04) 38%, rgba(0, 0, 0, .64) 76%, rgba(0, 0, 0, .94) 100%),
-    radial-gradient(circle at 18% 0%, rgba(255, 255, 255, .12), transparent 30%);
+    linear-gradient(180deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, .02) 42%,
+      rgba(0, 0, 0, .46) 74%,
+      rgba(0, 0, 0, .88) 100%
+    );
 }
 
 .category-poster {
@@ -90,15 +95,15 @@
 }
 
 .category-feed-counter {
-  min-height: 38px;
+  min-height: 36px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0 15px;
+  padding: 0 14px;
   border-radius: 999px;
-  background: rgba(12, 10, 22, .45);
-  border: 1px solid rgba(255, 255, 255, .16);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, .24);
+  background: rgba(12, 10, 22, .42);
+  border: 1px solid rgba(255, 255, 255, .14);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, .24);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   color: #fff;
@@ -110,19 +115,18 @@
   position: absolute;
   left: 22px;
   right: 22px;
-  bottom: max(24px, calc(20px + var(--safe-bottom) * .35));
+  bottom: max(22px, calc(18px + var(--safe-bottom) * .35));
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 
-
 .category-copy h3 {
   margin: 0;
-  max-width: 92%;
+  max-width: 94%;
   color: #fff;
-  font-size: clamp(36px, 9.8vw, 56px);
+  font-size: clamp(38px, 10vw, 58px);
   line-height: .94;
   letter-spacing: -.055em;
   font-weight: 950;
@@ -132,12 +136,12 @@
 }
 
 .category-copy p {
-  margin: 12px 0 0;
-  max-width: 28ch;
-  color: rgba(255, 255, 255, .82);
+  margin: 10px 0 0;
+  max-width: 30ch;
+  color: rgba(255, 255, 255, .84);
   font-size: clamp(14px, 3.7vw, 16px);
-  font-weight: 800;
-  line-height: 1.24;
+  font-weight: 850;
+  line-height: 1.22;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -163,7 +167,6 @@
   font-size: 13px;
   font-weight: 950;
 }
-
 
 /* Hard removal: category cards must not show emoji/icon blocks. */
 .category-card .category-icon,
