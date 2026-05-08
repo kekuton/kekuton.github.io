@@ -186,3 +186,34 @@
   margin: 0 !important;
   padding: 0 !important;
 }
+
+
+/* subtle motion + shimmer */
+.category-card::before{
+  content:'';
+  position:absolute;
+  inset:-30%;
+  background:linear-gradient(115deg,
+    transparent 30%,
+    rgba(255,255,255,.06) 48%,
+    transparent 64%);
+  transform:translateX(-120%) rotate(8deg);
+  animation:cardShimmer 9s ease-in-out infinite;
+  pointer-events:none;
+  z-index:1;
+}
+
+.category-poster{
+  animation:posterFloat 16s ease-in-out infinite alternate;
+  will-change:transform;
+}
+
+@keyframes posterFloat{
+  from{transform:scale(1.02) translate3d(0,0,0);}
+  to{transform:scale(1.06) translate3d(-8px,-6px,0);}
+}
+
+@keyframes cardShimmer{
+  0%,70%,100%{transform:translateX(-140%) rotate(8deg);}
+  82%{transform:translateX(140%) rotate(8deg);}
+}
