@@ -4,7 +4,7 @@ export const app = {};
 
 const tg = window.Telegram?.WebApp;
 
-const VERSION = 'paywall-code-1';
+const VERSION = 'premium-polish-1';
 const STORAGE_KEYS = {
   adult: 'adult_ok',
   paidAccessPrefix: 'paid_access_',
@@ -47,6 +47,8 @@ const ui = {
   goHomeFromErrorBtn: document.getElementById('goHomeFromErrorBtn'),
   errorText: document.getElementById('errorText'),
   categoriesGrid: document.getElementById('categoriesGrid'),
+  dailyQuestionCard: document.getElementById('dailyQuestionCard'),
+  dailyQuestionText: document.getElementById('dailyQuestionText'),
   introCard: document.getElementById('introCard'),
   introCategory: document.getElementById('introCategory'),
   introText: document.getElementById('introText'),
@@ -183,6 +185,7 @@ const background = {
     document.body.style.removeProperty('--screen-bg-start');
     document.body.style.removeProperty('--screen-bg-mid');
     document.body.style.removeProperty('--screen-bg-end');
+    document.body.style.removeProperty('--category-cover');
     bgLayers.forEach((layer, index) => {
       if (!layer) return;
       layer.style.backgroundImage = '';
@@ -195,6 +198,8 @@ const background = {
     document.body.style.setProperty('--screen-bg-start', category?.bgStart || '#070611');
     document.body.style.setProperty('--screen-bg-mid', category?.bgMid || '#090713');
     document.body.style.setProperty('--screen-bg-end', category?.bgEnd || '#05050a');
+    if (category?.cover) document.body.style.setProperty('--category-cover', `url(${category.cover})`);
+    else document.body.style.removeProperty('--category-cover');
     const currentLayer = bgLayers[state.activeBgLayerIndex];
     const nextLayer = bgLayers[(state.activeBgLayerIndex + 1) % bgLayers.length];
     if (!category?.cover || !currentLayer || !nextLayer) return this.reset();
@@ -214,6 +219,31 @@ const fx = {
         if (['success', 'warning', 'error'].includes(type)) tg.HapticFeedback.notificationOccurred(type);
         else tg.HapticFeedback.impactOccurred(type);
       } else if (navigator.vibrate) navigator.vibrate(type === 'light' ? 10 : 18);
+    } catch {}
+  },
+  swipeSound() {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = fx._audioContext || (fx._audioContext = new AudioContext());
+      if (ctx.state === 'suspended') ctx.resume?.();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+      const now = ctx.currentTime;
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(420, now);
+      osc.frequency.exponentialRampToValueAtTime(180, now + 0.12);
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(520, now);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.035, now + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.14);
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.15);
     } catch {}
   },
 };

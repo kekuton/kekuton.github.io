@@ -63,6 +63,7 @@ export const game = {
     if (state.questionTransitionLocked) return;
     state.questionTransitionLocked = true;
     fx.vibrate('light');
+    fx.swipeSound();
     swipe.animateOut(direction, () => {
       state.currentIndex += 1;
       if (state.currentIndex >= state.currentQuestions.length) {
@@ -117,18 +118,18 @@ export const swipe = {
       return;
     }
 
-    const outX = direction === 'right' ? 156 : -156;
+    const outX = direction === 'right' ? 132 : -132;
 
     card.classList.remove('is-swiping');
     card.classList.remove('question-card-enter');
     card.style.willChange = 'transform, opacity';
-    card.style.transition = 'transform 240ms cubic-bezier(.22,.72,.18,1), opacity 220ms ease';
-    card.style.transform = `translate3d(${outX}px,0,0) scale(.985)`;
+    card.style.transition = 'transform 260ms cubic-bezier(.22,.72,.18,1), opacity 230ms ease';
+    card.style.transform = `translate3d(${outX}px,0,0) rotate(${direction === 'right' ? 2.2 : -2.2}deg) scale(.982)`;
     card.style.opacity = '0';
 
     window.setTimeout(() => {
       callback?.();
-    }, 245);
+    }, 265);
   },
 
   resetSwipeState() {

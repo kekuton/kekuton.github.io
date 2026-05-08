@@ -2,7 +2,7 @@ import { app } from './core.js';
 import './ui.js';
 import './game.js';
 
-const { ui, state, router, data, background, render, loading, swipe, initTelegram, modals, game, storage, STORAGE_KEYS, fx } = app;
+const { ui, state, router, data, background, render, loading, swipe, initTelegram, modals, game, storage, STORAGE_KEYS, fx, CATEGORY_META, helpers } = app;
 
 function updateActiveCategoryCard() {
   const cards = [...ui.categoriesGrid.querySelectorAll('.category-card')];
@@ -66,6 +66,16 @@ function bindEvents() {
     game.openCategory(card.dataset.id);
   });
 
+
+  ui.dailyQuestionCard?.addEventListener('click', () => {
+    const categories = CATEGORY_META.filter((category) => (!category.hidden || state.easterUnlocked) && helpers.getCurrentCategoryQuestions(category.id).length);
+    if (!categories.length) return;
+    const daySeed = Math.floor(Date.now() / 86400000);
+    const category = categories[daySeed % categories.length];
+    fx.vibrate('light');
+    game.openCategory(category.id);
+  });
+
   ui.backBtn?.addEventListener('click', () => router.back());
   ui.gameBackBtn?.addEventListener('click', () => router.show('categories', { reset: true }));
 
@@ -73,6 +83,7 @@ function bindEvents() {
     loading.show('Повторяем загрузку...');
     const ok = await data.loadQuestions();
     render.categories();
+    render.dailyQuestion?.();
     loading.hide();
     if (ok) router.show('categories', { reset: true });
     else render.errorScreen(state.loadError || 'Не удалось загрузить вопросы.');
@@ -207,6 +218,7 @@ async function init() {
   background.reset();
   const questionsLoaded = await data.loadQuestions();
   render.categories();
+  render.dailyQuestion?.();
   await initTelegram();
   swipe.attachHandlers();
   bindEvents();

@@ -54,9 +54,9 @@
   box-shadow: 0 28px 76px rgba(0, 0, 0, .40);
   cursor: pointer;
   outline: 0;
-  transform: none !important;
+  transform: scale(1.02);
   object-position: center;
-  transition: none !important;
+  transition: none;
 }
 
 .category-card::after {
@@ -80,9 +80,9 @@
   height: 100%;
   object-fit: cover;
   z-index: -2;
-  transform: none !important;
+  transform: scale(1.02);
   object-position: center;
-  transition: none !important;
+  transition: none;
 }
 
 .category-card-top {

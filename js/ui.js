@@ -15,6 +15,22 @@ export const render = {
     router.show('error', { reset: true });
   },
 
+
+  dailyQuestion() {
+    if (!ui.dailyQuestionCard || !ui.dailyQuestionText) return;
+    const pools = CATEGORY_META
+      .filter((category) => (!category.hidden || state.easterUnlocked) && category.id !== '18+')
+      .flatMap((category) => helpers.getCurrentCategoryQuestions(category.id));
+    if (!pools.length) {
+      ui.dailyQuestionCard.classList.add('hidden');
+      return;
+    }
+    const daySeed = Math.floor(Date.now() / 86400000);
+    const question = pools[daySeed % pools.length];
+    ui.dailyQuestionText.textContent = question;
+    ui.dailyQuestionCard.classList.remove('hidden');
+  },
+
   categories() {
     if (!ui.categoriesGrid || !ui.categoryCardTemplate) return;
     const playable = CATEGORY_META.filter((category) => (!category.hidden || state.easterUnlocked) && helpers.getCurrentCategoryQuestions(category.id).length);
